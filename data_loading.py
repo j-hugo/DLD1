@@ -1,3 +1,16 @@
+from keras.utils import to_categorical
+
+import numpy as np
+import matplotlib.pyplot as plt
+import os
+import random
+import PIL
+
+import torch
+from torch.utils.data import Dataset
+from torchvision import transforms
+import torchvision.transforms.functional as TF
+
 # preprocessing, data iterators
 # informative description of content
 
@@ -108,7 +121,7 @@ class ColonDataset(Dataset):
         self.image_dir = image_dir
         self.label_dir = label_dir
         self.csv_dir = csv_dir
-        self.scaler = MinMaxScaler(feature_range=(-1, 1))
+        #self.scaler = MinMaxScaler(feature_range=(-1, 1))
         self.balance_dataset = balance_dataset
         self.torch_transform = torch_transform
         if self.balance_dataset == "undersample":
@@ -166,13 +179,27 @@ class ColonDataset(Dataset):
           label = TF.vflip(label)
 
       # Transform to tensor
-      self.scaler.fit(image)
-      image = self.scaler.transform(image)
+      #self.scaler.fit(image)
+      #image = self.scaler.transform(image)
       image = torch.from_numpy(np.array(image)) # to_tensor: /opt/conda/conda-bld/pytorch_1587428094786/work/torch/csrc/utils/tensor_numpy.cpp:141: UserWarning: The given NumPy array is not writeable, and PyTorch does not support non-writeable tensors. 
       image = image.unsqueeze(0).type(torch.FloatTensor)
       label = torch.from_numpy(np.moveaxis(to_categorical(label, num_classes=2), -1, 0)).type(torch.FloatTensor)
 
       # Normalize
-      #image = TF.normalize(image, mean=-531.28, std=499.68)
+      image = TF.normalize(image, mean=-531.28, std=499.68)
 
       return image, label
+      
+if __name__ == "__main__":
+  path = os.path.abspath(".") + "/"
+  image_dir = path+'npy_images'
+  label_dir = path+'npy_labels'
+  csv_dir = path+'contains_cancer_index.csv'
+
+  data = ColonDataset(image_dir,label_dir,csv_dir, torch_transform=True, balance_dataset="only_tumor")
+  single_example = data[1]
+  print(f"Plotting slice of Image")
+  plt.imshow(single_example[0][0], cmap='gray')
+  plt.imshow(single_example[1][1],alpha=0.3)
+  plt.axis('off')
+  plt.show()
