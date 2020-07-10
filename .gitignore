@@ -3,3 +3,4 @@ Task10_Colon/
 npy_images/
 npy_labels/
 __pycache__/
+weights/

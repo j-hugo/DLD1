@@ -1,15 +1,25 @@
 # instantiates a model, conducts the training and saves the model
 # adapted from https://github.com/mateuszbuda/brain-segmentation-pytorch
+from data_loading import ColonDataset
+
 import argparse
+import _osx_support
+import copy 
+import time 
 import os
+from collections import defaultdict
+
 import torch 
 from torch.utils.data import DataLoader
+from torchsummary import summary
 from architecture import UNet, ResNetUNet
-from data_loading import ColonDataset
+from loss import calc_loss, print_metrics
+from torchvision import models
+from torch.optim import lr_scheduler, Adam
+
 
 def makedirs(args):
     os.makedirs(args.weights, exist_ok=True)
-    os.makedirs(args.logs, exist_ok=True)
 
 def load_datasets(args):
     dataset = ColonDataset(
@@ -33,8 +43,102 @@ def load_dataloader(args, train, valid):
     }
     return dataloader
 
+def train_model(model, optimizer, scheduler, device, num_epochs, dataloaders):
+    best_model_wts = copy.deepcopy(model.state_dict())
+    best_loss = 1e10
+    epoch_train_loss = list()
+    epoch_valid_loss = list()
+    epoch_train_dice = list()
+    epoch_valid_dice = list()
+    epoch_train_bce = list()
+    epoch_valid_bce = list()
 
+    for epoch in range(num_epochs):
+        print('Epoch {}/{}'.format(epoch, num_epochs - 1))
+        print('-' * 10)
+        since = time.time()
+        # Each epoch has a training and validation phase
+        for phase in ['train', 'val']:
+            if phase == 'train':
+                for param_group in optimizer.param_groups:
+                    print("LR", param_group['lr'])
 
+                model.train()  # Set model to training mode
+            else:
+                model.eval()   # Set model to evaluate mode
+
+            metrics = defaultdict(float)
+            epoch_samples = 0
+
+            for inputs, labels in dataloaders[phase]:
+                inputs = inputs.to(device)
+                labels = labels.to(device)
+
+                # zero the parameter gradients
+                optimizer.zero_grad()
+
+                # forward
+                # track history if only in train
+                with torch.set_grad_enabled(phase == 'train'):
+                    outputs = model(inputs)
+                    loss = calc_loss(outputs, labels, metrics)
+                    # backward + optimize only if in training phase
+                    if phase == 'train':
+                        loss.backward()
+                        optimizer.step()
+
+                # statistics
+                epoch_samples += inputs.size(0)
+
+            print_metrics(metrics, epoch_samples, phase)
+            epoch_loss = metrics['loss'] / epoch_samples
+            
+            if phase == 'train':
+                scheduler.step()
+                epoch_train_loss.append(metrics['loss']/ epoch_samples)
+                epoch_train_bce.append(metrics['bce']/ epoch_samples)
+                epoch_train_dice.append(metrics['dice']/ epoch_samples)
+            elif phase == 'val':
+                epoch_valid_loss.append(metrics['loss']/ epoch_samples)
+                epoch_valid_bce.append(metrics['bce']/ epoch_samples)
+                epoch_valid_dice.append(metrics['dice']/ epoch_samples)
+            # deep copy the model
+            if phase == 'val' and epoch_loss < best_loss:
+                print("saving best model")
+                best_loss = epoch_loss
+                best_model_wts = copy.deepcopy(model.state_dict())
+                torch.save(model.state_dict(), "./weights/best_metric_model.pth")
+
+        time_elapsed = time.time() - since
+        print('{:.0f}m {:.0f}s'.format(time_elapsed // 60, time_elapsed % 60))
+
+    print('Best val loss: {:4f}'.format(best_loss))
+    metric_train = (epoch_train_loss, epoch_train_bce, epoch_train_dice)
+    metric_valid = (epoch_valid_loss, epoch_valid_bce, epoch_valid_dice)
+    # load best model weights
+    model.load_state_dict(best_model_wts)
+    return model, metric_train, metric_valid
+
+def main(args):
+    makedirs(args)
+    device = torch.device("cpu" if not torch.cuda.is_available() else args.device)
+    train, valid = load_datasets(args)
+    colon_dataloader = load_dataloader(args, train, valid)
+    model = UNet(args.num_channel, args.num_class).to(device)
+    #base_net = models.resnet34(pretrained=True)
+    #base_net.conv1 = torch.nn.Conv2d(1, 64, (7, 7), (2, 2), (3, 3), bias=False)
+    #model = ResNetUNet(base_net,args.num_class).to(device)
+    print(model)
+    # to freeze weights of pretrained resnet layers
+    if args.freeze:
+        for l in model.base_layers:
+            for param in l.parameters():
+                param.requires_grad = False
+
+    optimizer_ft = Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=args.lr)
+    exp_lr_scheduler = lr_scheduler.StepLR(optimizer_ft, step_size=args.step_size)
+    model, metric_t, metric_v = train_model(model, optimizer_ft, exp_lr_scheduler, device, args.epochs, colon_dataloader)
+    
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Training the model for image segmentation of Colon"
@@ -112,7 +216,17 @@ if __name__ == "__main__":
     parser.add_argument(
         "--shuffle", type=bool, default=False, help="shuffle the datset or not"
     )
+    parser.add_argument(
+        "--num_class", type=int, default=2, help="the number of class for image segmentation"
+    )
+    parser.add_argument(
+        "--num_channel", type=int, default=1, help="the number of channel of the image"
+    )
+    parser.add_argument(
+        "--freeze", type=bool, default=False, help="freeze the pretrained weights of resnet"
+    )
+    parser.add_argument(
+        "--step-size", type=int, default=50, help="step size of StepLR scheduler"
+    )
     args = parser.parse_args()
-    train, valid = load_datasets(args)
-    colon_dataloader = load_dataloader(args, train, valid)
-    
+    main(args)
