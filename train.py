@@ -130,8 +130,7 @@ def main(args):
         base_net = models.resnet34(pretrained=True)
         base_net.conv1 = torch.nn.Conv2d(1, 64, (7, 7), (2, 2), (3, 3), bias=False)
         model = ResNetUNet(base_net,args.num_class).to(device)
-    print(model)
-    # to freeze weights of pretrained resnet layers
+    summary(model, input_size=(args.num_channel, args.image_size, args.image_size))    # to freeze weights of pretrained resnet layers
     if args.freeze:
         for l in model.base_layers:
             for param in l.parameters():

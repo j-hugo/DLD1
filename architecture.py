@@ -75,6 +75,7 @@ class ResNetUNet(nn.Module):
         self.base_layers = list(self.base_model.children())
 
         self.layer0 = nn.Sequential(*self.base_layers[:3]) 
+        self.layer0_1x1 = convrelu(64, 64, 1, 0)
         self.layer1 = nn.Sequential(*self.base_layers[3:5]) 
         self.layer1_1x1 = convrelu(64, 64, 1, 0)
         self.layer2 = self.base_layers[5]  
