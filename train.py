@@ -124,10 +124,12 @@ def main(args):
     device = torch.device("cpu" if not torch.cuda.is_available() else args.device)
     train, valid = load_datasets(args)
     colon_dataloader = load_dataloader(args, train, valid)
-    model = UNet(args.num_channel, args.num_class).to(device)
-    #base_net = models.resnet34(pretrained=True)
-    #base_net.conv1 = torch.nn.Conv2d(1, 64, (7, 7), (2, 2), (3, 3), bias=False)
-    #model = ResNetUNet(base_net,args.num_class).to(device)
+    if args.model == 'unet':
+        model = UNet(args.num_channel, args.num_class).to(device)
+    elif args.model == 'resnetunet':
+        base_net = models.resnet34(pretrained=True)
+        base_net.conv1 = torch.nn.Conv2d(1, 64, (7, 7), (2, 2), (3, 3), bias=False)
+        model = ResNetUNet(base_net,args.num_class).to(device)
     print(model)
     # to freeze weights of pretrained resnet layers
     if args.freeze:
@@ -138,7 +140,7 @@ def main(args):
     optimizer_ft = Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=args.lr)
     exp_lr_scheduler = lr_scheduler.StepLR(optimizer_ft, step_size=args.step_size)
     model, metric_t, metric_v = train_model(model, optimizer_ft, exp_lr_scheduler, device, args.epochs, colon_dataloader)
-    
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Training the model for image segmentation of Colon"
@@ -227,6 +229,9 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--step-size", type=int, default=50, help="step size of StepLR scheduler"
+    )
+    parser.add_argument(
+        "--model", type=str, default='unet', help="choose the model between unet and resnet+unet; UNet-> unet, Resnet+Unet-> resnetunet"
     )
     args = parser.parse_args()
     main(args)
