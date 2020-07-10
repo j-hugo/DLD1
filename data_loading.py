@@ -105,7 +105,7 @@ def only_tumor_files(csv_file):
 class ColonDataset(Dataset):
     """Colon Cancer dataset."""
 
-    def __init__(self, image_dir, label_dir, csv_dir, torch_transform, balance_dataset=None):
+    def __init__(self, image_dir, label_dir, csv_dir, image_size, torch_transform, balance_dataset=None):
         """
         Args:
             image_dir: Path to image folder.
@@ -121,6 +121,7 @@ class ColonDataset(Dataset):
         self.image_dir = image_dir
         self.label_dir = label_dir
         self.csv_dir = csv_dir
+        self.image_size = image_size
         #self.scaler = MinMaxScaler(feature_range=(-1, 1))
         self.balance_dataset = balance_dataset
         self.torch_transform = torch_transform
@@ -159,12 +160,12 @@ class ColonDataset(Dataset):
       label = PIL.Image.fromarray(label)
 
       # Resize
-      image = TF.resize(image, size=(280, 280))
-      label = TF.resize(label, size=(280, 280))
+      image = TF.resize(image, size=(self.image_size+44, self.image_size+44))
+      label = TF.resize(label, size=(self.image_size+44, self.image_size+44))
 
       # Random crop
       i, j, h, w = transforms.RandomCrop.get_params(
-          image, output_size=(256, 256))
+          image, output_size=(self.image_size, self.image_size))
       image = TF.crop(image, i, j, h, w)
       label = TF.crop(label, i, j, h, w)
 
@@ -196,7 +197,7 @@ if __name__ == "__main__":
   label_dir = path+'npy_labels'
   csv_dir = path+'contains_cancer_index.csv'
 
-  data = ColonDataset(image_dir,label_dir,csv_dir, torch_transform=True, balance_dataset="only_tumor")
+  data = ColonDataset(image_dir,label_dir,csv_dir, 256,torch_transform=True, balance_dataset="only_tumor")
   single_example = data[1]
   print(f"Plotting slice of Image")
   plt.imshow(single_example[0][0], cmap='gray')
