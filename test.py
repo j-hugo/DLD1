@@ -51,13 +51,13 @@ def test_model(model, device, dataloaders):
             outputs = model(inputs)
             dice_score = dice_coeff(torch.sigmoid(outputs), labels)
         # statistics
-        print(f"The {i} image's dice score is {dice_score}.")
+        #print(f"The {i} image's dice score is {dice_score}.")
         test_dice.append(dice_score)
         test_samples += inputs.size(0)
         i += 1
     
     average_dice_score = sum(test_dice) / test_samples
-
+    print(f"The average dice score is {dice_score}.")
     time_elapsed = time.time() - since
     print('{:.0f}m {:.0f}s'.format(time_elapsed // 60, time_elapsed % 60))
 

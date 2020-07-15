@@ -161,8 +161,12 @@ class ColonDataset(Dataset):
       label = PIL.Image.fromarray(label)
 
       # Resize
-      image = TF.resize(image, size=(self.image_size+44, self.image_size+44))
-      label = TF.resize(label, size=(self.image_size+44, self.image_size+44))
+      if self.test == None:
+        image = TF.resize(image, size=(self.image_size+44, self.image_size+44))
+        label = TF.resize(label, size=(self.image_size+44, self.image_size+44))
+      else:
+        image = TF.resize(image, size=(self.image_size, self.image_size))
+        label = TF.resize(label, size=(self.image_size, self.image_size))
 
       # Random crop
       if self.test == None:

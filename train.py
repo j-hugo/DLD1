@@ -11,6 +11,7 @@ from collections import defaultdict
 
 import torch 
 from torch.utils.data import DataLoader
+from torch.utils.tensorboard import SummaryWriter
 from torchsummary import summary
 from architecture import UNet, ResNetUNet
 from loss import calc_loss, print_metrics
@@ -52,6 +53,7 @@ def train_model(model, optimizer, scheduler, device, num_epochs, dataloaders):
     epoch_valid_dice = list()
     epoch_train_bce = list()
     epoch_valid_bce = list()
+    writer = SummaryWriter()
 
     for epoch in range(num_epochs):
         print('Epoch {}/{}'.format(epoch, num_epochs - 1))
@@ -85,13 +87,15 @@ def train_model(model, optimizer, scheduler, device, num_epochs, dataloaders):
                     if phase == 'train':
                         loss.backward()
                         optimizer.step()
-
+                    
                 # statistics
                 epoch_samples += inputs.size(0)
 
             print_metrics(metrics, epoch_samples, phase)
             epoch_loss = metrics['loss'] / epoch_samples
-            
+            writer.add_scalar('Loss/train', epoch_loss, epoch)
+            writer.add_scalar('Dice/train', metrics['dice']/ epoch_samples, epoch)
+
             if phase == 'train':
                 scheduler.step()
                 epoch_train_loss.append(metrics['loss']/ epoch_samples)
@@ -101,12 +105,19 @@ def train_model(model, optimizer, scheduler, device, num_epochs, dataloaders):
                 epoch_valid_loss.append(metrics['loss']/ epoch_samples)
                 epoch_valid_bce.append(metrics['bce']/ epoch_samples)
                 epoch_valid_dice.append(metrics['dice']/ epoch_samples)
+                for tag, value in model.named_parameters():
+                    tag = tag.replace('.', '/')
+                    writer.add_histogram('weights/' + tag, value.data.cpu().numpy(), epoch)
+                    writer.add_histogram('grads/' + tag, value.grad.data.cpu().numpy(), epoch)
+                writer.add_scalar('learning_rate', optimizer.param_groups[0]['lr'], epoch)
+                writer.add_scalar('Loss/test', metrics['loss']/ epoch_samples, epoch)
+                writer.add_scalar('Dice/test', metrics['dice']/ epoch_samples, epoch)
             # deep copy the model
             if phase == 'val' and epoch_loss < best_loss:
                 print("saving best model")
                 best_loss = epoch_loss
                 best_model_wts = copy.deepcopy(model.state_dict())
-                torch.save(model.state_dict(), f"{args.weights}best_metric_model_{args.model}.pth")
+                torch.save(model.state_dict(), f"{args.weights}best_metric_model_{args.model}.pth")        
 
         time_elapsed = time.time() - since
         print('{:.0f}m {:.0f}s'.format(time_elapsed // 60, time_elapsed % 60))
@@ -116,6 +127,7 @@ def train_model(model, optimizer, scheduler, device, num_epochs, dataloaders):
     metric_valid = (epoch_valid_loss, epoch_valid_bce, epoch_valid_dice)
     # load best model weights
     model.load_state_dict(best_model_wts)
+    writer.close()
     return model, metric_train, metric_valid
 
 def main(args):
@@ -141,6 +153,9 @@ def main(args):
 
     optimizer_ft = Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=args.lr)
     exp_lr_scheduler = lr_scheduler.StepLR(optimizer_ft, step_size=args.step_size)
+    if args.load:
+        model.load_state_dict(torch.load(f"{args.weights}best_metric_model_{args.model}.pth")) 
+
     model, metric_t, metric_v = train_model(model, optimizer_ft, exp_lr_scheduler, device, args.epochs, colon_dataloader)
 
 if __name__ == "__main__":
@@ -237,6 +252,9 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--freeze", type=bool, default=True, help="freeze the pretrained weights of resnet"
+    )
+    parser.add_argument(
+        "--load", type=bool, default=False, help="continute training from the best model"
     )
     parser.add_argument(
         "--step-size", type=int, default=50, help="step size of StepLR scheduler"

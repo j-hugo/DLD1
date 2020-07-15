@@ -6,3 +6,4 @@ npy_test_images/
 npy_test_labels/
 __pycache__/
 weights/
+runs/
