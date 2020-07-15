@@ -1,6 +1,6 @@
 import torch.nn.functional as F
 import torch
-from sklearn.metrics import jaccard_score as jsc
+
 def dice_loss(pred, target, smooth = 1.):
     pred = pred.contiguous()
     target = target.contiguous()    

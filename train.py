@@ -116,7 +116,7 @@ def train_model(model, optimizer, scheduler, device, num_epochs, dataloaders):
                 print("saving best model")
                 best_loss = epoch_loss
                 best_model_wts = copy.deepcopy(model.state_dict())
-                torch.save(model.state_dict(), f"{args.weights}best_metric_model_{args.model}.pth")        
+                torch.save(model.state_dict(), f"{args.weights}best_metric_model_{args.model}_{args.dataset_type}.pth")        
 
         time_elapsed = time.time() - since
         print('{:.0f}m {:.0f}s'.format(time_elapsed // 60, time_elapsed % 60))
@@ -152,7 +152,7 @@ def main(args):
 
     optimizer_ft = Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=args.lr)
     #exp_lr_scheduler = lr_scheduler.StepLR(optimizer_ft, step_size=args.step_size)
-    scheduler = lr_scheduler.ReduceLROnPlateau(optimizer_ft, 'min')
+    scheduler = lr_scheduler.ReduceLROnPlateau(optimizer_ft, 'min', patience=5)
     if args.load:
         model.load_state_dict(torch.load(f"{args.weights}best_metric_model_{args.model}_{args.dataset_type}.pth")) 
 
@@ -235,7 +235,7 @@ if __name__ == "__main__":
         "--dataset-type", type=str, default=None, help="choose what type of dataset you need; \
         None=original dataset, \
         undersample=adjust to the number of non tumor images to the number of tumor images, \
-        oversample=adjust to the number of tumor images to the number of non-tumor data, \
+        upsample=adjust to the number of tumor images to the number of non-tumor data, \
         only_tumor=take only images which have tumor"
     )
     parser.add_argument(

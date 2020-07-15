@@ -5,6 +5,6 @@ npy_train_labels/
 npy_test_images/
 npy_test_labels/
 __pycache__/
-weights/
 runs/
 eval_plot/
+data/

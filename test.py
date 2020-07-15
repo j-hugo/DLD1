@@ -50,7 +50,7 @@ def plot_result(img, label, pred, index, path, dice_score):
     plt.savefig(f'{path}eval_plot_{index}.png')
 
 def test_model(model, device, dataloaders, plot_path):
-    model.load_state_dict(torch.load(f"{args.weights}best_metric_model_{args.model}.pth")) 
+    model.load_state_dict(torch.load(f"{args.weights}best_metric_model_{args.model}_{args.dataset_type}.pth")) 
     test_dice = list()
     print('-' * 10)
     since = time.time()
@@ -177,7 +177,7 @@ if __name__ == "__main__":
         "--dataset-type", type=str, default=None, help="choose what type of dataset you need; \
         None=original dataset, \
         undersample=adjust to the number of non tumor images to the number of tumor images, \
-        oversample=adjust to the number of tumor images to the number of non-tumor data, \
+        upsample=adjust to the number of tumor images to the number of non-tumor data, \
         only_tumor=take only images which have tumor"
     )
     parser.add_argument(
