@@ -23,5 +23,11 @@ Use the following structure as minimal requirement for your submission:
 
 How to use 
 1. execute dataset.py
-2. execute train.py 
+
+2-1. execute train.py 
+
+2-2. run this command on the command line to see plots of loss: 
+```
+tensorboard --logdir=runs
+```
 3. exectue evaluate.py 
