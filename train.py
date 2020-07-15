@@ -96,7 +96,6 @@ def train_model(model, optimizer, scheduler, device, num_epochs, dataloaders):
             writer.add_scalar('Dice/train', metrics['dice']/ epoch_samples, epoch)
 
             if phase == 'train':
-                scheduler.step()
                 epoch_train_loss.append(metrics['loss']/ epoch_samples)
                 epoch_train_bce.append(metrics['bce']/ epoch_samples)
                 epoch_train_dice.append(metrics['dice']/ epoch_samples)
