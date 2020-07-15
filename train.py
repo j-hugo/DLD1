@@ -23,9 +23,9 @@ def makedirs(args):
 
 def load_datasets(args):
     dataset = ColonDataset(
-        image_dir=args.images,
-        label_dir=args.labels,
-        csv_dir=args.csv,
+        image_dir=args.trainimages,
+        label_dir=args.trainlabels,
+        csv_dir=args.traincsv,
         image_size=args.image_size,
         torch_transform=args.transform,
         balance_dataset=args.dataset_type
@@ -134,7 +134,7 @@ def main(args):
     else:
         summary(model, input_size=(args.num_channel, args.image_size, args.image_size))    
     # to freeze weights of pretrained resnet layers
-    if args.freeze:
+    if args.freeze and args.model == 'resnetunet':
         for l in model.base_layers:
             for param in l.parameters():
                 param.requires_grad = False
@@ -156,7 +156,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--valid-batch",
         type=int,
-        default=4,
+        default=12,
         help="input batch size for valid (default: 12)",
     )
     parser.add_argument(
@@ -196,19 +196,28 @@ if __name__ == "__main__":
         help="target input image size (default: 256)",
     )
     parser.add_argument(
-        "--images", type=str, default="./npy_images", help="root folder with images"
+        "--trainimages", type=str, default="./npy_train_images", help="root folder with images"
     )
     parser.add_argument(
-        "--labels", type=str, default="./npy_labels", help="root folder with labels"
+        "--trainlabels", type=str, default="./npy_train_labels", help="root folder with labels"
     )
     parser.add_argument(
-        "--csv", type=str, default="./contains_cancer_index.csv", help="root folder with csv"
+        "--testimages", type=str, default="./npy_test_images", help="root folder with images"
+    )
+    parser.add_argument(
+        "--testlabels", type=str, default="./npy_test_labels", help="root folder with labels"
+    )
+    parser.add_argument(
+        "--traincsv", type=str, default="./contains_cancer_train_index.csv", help="root folder with csv"
+    )
+    parser.add_argument(
+        "--testcsv", type=str, default="./contains_cancer_test_index.csv", help="root folder with csv"
     )
     parser.add_argument(
         "--transform", type=bool, default=True, help="activate data augmentation"
     )
     parser.add_argument(
-        "--dataset-type", type=str, default='undersample', help="choose what type of dataset you need; \
+        "--dataset-type", type=str, default=None, help="choose what type of dataset you need; \
         None=original dataset, \
         undersample=adjust to the number of non tumor images to the number of tumor images, \
         oversample=adjust to the number of tumor images to the number of non-tumor data, \
@@ -227,7 +236,7 @@ if __name__ == "__main__":
         "--num_channel", type=int, default=1, help="the number of channel of the image"
     )
     parser.add_argument(
-        "--freeze", type=bool, default=False, help="freeze the pretrained weights of resnet"
+        "--freeze", type=bool, default=True, help="freeze the pretrained weights of resnet"
     )
     parser.add_argument(
         "--step-size", type=int, default=50, help="step size of StepLR scheduler"
