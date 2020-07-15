@@ -105,7 +105,7 @@ def only_tumor_files(csv_file):
 class ColonDataset(Dataset):
     """Colon Cancer dataset."""
 
-    def __init__(self, image_dir, label_dir, csv_dir, image_size, torch_transform, balance_dataset=None):
+    def __init__(self, image_dir, label_dir, csv_dir, image_size, torch_transform, balance_dataset=None, test=None):
         """
         Args:
             image_dir: Path to image folder.
@@ -122,6 +122,7 @@ class ColonDataset(Dataset):
         self.label_dir = label_dir
         self.csv_dir = csv_dir
         self.image_size = image_size
+        self.test = test
         #self.scaler = MinMaxScaler(feature_range=(-1, 1))
         self.balance_dataset = balance_dataset
         self.torch_transform = torch_transform
@@ -164,20 +165,23 @@ class ColonDataset(Dataset):
       label = TF.resize(label, size=(self.image_size+44, self.image_size+44))
 
       # Random crop
-      i, j, h, w = transforms.RandomCrop.get_params(
-          image, output_size=(self.image_size, self.image_size))
-      image = TF.crop(image, i, j, h, w)
-      label = TF.crop(label, i, j, h, w)
+      if self.test == None:
+        i, j, h, w = transforms.RandomCrop.get_params(
+            image, output_size=(self.image_size, self.image_size))
+        image = TF.crop(image, i, j, h, w)
+        label = TF.crop(label, i, j, h, w)
 
       # Random horizontal flipping
-      if random.random() > 0.5:
-          image = TF.hflip(image)
-          label = TF.hflip(label)
+      if self.test == None:
+        if random.random() > 0.5:
+            image = TF.hflip(image)
+            label = TF.hflip(label)
 
       # Random vertical flipping
-      if random.random() > 0.5:
-          image = TF.vflip(image)
-          label = TF.vflip(label)
+      if self.test == None:
+        if random.random() > 0.5:
+            image = TF.vflip(image)
+            label = TF.vflip(label)
 
       # Transform to tensor
       #self.scaler.fit(image)
