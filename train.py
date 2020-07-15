@@ -105,6 +105,7 @@ def train_model(model, optimizer, scheduler, device, num_epochs, dataloaders):
                 epoch_valid_loss.append(metrics['loss']/ epoch_samples)
                 epoch_valid_bce.append(metrics['bce']/ epoch_samples)
                 epoch_valid_dice.append(metrics['dice']/ epoch_samples)
+                scheduler.step(metrics['loss']/ epoch_samples)
                 for tag, value in model.named_parameters():
                     tag = tag.replace('.', '/')
                     writer.add_histogram('weights/' + tag, value.data.cpu().numpy(), epoch)
@@ -152,11 +153,12 @@ def main(args):
                 param.requires_grad = False
 
     optimizer_ft = Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=args.lr)
-    exp_lr_scheduler = lr_scheduler.StepLR(optimizer_ft, step_size=args.step_size)
+    #exp_lr_scheduler = lr_scheduler.StepLR(optimizer_ft, step_size=args.step_size)
+    scheduler = ReduceLROnPlateau(optimizer_ft, 'min')
     if args.load:
         model.load_state_dict(torch.load(f"{args.weights}best_metric_model_{args.model}.pth")) 
 
-    model, metric_t, metric_v = train_model(model, optimizer_ft, exp_lr_scheduler, device, args.epochs, colon_dataloader)
+    model, metric_t, metric_v = train_model(model, optimizer_ft, scheduler, device, args.epochs, colon_dataloader)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(

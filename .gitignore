@@ -7,3 +7,4 @@ npy_test_labels/
 __pycache__/
 weights/
 runs/
+eval_plot/

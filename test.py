@@ -7,6 +7,7 @@ import copy
 import time 
 import os
 from collections import defaultdict
+import matplotlib.pyplot as plt
 
 import torch 
 from torch.utils.data import DataLoader
@@ -34,7 +35,21 @@ def load_dataloader(args, dataset):
     }
     return dataloader
 
-def test_model(model, device, dataloaders):
+def plot_result(img, label, pred, index, path, dice_score):
+    result = torch.argmax(pred, dim=1)
+    plt.figure('check', (18, 6))
+    ax1 = plt.subplot(1, 3, 1)
+    ax1.set_title('image')
+    ax1.imshow(img[0][0][ :, :])
+    ax2 = plt.subplot(1, 3, 2)
+    ax2.set_title('label')
+    ax2.imshow(label[0][1][ :, :])
+    ax3 = plt.subplot(1, 3, 3)
+    ax3.set_title(f'output: dice_score{dice_score}')
+    ax3.imshow(result[0][:, :])
+    plt.savefig(f'{path}eval_plot_{index}.png')
+
+def test_model(model, device, dataloaders, plot_path):
     model.load_state_dict(torch.load(f"{args.weights}best_metric_model_{args.model}.pth")) 
     test_dice = list()
     print('-' * 10)
@@ -45,11 +60,14 @@ def test_model(model, device, dataloaders):
     test_samples = 0
     i = 0
     for inputs, labels in dataloaders['test']:
-        inputs = inputs.to(device)
-        labels = labels.to(device)
+        inputs = inputs
+        labels = labels
         with torch.set_grad_enabled(False):
             outputs = model(inputs)
-            dice_score = dice_coeff(torch.sigmoid(outputs), labels)
+            preds = torch.sigmoid(outputs)
+            dice_score = dice_coeff(preds, labels)
+        if i % 100 == 0:
+            plot_result(inputs, labels, preds, i, plot_path, dice_score)
         # statistics
         #print(f"The {i} image's dice score is {dice_score}.")
         test_dice.append(dice_score)
@@ -63,17 +81,21 @@ def test_model(model, device, dataloaders):
 
     return test_dice
 
+def makedirs(args):
+    os.makedirs(args.eval_plot, exist_ok=True)
+
 def main(args):
+    makedirs(args)
     device = torch.device("cpu" if not torch.cuda.is_available() else args.device)
     dataset = load_datasets(args)
     colon_dataloader = load_dataloader(args, dataset)
     if args.model == 'unet':
-        model = UNet(args.num_channel, args.num_class).to(device)
+        model = UNet(args.num_channel, args.num_class)
     elif args.model == 'resnetunet':
         base_net = models.resnet34(pretrained=True)
         base_net.conv1 = torch.nn.Conv2d(1, 64, (7, 7), (2, 2), (3, 3), bias=False)
-        model = ResNetUNet(base_net,args.num_class).to(device)
-    result = test_model(model, device, colon_dataloader)
+        model = ResNetUNet(base_net,args.num_class)
+    result = test_model(model, device, colon_dataloader, args.eval_plot)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -117,6 +139,9 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--weights", type=str, default="./weights/", help="folder to save weights"
+    )
+    parser.add_argument(
+        "--eval-plot", type=str, default="./eval_plot/", help="folder to save eval plots"
     )
     parser.add_argument(
         "--logs", type=str, default="./logs", help="folder to save logs"
