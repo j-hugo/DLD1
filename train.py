@@ -18,7 +18,6 @@ from loss import calc_loss, print_metrics
 from torchvision import models
 from torch.optim import lr_scheduler, Adam
 
-
 def makedirs(args):
     os.makedirs(args.weights, exist_ok=True)
 
@@ -154,9 +153,9 @@ def main(args):
 
     optimizer_ft = Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=args.lr)
     #exp_lr_scheduler = lr_scheduler.StepLR(optimizer_ft, step_size=args.step_size)
-    scheduler = ReduceLROnPlateau(optimizer_ft, 'min')
+    scheduler = lr_scheduler.ReduceLROnPlateau(optimizer_ft, 'min')
     if args.load:
-        model.load_state_dict(torch.load(f"{args.weights}best_metric_model_{args.model}.pth")) 
+        model.load_state_dict(torch.load(f"{args.weights}best_metric_model_{args.model}_{args.dataset_type}.pth")) 
 
     model, metric_t, metric_v = train_model(model, optimizer_ft, scheduler, device, args.epochs, colon_dataloader)
 
