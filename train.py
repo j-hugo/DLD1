@@ -62,7 +62,6 @@ def train_model(model, optimizer, scheduler, device, num_epochs, dataloaders):
             if phase == 'train':
                 for param_group in optimizer.param_groups:
                     print("LR", param_group['lr'])
-
                 model.train()  # Set model to training mode
             else:
                 model.eval()   # Set model to evaluate mode
@@ -107,7 +106,7 @@ def train_model(model, optimizer, scheduler, device, num_epochs, dataloaders):
                 print("saving best model")
                 best_loss = epoch_loss
                 best_model_wts = copy.deepcopy(model.state_dict())
-                torch.save(model.state_dict(), "./weights/best_metric_model.pth")
+                torch.save(model.state_dict(), f"{args.weights}best_metric_model_{args.model}.pth")
 
         time_elapsed = time.time() - since
         print('{:.0f}m {:.0f}s'.format(time_elapsed // 60, time_elapsed % 60))
@@ -130,7 +129,11 @@ def main(args):
         base_net = models.resnet34(pretrained=True)
         base_net.conv1 = torch.nn.Conv2d(1, 64, (7, 7), (2, 2), (3, 3), bias=False)
         model = ResNetUNet(base_net,args.num_class).to(device)
-    summary(model, input_size=(args.num_channel, args.image_size, args.image_size))    # to freeze weights of pretrained resnet layers
+    if args.device == 'cpu':
+        print(model)
+    else:
+        summary(model, input_size=(args.num_channel, args.image_size, args.image_size))    
+    # to freeze weights of pretrained resnet layers
     if args.freeze:
         for l in model.base_layers:
             for param in l.parameters():
@@ -181,7 +184,7 @@ if __name__ == "__main__":
         help="number of workers for data loading (default: 4)",
     )
     parser.add_argument(
-        "--weights", type=str, default="./weights", help="folder to save weights"
+        "--weights", type=str, default="./weights/", help="folder to save weights"
     )
     parser.add_argument(
         "--logs", type=str, default="./logs", help="folder to save logs"

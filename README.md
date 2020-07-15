@@ -20,3 +20,8 @@ Use the following structure as minimal requirement for your submission:
 () README: Describe clearly how to run your code
 
 () license file: Under which license do you distribute your project?
+
+How to use 
+1. execute dataset.py
+2. execute train.py 
+3. exectue evaluate.py 
