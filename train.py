@@ -7,6 +7,7 @@ import _osx_support
 import copy 
 import time 
 import os
+import numpy as np
 from collections import defaultdict
 
 import torch 
@@ -43,6 +44,48 @@ def load_dataloader(args, train, valid):
     }
     return dataloader
 
+# Adapted from https://github.com/Bjarten/early-stopping-pytorch
+class EarlyStopping:
+    """Early stops the training if validation loss doesn't improve after a given patience."""
+    def __init__(self, patience, verbose=False):
+        """
+        Args:
+            patience (int): How long to wait after last time validation loss improved.
+                            Default: 7
+            verbose (bool): If True, prints a message for each validation loss improvement. 
+                            Default: False
+        """
+        self.patience = patience
+        self.verbose = verbose
+        self.counter = 0
+        self.best_score = None
+        self.early_stop = False
+        self.val_loss_min = np.Inf
+
+    def __call__(self, val_loss, model):
+
+        score = -val_loss
+
+        if self.best_score is None:
+            self.best_score = score
+            self.save_checkpoint(val_loss, model)
+        elif score < self.best_score:
+            self.counter += 1
+            print(f'EarlyStopping counter: {self.counter} out of {self.patience}')
+            if self.counter >= self.patience:
+                self.early_stop = True
+        else:
+            self.best_score = score
+            self.save_checkpoint(val_loss, model)
+            self.counter = 0
+
+    def save_checkpoint(self, val_loss, model):
+        '''Saves model when validation loss decrease.'''
+        if self.verbose:
+            print(f'Validation loss decreased ({self.val_loss_min:.6f} --> {val_loss:.6f}).  Saving best model ...')
+        torch.save(model.state_dict(), f"{args.weights}best_metric_model_{args.model}_{args.dataset_type}.pth")
+        self.val_loss_min = val_loss
+
 def train_model(model, optimizer, scheduler, device, num_epochs, dataloaders):
     best_model_wts = copy.deepcopy(model.state_dict())
     best_loss = 1e10
@@ -53,6 +96,8 @@ def train_model(model, optimizer, scheduler, device, num_epochs, dataloaders):
     epoch_train_bce = list()
     epoch_valid_bce = list()
     writer = SummaryWriter()
+
+    early_stopping = EarlyStopping(patience=args.earlystop, verbose=True)
 
     for epoch in range(num_epochs):
         print('Epoch {}/{}'.format(epoch, num_epochs - 1))
@@ -94,7 +139,6 @@ def train_model(model, optimizer, scheduler, device, num_epochs, dataloaders):
             epoch_loss = metrics['loss'] / epoch_samples
             writer.add_scalar('Loss/train', epoch_loss, epoch)
             writer.add_scalar('Dice/train', metrics['dice']/ epoch_samples, epoch)
-
             if phase == 'train':
                 epoch_train_loss.append(metrics['loss']/ epoch_samples)
                 epoch_train_bce.append(metrics['bce']/ epoch_samples)
@@ -111,15 +155,17 @@ def train_model(model, optimizer, scheduler, device, num_epochs, dataloaders):
                 writer.add_scalar('learning_rate', optimizer.param_groups[0]['lr'], epoch)
                 writer.add_scalar('Loss/test', metrics['loss']/ epoch_samples, epoch)
                 writer.add_scalar('Dice/test', metrics['dice']/ epoch_samples, epoch)
+                early_stopping(epoch_loss, model)
             # deep copy the model
             if phase == 'val' and epoch_loss < best_loss:
-                print("saving best model")
                 best_loss = epoch_loss
                 best_model_wts = copy.deepcopy(model.state_dict())
-                torch.save(model.state_dict(), f"{args.weights}best_metric_model_{args.model}_{args.dataset_type}.pth")        
-
         time_elapsed = time.time() - since
         print('{:.0f}m {:.0f}s'.format(time_elapsed // 60, time_elapsed % 60))
+
+        if early_stopping.early_stop:
+            print("Early stopping")
+            break   
 
     print('Best val loss: {:4f}'.format(best_loss))
     metric_train = (epoch_train_loss, epoch_train_bce, epoch_train_dice)
@@ -152,7 +198,7 @@ def main(args):
 
     optimizer_ft = Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=args.lr)
     #exp_lr_scheduler = lr_scheduler.StepLR(optimizer_ft, step_size=args.step_size)
-    scheduler = lr_scheduler.ReduceLROnPlateau(optimizer_ft, 'min', patience=5)
+    scheduler = lr_scheduler.ReduceLROnPlateau(optimizer_ft, 'min', patience=args.sched_patience)
     if args.load:
         model.load_state_dict(torch.load(f"{args.weights}best_metric_model_{args.model}_{args.dataset_type}.pth")) 
 
@@ -183,7 +229,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--lr",
         type=float,
-        default=0.0001,
+        default=0.001,
         help="initial learning rate (default: 0.001)",
     )
     parser.add_argument(
@@ -245,10 +291,10 @@ if __name__ == "__main__":
         "--shuffle", type=bool, default=False, help="shuffle the datset or not"
     )
     parser.add_argument(
-        "--num_class", type=int, default=2, help="the number of class for image segmentation"
+        "--num-class", type=int, default=2, help="the number of class for image segmentation"
     )
     parser.add_argument(
-        "--num_channel", type=int, default=1, help="the number of channel of the image"
+        "--num-channel", type=int, default=1, help="the number of channel of the image"
     )
     parser.add_argument(
         "--freeze", type=bool, default=True, help="freeze the pretrained weights of resnet"
@@ -261,6 +307,12 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--model", type=str, default='unet', help="choose the model between unet and resnet+unet; UNet-> unet, Resnet+Unet-> resnetunet"
+    )
+    parser.add_argument(
+        "--earlystop", type=int, default=10, help="the number of patience for early stopping"
+    )
+    parser.add_argument(
+        "--sched-patience", type=int, default=5, help="the number of patience for scheduler"
     )
     args = parser.parse_args()
     main(args)

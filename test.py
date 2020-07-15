@@ -73,9 +73,8 @@ def test_model(model, device, dataloaders, plot_path):
         test_dice.append(dice_score)
         test_samples += inputs.size(0)
         i += 1
-    
     average_dice_score = sum(test_dice) / test_samples
-    print(f"The average dice score is {dice_score}.")
+    print(f"The average dice score is {average_dice_score}.")
     time_elapsed = time.time() - since
     print('{:.0f}m {:.0f}s'.format(time_elapsed // 60, time_elapsed % 60))
 
@@ -122,7 +121,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--lr",
         type=float,
-        default=0.0001,
+        default=0.001,
         help="initial learning rate (default: 0.001)",
     )
     parser.add_argument(
