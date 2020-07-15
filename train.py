@@ -151,7 +151,8 @@ def train_model(model, optimizer, scheduler, device, num_epochs, dataloaders):
                 for tag, value in model.named_parameters():
                     tag = tag.replace('.', '/')
                     writer.add_histogram('weights/' + tag, value.data.cpu().numpy(), epoch)
-                    writer.add_histogram('grads/' + tag, value.grad.data.cpu().numpy(), epoch)
+                    #if args.freeze != True:
+                    #    writer.add_histogram('grads/' + tag, value.grad.data.cpu().numpy(), epoch)
                 writer.add_scalar('learning_rate', optimizer.param_groups[0]['lr'], epoch)
                 writer.add_scalar('Loss/test', metrics['loss']/ epoch_samples, epoch)
                 writer.add_scalar('Dice/test', metrics['dice']/ epoch_samples, epoch)
@@ -166,7 +167,7 @@ def train_model(model, optimizer, scheduler, device, num_epochs, dataloaders):
         if early_stopping.early_stop:
             print("Early stopping")
             break   
-
+        
     print('Best val loss: {:4f}'.format(best_loss))
     metric_train = (epoch_train_loss, epoch_train_bce, epoch_train_dice)
     metric_valid = (epoch_valid_loss, epoch_valid_bce, epoch_valid_dice)
@@ -189,18 +190,23 @@ def main(args):
     if args.device == 'cpu':
         print(model)
     else:
-        summary(model, input_size=(args.num_channel, args.image_size, args.image_size))    
+        summary(model, input_size=(args.num_channel, args.image_size, args.image_size))  
+
     # to freeze weights of pretrained resnet layers
     if args.freeze and args.model == 'resnetunet':
         for l in model.base_layers:
             for param in l.parameters():
                 param.requires_grad = False
+    if args.freeze == False and args.model == 'resnetunet':
+        for l in model.base_layers:
+            for param in l.parameters():
+                param.requires_grad = True
 
     optimizer_ft = Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=args.lr)
     #exp_lr_scheduler = lr_scheduler.StepLR(optimizer_ft, step_size=args.step_size)
     scheduler = lr_scheduler.ReduceLROnPlateau(optimizer_ft, 'min', patience=args.sched_patience)
     if args.load:
-        model.load_state_dict(torch.load(f"{args.weights}best_metric_model_{args.model}_{args.dataset_type}.pth")) 
+        model.load_state_dict(torch.load(f"{args.weights}best_metric_model_{args.model}_{args.dataset_type}_{args.epochs}.pth")) 
 
     model, metric_t, metric_v = train_model(model, optimizer_ft, scheduler, device, args.epochs, colon_dataloader)
 
@@ -229,8 +235,8 @@ if __name__ == "__main__":
     parser.add_argument(
         "--lr",
         type=float,
-        default=0.001,
-        help="initial learning rate (default: 0.001)",
+        default=0.0001,
+        help="initial learning rate (default: 0.0001)",
     )
     parser.add_argument(
         "--device",
@@ -288,7 +294,7 @@ if __name__ == "__main__":
         "--split-ratio", type=float, default=0.8, help="the ratio to split the dataset into training and valid"
     )
     parser.add_argument(
-        "--shuffle", type=bool, default=False, help="shuffle the datset or not"
+        "--shuffle", type=bool, default=True, help="shuffle the datset or not"
     )
     parser.add_argument(
         "--num-class", type=int, default=2, help="the number of class for image segmentation"
@@ -297,7 +303,7 @@ if __name__ == "__main__":
         "--num-channel", type=int, default=1, help="the number of channel of the image"
     )
     parser.add_argument(
-        "--freeze", type=bool, default=True, help="freeze the pretrained weights of resnet"
+        "--freeze", type=bool, default=False, help="freeze the pretrained weights of resnet"
     )
     parser.add_argument(
         "--load", type=bool, default=False, help="continute training from the best model"
@@ -309,10 +315,10 @@ if __name__ == "__main__":
         "--model", type=str, default='unet', help="choose the model between unet and resnet+unet; UNet-> unet, Resnet+Unet-> resnetunet"
     )
     parser.add_argument(
-        "--earlystop", type=int, default=10, help="the number of patience for early stopping"
+        "--earlystop", type=int, default=15, help="the number of patience for early stopping"
     )
     parser.add_argument(
-        "--sched-patience", type=int, default=5, help="the number of patience for scheduler"
+        "--sched-patience", type=int, default=4, help="the number of patience for scheduler"
     )
     args = parser.parse_args()
     main(args)

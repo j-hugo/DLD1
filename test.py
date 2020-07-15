@@ -8,6 +8,7 @@ import time
 import os
 from collections import defaultdict
 import matplotlib.pyplot as plt
+import numpy as np
 
 import torch 
 from torch.utils.data import DataLoader
@@ -50,7 +51,7 @@ def plot_result(img, label, pred, index, path, dice_score):
     plt.savefig(f'{path}eval_plot_{index}.png')
 
 def test_model(model, device, dataloaders, plot_path):
-    model.load_state_dict(torch.load(f"{args.weights}best_metric_model_{args.model}_{args.dataset_type}.pth")) 
+    model.load_state_dict(torch.load(f"{args.weights}best_metric_model_{args.model}_{args.metric_dataset_type}_{args.epochs}.pth")) 
     test_dice = list()
     print('-' * 10)
     since = time.time()
@@ -66,7 +67,10 @@ def test_model(model, device, dataloaders, plot_path):
             outputs = model(inputs)
             preds = torch.sigmoid(outputs)
             dice_score = dice_coeff(preds, labels)
-        if i % 100 == 0:
+        #if i % 100 == 0:
+        #    plot_result(inputs, labels, preds, i, plot_path, dice_score)
+        #print(np.unique(labels))
+        if len(np.unique(labels)) != 1:
             plot_result(inputs, labels, preds, i, plot_path, dice_score)
         # statistics
         #print(f"The {i} image's dice score is {dice_score}.")
@@ -109,8 +113,14 @@ if __name__ == "__main__":
     parser.add_argument(
         "--valid-batch",
         type=int,
-        default=4,
+        default=12,
         help="input batch size for valid (default: 12)",
+    )
+    parser.add_argument(
+        "--test-batch",
+        type=int,
+        default=12,
+        help="input batch size for test (default: 12)",
     )
     parser.add_argument(
         "--epochs",
@@ -121,7 +131,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--lr",
         type=float,
-        default=0.001,
+        default=0.1,
         help="initial learning rate (default: 0.001)",
     )
     parser.add_argument(
@@ -174,6 +184,13 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--dataset-type", type=str, default=None, help="choose what type of dataset you need; \
+        None=original dataset, \
+        undersample=adjust to the number of non tumor images to the number of tumor images, \
+        upsample=adjust to the number of tumor images to the number of non-tumor data, \
+        only_tumor=take only images which have tumor"
+    )
+    parser.add_argument(
+        "--metric-dataset-type", type=str, default=None, help="choose what type of dataset you need for loading best metric; \
         None=original dataset, \
         undersample=adjust to the number of non tumor images to the number of tumor images, \
         upsample=adjust to the number of tumor images to the number of non-tumor data, \
