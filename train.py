@@ -211,22 +211,22 @@ if __name__ == "__main__":
         help="target input image size (default: 256)",
     )
     parser.add_argument(
-        "--trainimages", type=str, default="./npy_train_images", help="root folder with images"
+        "--trainimages", type=str, default="./data/npy_train_images", help="root folder with images"
     )
     parser.add_argument(
-        "--trainlabels", type=str, default="./npy_train_labels", help="root folder with labels"
+        "--trainlabels", type=str, default="./data/npy_train_labels", help="root folder with labels"
     )
     parser.add_argument(
-        "--testimages", type=str, default="./npy_test_images", help="root folder with images"
+        "--testimages", type=str, default="./data/npy_test_images", help="root folder with images"
     )
     parser.add_argument(
-        "--testlabels", type=str, default="./npy_test_labels", help="root folder with labels"
+        "--testlabels", type=str, default="./data/npy_test_labels", help="root folder with labels"
     )
     parser.add_argument(
-        "--traincsv", type=str, default="./contains_cancer_train_index.csv", help="root folder with csv"
+        "--traincsv", type=str, default="./data/contains_cancer_train_index.csv", help="root folder with csv"
     )
     parser.add_argument(
-        "--testcsv", type=str, default="./contains_cancer_test_index.csv", help="root folder with csv"
+        "--testcsv", type=str, default="./data/contains_cancer_test_index.csv", help="root folder with csv"
     )
     parser.add_argument(
         "--transform", type=bool, default=True, help="activate data augmentation"

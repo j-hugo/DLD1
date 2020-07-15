@@ -6,6 +6,9 @@ from glob import glob
 import csv
 import argparse
 
+def makedirs(path):
+    os.makedirs(path, exist_ok=True)
+
 def dir_path(string):
     if os.path.isdir(string):
         return string
@@ -119,14 +122,15 @@ if __name__ == "__main__":
         description="Slicing dataset for image segmentation of Colon"
     )
     parser.add_argument(
-        "--path", type=dir_path, default='./', help="path for the parent folder of the sliced images and labels"
+        "--path", type=dir_path, default='./data/', help="path for the parent folder of the sliced images and labels"
     )
     parser.add_argument(
         "--datapath", type=dir_path, default='./Task10_Colon', help="path to the dataset"
     )
     parser.add_argument(
-        "--split", type=float, default=0.1, help="ratio for testset"
+        "--split", type=float, default=0.2, help="ratio for testset"
     )
+    makedirs("./data/")
     args = parser.parse_args()
     convert_to_npy_train(args)
     convert_to_npy_test(args)
