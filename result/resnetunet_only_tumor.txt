@@ -1,0 +1,1027 @@
+chan@chan-desktop:~/Desktop/DLD1$ python train.py --epochs 200 --lr 0.001 --model resnetunet --freeze True --dataset-type only_tumor
+----------------------------------------------------------------
+        Layer (type)               Output Shape         Param #
+================================================================
+            Conv2d-1         [-1, 64, 256, 256]             640
+              ReLU-2         [-1, 64, 256, 256]               0
+            Conv2d-3         [-1, 64, 256, 256]          36,928
+              ReLU-4         [-1, 64, 256, 256]               0
+            Conv2d-5         [-1, 64, 128, 128]           3,136
+            Conv2d-6         [-1, 64, 128, 128]           3,136
+       BatchNorm2d-7         [-1, 64, 128, 128]             128
+       BatchNorm2d-8         [-1, 64, 128, 128]             128
+              ReLU-9         [-1, 64, 128, 128]               0
+             ReLU-10         [-1, 64, 128, 128]               0
+        MaxPool2d-11           [-1, 64, 64, 64]               0
+        MaxPool2d-12           [-1, 64, 64, 64]               0
+           Conv2d-13           [-1, 64, 64, 64]          36,864
+           Conv2d-14           [-1, 64, 64, 64]          36,864
+      BatchNorm2d-15           [-1, 64, 64, 64]             128
+      BatchNorm2d-16           [-1, 64, 64, 64]             128
+             ReLU-17           [-1, 64, 64, 64]               0
+             ReLU-18           [-1, 64, 64, 64]               0
+           Conv2d-19           [-1, 64, 64, 64]          36,864
+           Conv2d-20           [-1, 64, 64, 64]          36,864
+      BatchNorm2d-21           [-1, 64, 64, 64]             128
+      BatchNorm2d-22           [-1, 64, 64, 64]             128
+             ReLU-23           [-1, 64, 64, 64]               0
+             ReLU-24           [-1, 64, 64, 64]               0
+       BasicBlock-25           [-1, 64, 64, 64]               0
+       BasicBlock-26           [-1, 64, 64, 64]               0
+           Conv2d-27           [-1, 64, 64, 64]          36,864
+           Conv2d-28           [-1, 64, 64, 64]          36,864
+      BatchNorm2d-29           [-1, 64, 64, 64]             128
+      BatchNorm2d-30           [-1, 64, 64, 64]             128
+             ReLU-31           [-1, 64, 64, 64]               0
+             ReLU-32           [-1, 64, 64, 64]               0
+           Conv2d-33           [-1, 64, 64, 64]          36,864
+           Conv2d-34           [-1, 64, 64, 64]          36,864
+      BatchNorm2d-35           [-1, 64, 64, 64]             128
+      BatchNorm2d-36           [-1, 64, 64, 64]             128
+             ReLU-37           [-1, 64, 64, 64]               0
+             ReLU-38           [-1, 64, 64, 64]               0
+       BasicBlock-39           [-1, 64, 64, 64]               0
+       BasicBlock-40           [-1, 64, 64, 64]               0
+           Conv2d-41           [-1, 64, 64, 64]          36,864
+           Conv2d-42           [-1, 64, 64, 64]          36,864
+      BatchNorm2d-43           [-1, 64, 64, 64]             128
+      BatchNorm2d-44           [-1, 64, 64, 64]             128
+             ReLU-45           [-1, 64, 64, 64]               0
+             ReLU-46           [-1, 64, 64, 64]               0
+           Conv2d-47           [-1, 64, 64, 64]          36,864
+           Conv2d-48           [-1, 64, 64, 64]          36,864
+      BatchNorm2d-49           [-1, 64, 64, 64]             128
+      BatchNorm2d-50           [-1, 64, 64, 64]             128
+             ReLU-51           [-1, 64, 64, 64]               0
+             ReLU-52           [-1, 64, 64, 64]               0
+       BasicBlock-53           [-1, 64, 64, 64]               0
+       BasicBlock-54           [-1, 64, 64, 64]               0
+           Conv2d-55          [-1, 128, 32, 32]          73,728
+           Conv2d-56          [-1, 128, 32, 32]          73,728
+      BatchNorm2d-57          [-1, 128, 32, 32]             256
+      BatchNorm2d-58          [-1, 128, 32, 32]             256
+             ReLU-59          [-1, 128, 32, 32]               0
+             ReLU-60          [-1, 128, 32, 32]               0
+           Conv2d-61          [-1, 128, 32, 32]         147,456
+           Conv2d-62          [-1, 128, 32, 32]         147,456
+      BatchNorm2d-63          [-1, 128, 32, 32]             256
+      BatchNorm2d-64          [-1, 128, 32, 32]             256
+           Conv2d-65          [-1, 128, 32, 32]           8,192
+           Conv2d-66          [-1, 128, 32, 32]           8,192
+      BatchNorm2d-67          [-1, 128, 32, 32]             256
+      BatchNorm2d-68          [-1, 128, 32, 32]             256
+             ReLU-69          [-1, 128, 32, 32]               0
+             ReLU-70          [-1, 128, 32, 32]               0
+       BasicBlock-71          [-1, 128, 32, 32]               0
+       BasicBlock-72          [-1, 128, 32, 32]               0
+           Conv2d-73          [-1, 128, 32, 32]         147,456
+           Conv2d-74          [-1, 128, 32, 32]         147,456
+      BatchNorm2d-75          [-1, 128, 32, 32]             256
+      BatchNorm2d-76          [-1, 128, 32, 32]             256
+             ReLU-77          [-1, 128, 32, 32]               0
+             ReLU-78          [-1, 128, 32, 32]               0
+           Conv2d-79          [-1, 128, 32, 32]         147,456
+           Conv2d-80          [-1, 128, 32, 32]         147,456
+      BatchNorm2d-81          [-1, 128, 32, 32]             256
+      BatchNorm2d-82          [-1, 128, 32, 32]             256
+             ReLU-83          [-1, 128, 32, 32]               0
+             ReLU-84          [-1, 128, 32, 32]               0
+       BasicBlock-85          [-1, 128, 32, 32]               0
+       BasicBlock-86          [-1, 128, 32, 32]               0
+           Conv2d-87          [-1, 128, 32, 32]         147,456
+           Conv2d-88          [-1, 128, 32, 32]         147,456
+      BatchNorm2d-89          [-1, 128, 32, 32]             256
+      BatchNorm2d-90          [-1, 128, 32, 32]             256
+             ReLU-91          [-1, 128, 32, 32]               0
+             ReLU-92          [-1, 128, 32, 32]               0
+           Conv2d-93          [-1, 128, 32, 32]         147,456
+           Conv2d-94          [-1, 128, 32, 32]         147,456
+      BatchNorm2d-95          [-1, 128, 32, 32]             256
+      BatchNorm2d-96          [-1, 128, 32, 32]             256
+             ReLU-97          [-1, 128, 32, 32]               0
+             ReLU-98          [-1, 128, 32, 32]               0
+       BasicBlock-99          [-1, 128, 32, 32]               0
+      BasicBlock-100          [-1, 128, 32, 32]               0
+          Conv2d-101          [-1, 128, 32, 32]         147,456
+          Conv2d-102          [-1, 128, 32, 32]         147,456
+     BatchNorm2d-103          [-1, 128, 32, 32]             256
+     BatchNorm2d-104          [-1, 128, 32, 32]             256
+            ReLU-105          [-1, 128, 32, 32]               0
+            ReLU-106          [-1, 128, 32, 32]               0
+          Conv2d-107          [-1, 128, 32, 32]         147,456
+          Conv2d-108          [-1, 128, 32, 32]         147,456
+     BatchNorm2d-109          [-1, 128, 32, 32]             256
+     BatchNorm2d-110          [-1, 128, 32, 32]             256
+            ReLU-111          [-1, 128, 32, 32]               0
+            ReLU-112          [-1, 128, 32, 32]               0
+      BasicBlock-113          [-1, 128, 32, 32]               0
+      BasicBlock-114          [-1, 128, 32, 32]               0
+          Conv2d-115          [-1, 256, 16, 16]         294,912
+          Conv2d-116          [-1, 256, 16, 16]         294,912
+     BatchNorm2d-117          [-1, 256, 16, 16]             512
+     BatchNorm2d-118          [-1, 256, 16, 16]             512
+            ReLU-119          [-1, 256, 16, 16]               0
+            ReLU-120          [-1, 256, 16, 16]               0
+          Conv2d-121          [-1, 256, 16, 16]         589,824
+          Conv2d-122          [-1, 256, 16, 16]         589,824
+     BatchNorm2d-123          [-1, 256, 16, 16]             512
+     BatchNorm2d-124          [-1, 256, 16, 16]             512
+          Conv2d-125          [-1, 256, 16, 16]          32,768
+          Conv2d-126          [-1, 256, 16, 16]          32,768
+     BatchNorm2d-127          [-1, 256, 16, 16]             512
+     BatchNorm2d-128          [-1, 256, 16, 16]             512
+            ReLU-129          [-1, 256, 16, 16]               0
+            ReLU-130          [-1, 256, 16, 16]               0
+      BasicBlock-131          [-1, 256, 16, 16]               0
+      BasicBlock-132          [-1, 256, 16, 16]               0
+          Conv2d-133          [-1, 256, 16, 16]         589,824
+          Conv2d-134          [-1, 256, 16, 16]         589,824
+     BatchNorm2d-135          [-1, 256, 16, 16]             512
+     BatchNorm2d-136          [-1, 256, 16, 16]             512
+            ReLU-137          [-1, 256, 16, 16]               0
+            ReLU-138          [-1, 256, 16, 16]               0
+          Conv2d-139          [-1, 256, 16, 16]         589,824
+          Conv2d-140          [-1, 256, 16, 16]         589,824
+     BatchNorm2d-141          [-1, 256, 16, 16]             512
+     BatchNorm2d-142          [-1, 256, 16, 16]             512
+            ReLU-143          [-1, 256, 16, 16]               0
+            ReLU-144          [-1, 256, 16, 16]               0
+      BasicBlock-145          [-1, 256, 16, 16]               0
+      BasicBlock-146          [-1, 256, 16, 16]               0
+          Conv2d-147          [-1, 256, 16, 16]         589,824
+          Conv2d-148          [-1, 256, 16, 16]         589,824
+     BatchNorm2d-149          [-1, 256, 16, 16]             512
+     BatchNorm2d-150          [-1, 256, 16, 16]             512
+            ReLU-151          [-1, 256, 16, 16]               0
+            ReLU-152          [-1, 256, 16, 16]               0
+          Conv2d-153          [-1, 256, 16, 16]         589,824
+          Conv2d-154          [-1, 256, 16, 16]         589,824
+     BatchNorm2d-155          [-1, 256, 16, 16]             512
+     BatchNorm2d-156          [-1, 256, 16, 16]             512
+            ReLU-157          [-1, 256, 16, 16]               0
+            ReLU-158          [-1, 256, 16, 16]               0
+      BasicBlock-159          [-1, 256, 16, 16]               0
+      BasicBlock-160          [-1, 256, 16, 16]               0
+          Conv2d-161          [-1, 256, 16, 16]         589,824
+          Conv2d-162          [-1, 256, 16, 16]         589,824
+     BatchNorm2d-163          [-1, 256, 16, 16]             512
+     BatchNorm2d-164          [-1, 256, 16, 16]             512
+            ReLU-165          [-1, 256, 16, 16]               0
+            ReLU-166          [-1, 256, 16, 16]               0
+          Conv2d-167          [-1, 256, 16, 16]         589,824
+          Conv2d-168          [-1, 256, 16, 16]         589,824
+     BatchNorm2d-169          [-1, 256, 16, 16]             512
+     BatchNorm2d-170          [-1, 256, 16, 16]             512
+            ReLU-171          [-1, 256, 16, 16]               0
+            ReLU-172          [-1, 256, 16, 16]               0
+      BasicBlock-173          [-1, 256, 16, 16]               0
+      BasicBlock-174          [-1, 256, 16, 16]               0
+          Conv2d-175          [-1, 256, 16, 16]         589,824
+          Conv2d-176          [-1, 256, 16, 16]         589,824
+     BatchNorm2d-177          [-1, 256, 16, 16]             512
+     BatchNorm2d-178          [-1, 256, 16, 16]             512
+            ReLU-179          [-1, 256, 16, 16]               0
+            ReLU-180          [-1, 256, 16, 16]               0
+          Conv2d-181          [-1, 256, 16, 16]         589,824
+          Conv2d-182          [-1, 256, 16, 16]         589,824
+     BatchNorm2d-183          [-1, 256, 16, 16]             512
+     BatchNorm2d-184          [-1, 256, 16, 16]             512
+            ReLU-185          [-1, 256, 16, 16]               0
+            ReLU-186          [-1, 256, 16, 16]               0
+      BasicBlock-187          [-1, 256, 16, 16]               0
+      BasicBlock-188          [-1, 256, 16, 16]               0
+          Conv2d-189          [-1, 256, 16, 16]         589,824
+          Conv2d-190          [-1, 256, 16, 16]         589,824
+     BatchNorm2d-191          [-1, 256, 16, 16]             512
+     BatchNorm2d-192          [-1, 256, 16, 16]             512
+            ReLU-193          [-1, 256, 16, 16]               0
+            ReLU-194          [-1, 256, 16, 16]               0
+          Conv2d-195          [-1, 256, 16, 16]         589,824
+          Conv2d-196          [-1, 256, 16, 16]         589,824
+     BatchNorm2d-197          [-1, 256, 16, 16]             512
+     BatchNorm2d-198          [-1, 256, 16, 16]             512
+            ReLU-199          [-1, 256, 16, 16]               0
+            ReLU-200          [-1, 256, 16, 16]               0
+      BasicBlock-201          [-1, 256, 16, 16]               0
+      BasicBlock-202          [-1, 256, 16, 16]               0
+          Conv2d-203            [-1, 512, 8, 8]       1,179,648
+          Conv2d-204            [-1, 512, 8, 8]       1,179,648
+     BatchNorm2d-205            [-1, 512, 8, 8]           1,024
+     BatchNorm2d-206            [-1, 512, 8, 8]           1,024
+            ReLU-207            [-1, 512, 8, 8]               0
+            ReLU-208            [-1, 512, 8, 8]               0
+          Conv2d-209            [-1, 512, 8, 8]       2,359,296
+          Conv2d-210            [-1, 512, 8, 8]       2,359,296
+     BatchNorm2d-211            [-1, 512, 8, 8]           1,024
+     BatchNorm2d-212            [-1, 512, 8, 8]           1,024
+          Conv2d-213            [-1, 512, 8, 8]         131,072
+          Conv2d-214            [-1, 512, 8, 8]         131,072
+     BatchNorm2d-215            [-1, 512, 8, 8]           1,024
+     BatchNorm2d-216            [-1, 512, 8, 8]           1,024
+            ReLU-217            [-1, 512, 8, 8]               0
+            ReLU-218            [-1, 512, 8, 8]               0
+      BasicBlock-219            [-1, 512, 8, 8]               0
+      BasicBlock-220            [-1, 512, 8, 8]               0
+          Conv2d-221            [-1, 512, 8, 8]       2,359,296
+          Conv2d-222            [-1, 512, 8, 8]       2,359,296
+     BatchNorm2d-223            [-1, 512, 8, 8]           1,024
+     BatchNorm2d-224            [-1, 512, 8, 8]           1,024
+            ReLU-225            [-1, 512, 8, 8]               0
+            ReLU-226            [-1, 512, 8, 8]               0
+          Conv2d-227            [-1, 512, 8, 8]       2,359,296
+          Conv2d-228            [-1, 512, 8, 8]       2,359,296
+     BatchNorm2d-229            [-1, 512, 8, 8]           1,024
+     BatchNorm2d-230            [-1, 512, 8, 8]           1,024
+            ReLU-231            [-1, 512, 8, 8]               0
+            ReLU-232            [-1, 512, 8, 8]               0
+      BasicBlock-233            [-1, 512, 8, 8]               0
+      BasicBlock-234            [-1, 512, 8, 8]               0
+          Conv2d-235            [-1, 512, 8, 8]       2,359,296
+          Conv2d-236            [-1, 512, 8, 8]       2,359,296
+     BatchNorm2d-237            [-1, 512, 8, 8]           1,024
+     BatchNorm2d-238            [-1, 512, 8, 8]           1,024
+            ReLU-239            [-1, 512, 8, 8]               0
+            ReLU-240            [-1, 512, 8, 8]               0
+          Conv2d-241            [-1, 512, 8, 8]       2,359,296
+          Conv2d-242            [-1, 512, 8, 8]       2,359,296
+     BatchNorm2d-243            [-1, 512, 8, 8]           1,024
+     BatchNorm2d-244            [-1, 512, 8, 8]           1,024
+            ReLU-245            [-1, 512, 8, 8]               0
+            ReLU-246            [-1, 512, 8, 8]               0
+      BasicBlock-247            [-1, 512, 8, 8]               0
+      BasicBlock-248            [-1, 512, 8, 8]               0
+          Conv2d-249            [-1, 512, 8, 8]         262,656
+            ReLU-250            [-1, 512, 8, 8]               0
+        Upsample-251          [-1, 512, 16, 16]               0
+          Conv2d-252          [-1, 256, 16, 16]          65,792
+            ReLU-253          [-1, 256, 16, 16]               0
+          Conv2d-254          [-1, 512, 16, 16]       3,539,456
+            ReLU-255          [-1, 512, 16, 16]               0
+        Upsample-256          [-1, 512, 32, 32]               0
+          Conv2d-257          [-1, 128, 32, 32]          16,512
+            ReLU-258          [-1, 128, 32, 32]               0
+          Conv2d-259          [-1, 256, 32, 32]       1,474,816
+            ReLU-260          [-1, 256, 32, 32]               0
+        Upsample-261          [-1, 256, 64, 64]               0
+          Conv2d-262           [-1, 64, 64, 64]           4,160
+            ReLU-263           [-1, 64, 64, 64]               0
+          Conv2d-264          [-1, 256, 64, 64]         737,536
+            ReLU-265          [-1, 256, 64, 64]               0
+        Upsample-266        [-1, 256, 128, 128]               0
+          Conv2d-267         [-1, 64, 128, 128]           4,160
+            ReLU-268         [-1, 64, 128, 128]               0
+          Conv2d-269        [-1, 128, 128, 128]         368,768
+            ReLU-270        [-1, 128, 128, 128]               0
+        Upsample-271        [-1, 128, 256, 256]               0
+          Conv2d-272         [-1, 64, 256, 256]         110,656
+            ReLU-273         [-1, 64, 256, 256]               0
+          Conv2d-274          [-1, 2, 256, 256]             130
+================================================================
+Total params: 49,179,010
+Trainable params: 49,179,010
+Non-trainable params: 0
+----------------------------------------------------------------
+Input size (MB): 0.25
+Forward/backward pass size (MB): 631.00
+Params size (MB): 187.60
+Estimated Total Size (MB): 818.85
+----------------------------------------------------------------
+----------------------------------------------------------------
+The number of train set: 840
+The number of valid set: 216
+----------------------------------------------------------------
+Epoch 0/199
+----------
+LR 0.001
+train: bce: 0.069577, dice: 0.481100, loss: 0.357643
+val: bce: 0.038702, dice: 0.430596, loss: 0.313028
+Validation loss decreased (inf --> 0.313028).  Saving best model ...
+0m 23s
+Epoch 1/199
+----------
+LR 0.001
+train: bce: 0.049875, dice: 0.410366, loss: 0.302219
+val: bce: 0.042837, dice: 0.389242, loss: 0.285320
+Validation loss decreased (0.313028 --> 0.285320).  Saving best model ...
+0m 23s
+Epoch 2/199
+----------
+LR 0.001
+train: bce: 0.041861, dice: 0.372156, loss: 0.273068
+val: bce: 0.034274, dice: 0.345869, loss: 0.252390
+Validation loss decreased (0.285320 --> 0.252390).  Saving best model ...
+0m 23s
+Epoch 3/199
+----------
+LR 0.001
+train: bce: 0.039639, dice: 0.357883, loss: 0.262410
+val: bce: 0.029666, dice: 0.322226, loss: 0.234458
+Validation loss decreased (0.252390 --> 0.234458).  Saving best model ...
+0m 23s
+Epoch 4/199
+----------
+LR 0.001
+train: bce: 0.037461, dice: 0.338369, loss: 0.248097
+val: bce: 0.028821, dice: 0.310386, loss: 0.225916
+Validation loss decreased (0.234458 --> 0.225916).  Saving best model ...
+0m 23s
+Epoch 5/199
+----------
+LR 0.001
+train: bce: 0.033117, dice: 0.321881, loss: 0.235252
+val: bce: 0.029331, dice: 0.312484, loss: 0.227538
+EarlyStopping counter: 1 out of 15
+0m 23s
+Epoch 6/199
+----------
+LR 0.001
+train: bce: 0.038526, dice: 0.323049, loss: 0.237692
+val: bce: 0.029889, dice: 0.304765, loss: 0.222302
+Validation loss decreased (0.225916 --> 0.222302).  Saving best model ...
+0m 23s
+Epoch 7/199
+----------
+LR 0.001
+train: bce: 0.034345, dice: 0.311609, loss: 0.228429
+val: bce: 0.029702, dice: 0.298578, loss: 0.217915
+Validation loss decreased (0.222302 --> 0.217915).  Saving best model ...
+0m 23s
+Epoch 8/199
+----------
+LR 0.001
+train: bce: 0.032509, dice: 0.302040, loss: 0.221181
+val: bce: 0.023015, dice: 0.273570, loss: 0.198404
+Validation loss decreased (0.217915 --> 0.198404).  Saving best model ...
+0m 23s
+Epoch 9/199
+----------
+LR 0.001
+train: bce: 0.031390, dice: 0.292816, loss: 0.214388
+val: bce: 0.099731, dice: 0.376921, loss: 0.293764
+EarlyStopping counter: 1 out of 15
+0m 23s
+Epoch 10/199
+----------
+LR 0.001
+train: bce: 0.032247, dice: 0.291375, loss: 0.213636
+val: bce: 0.028803, dice: 0.283308, loss: 0.206956
+EarlyStopping counter: 2 out of 15
+0m 23s
+Epoch 11/199
+----------
+LR 0.001
+train: bce: 0.033481, dice: 0.294889, loss: 0.216467
+val: bce: 0.026719, dice: 0.272052, loss: 0.198452
+EarlyStopping counter: 3 out of 15
+0m 24s
+Epoch 12/199
+----------
+LR 0.001
+train: bce: 0.030467, dice: 0.282992, loss: 0.207234
+val: bce: 0.033838, dice: 0.285797, loss: 0.210210
+EarlyStopping counter: 4 out of 15
+0m 24s
+Epoch 13/199
+----------
+LR 0.001
+train: bce: 0.029139, dice: 0.277288, loss: 0.202844
+val: bce: 0.033772, dice: 0.285507, loss: 0.209986
+EarlyStopping counter: 5 out of 15
+0m 23s
+Epoch 14/199
+----------
+LR 0.0001
+train: bce: 0.025450, dice: 0.255189, loss: 0.186267
+val: bce: 0.021873, dice: 0.255403, loss: 0.185344
+Validation loss decreased (0.198404 --> 0.185344).  Saving best model ...
+0m 24s
+Epoch 15/199
+----------
+LR 0.0001
+train: bce: 0.024973, dice: 0.254498, loss: 0.185640
+val: bce: 0.020628, dice: 0.257196, loss: 0.186226
+EarlyStopping counter: 1 out of 15
+0m 23s
+Epoch 16/199
+----------
+LR 0.0001
+train: bce: 0.023442, dice: 0.246829, loss: 0.179813
+val: bce: 0.020364, dice: 0.252176, loss: 0.182632
+Validation loss decreased (0.185344 --> 0.182632).  Saving best model ...
+0m 24s
+Epoch 17/199
+----------
+LR 0.0001
+train: bce: 0.022177, dice: 0.242110, loss: 0.176130
+val: bce: 0.020999, dice: 0.242908, loss: 0.176335
+Validation loss decreased (0.182632 --> 0.176335).  Saving best model ...
+0m 24s
+Epoch 18/199
+----------
+LR 0.0001
+train: bce: 0.022647, dice: 0.243836, loss: 0.177479
+val: bce: 0.020035, dice: 0.246976, loss: 0.178893
+EarlyStopping counter: 1 out of 15
+0m 23s
+Epoch 19/199
+----------
+LR 0.0001
+train: bce: 0.022443, dice: 0.241888, loss: 0.176055
+val: bce: 0.020330, dice: 0.244251, loss: 0.177075
+EarlyStopping counter: 2 out of 15
+0m 23s
+Epoch 20/199
+----------
+LR 0.0001
+train: bce: 0.022103, dice: 0.237815, loss: 0.173101
+val: bce: 0.022769, dice: 0.246004, loss: 0.179033
+EarlyStopping counter: 3 out of 15
+0m 23s
+Epoch 21/199
+----------
+LR 0.0001
+train: bce: 0.022718, dice: 0.239932, loss: 0.174767
+val: bce: 0.020566, dice: 0.247354, loss: 0.179318
+EarlyStopping counter: 4 out of 15
+0m 23s
+Epoch 22/199
+----------
+LR 0.0001
+train: bce: 0.021960, dice: 0.235964, loss: 0.171763
+val: bce: 0.019942, dice: 0.238053, loss: 0.172620
+Validation loss decreased (0.176335 --> 0.172620).  Saving best model ...
+0m 23s
+Epoch 23/199
+----------
+LR 0.0001
+train: bce: 0.021686, dice: 0.234434, loss: 0.170610
+val: bce: 0.019398, dice: 0.236138, loss: 0.171116
+Validation loss decreased (0.172620 --> 0.171116).  Saving best model ...
+0m 24s
+Epoch 24/199
+----------
+LR 0.0001
+train: bce: 0.021938, dice: 0.232205, loss: 0.169125
+val: bce: 0.019669, dice: 0.231513, loss: 0.167960
+Validation loss decreased (0.171116 --> 0.167960).  Saving best model ...
+0m 24s
+Epoch 25/199
+----------
+LR 0.0001
+train: bce: 0.021234, dice: 0.233189, loss: 0.169603
+val: bce: 0.018457, dice: 0.231158, loss: 0.167348
+Validation loss decreased (0.167960 --> 0.167348).  Saving best model ...
+0m 24s
+Epoch 26/199
+----------
+LR 0.0001
+train: bce: 0.021357, dice: 0.231290, loss: 0.168310
+val: bce: 0.021499, dice: 0.239190, loss: 0.173883
+EarlyStopping counter: 1 out of 15
+0m 23s
+Epoch 27/199
+----------
+LR 0.0001
+train: bce: 0.022021, dice: 0.234629, loss: 0.170847
+val: bce: 0.019238, dice: 0.230791, loss: 0.167325
+Validation loss decreased (0.167348 --> 0.167325).  Saving best model ...
+0m 24s
+Epoch 28/199
+----------
+LR 0.0001
+train: bce: 0.021521, dice: 0.226509, loss: 0.165013
+val: bce: 0.020282, dice: 0.240797, loss: 0.174642
+EarlyStopping counter: 1 out of 15
+0m 24s
+Epoch 29/199
+----------
+LR 0.0001
+train: bce: 0.022321, dice: 0.226316, loss: 0.165117
+val: bce: 0.019287, dice: 0.232161, loss: 0.168299
+EarlyStopping counter: 2 out of 15
+0m 24s
+Epoch 30/199
+----------
+LR 0.0001
+train: bce: 0.020455, dice: 0.225516, loss: 0.163998
+val: bce: 0.020319, dice: 0.234642, loss: 0.170345
+EarlyStopping counter: 3 out of 15
+0m 24s
+Epoch 31/199
+----------
+LR 0.0001
+train: bce: 0.019627, dice: 0.218802, loss: 0.159049
+val: bce: 0.019101, dice: 0.236296, loss: 0.171138
+EarlyStopping counter: 4 out of 15
+0m 23s
+Epoch 32/199
+----------
+LR 0.0001
+train: bce: 0.021136, dice: 0.223090, loss: 0.162504
+val: bce: 0.020821, dice: 0.237864, loss: 0.172751
+EarlyStopping counter: 5 out of 15
+0m 23s
+Epoch 33/199
+----------
+LR 1e-05
+train: bce: 0.020611, dice: 0.219813, loss: 0.160052
+val: bce: 0.019664, dice: 0.238671, loss: 0.172969
+EarlyStopping counter: 6 out of 15
+0m 23s
+Epoch 34/199
+----------
+LR 1e-05
+train: bce: 0.020431, dice: 0.220783, loss: 0.160677
+val: bce: 0.019536, dice: 0.229782, loss: 0.166708
+Validation loss decreased (0.167325 --> 0.166708).  Saving best model ...
+0m 24s
+Epoch 35/199
+----------
+LR 1e-05
+train: bce: 0.019626, dice: 0.218702, loss: 0.158979
+val: bce: 0.018299, dice: 0.228812, loss: 0.165658
+Validation loss decreased (0.166708 --> 0.165658).  Saving best model ...
+0m 24s
+Epoch 36/199
+----------
+LR 1e-05
+train: bce: 0.019743, dice: 0.220089, loss: 0.159985
+val: bce: 0.018556, dice: 0.227821, loss: 0.165042
+Validation loss decreased (0.165658 --> 0.165042).  Saving best model ...
+0m 24s
+Epoch 37/199
+----------
+LR 1e-05
+train: bce: 0.019142, dice: 0.215522, loss: 0.156608
+val: bce: 0.019558, dice: 0.225939, loss: 0.164025
+Validation loss decreased (0.165042 --> 0.164025).  Saving best model ...
+0m 24s
+Epoch 38/199
+----------
+LR 1e-05
+train: bce: 0.019427, dice: 0.217106, loss: 0.157802
+val: bce: 0.019053, dice: 0.233862, loss: 0.169419
+EarlyStopping counter: 1 out of 15
+0m 23s
+Epoch 39/199
+----------
+LR 1e-05
+train: bce: 0.019946, dice: 0.221089, loss: 0.160746
+val: bce: 0.018489, dice: 0.224362, loss: 0.162600
+Validation loss decreased (0.164025 --> 0.162600).  Saving best model ...
+0m 24s
+Epoch 40/199
+----------
+LR 1e-05
+train: bce: 0.019025, dice: 0.213987, loss: 0.155499
+val: bce: 0.019873, dice: 0.233766, loss: 0.169598
+EarlyStopping counter: 1 out of 15
+0m 23s
+Epoch 41/199
+----------
+LR 1e-05
+train: bce: 0.019245, dice: 0.216179, loss: 0.157099
+val: bce: 0.018555, dice: 0.225733, loss: 0.163580
+EarlyStopping counter: 2 out of 15
+0m 23s
+Epoch 42/199
+----------
+LR 1e-05
+train: bce: 0.020150, dice: 0.221033, loss: 0.160768
+val: bce: 0.018428, dice: 0.224430, loss: 0.162629
+EarlyStopping counter: 3 out of 15
+0m 23s
+Epoch 43/199
+----------
+LR 1e-05
+train: bce: 0.019611, dice: 0.214340, loss: 0.155921
+val: bce: 0.017640, dice: 0.215837, loss: 0.156377
+Validation loss decreased (0.162600 --> 0.156377).  Saving best model ...
+0m 23s
+Epoch 44/199
+----------
+LR 1e-05
+train: bce: 0.019570, dice: 0.218961, loss: 0.159144
+val: bce: 0.020004, dice: 0.227770, loss: 0.165440
+EarlyStopping counter: 1 out of 15
+0m 23s
+Epoch 45/199
+----------
+LR 1e-05
+train: bce: 0.020032, dice: 0.217406, loss: 0.158194
+val: bce: 0.020036, dice: 0.232506, loss: 0.168765
+EarlyStopping counter: 2 out of 15
+0m 23s
+Epoch 46/199
+----------
+LR 1e-05
+train: bce: 0.019271, dice: 0.215794, loss: 0.156837
+val: bce: 0.018925, dice: 0.226168, loss: 0.163995
+EarlyStopping counter: 3 out of 15
+0m 23s
+Epoch 47/199
+----------
+LR 1e-05
+train: bce: 0.019238, dice: 0.216504, loss: 0.157324
+val: bce: 0.019283, dice: 0.225955, loss: 0.163953
+EarlyStopping counter: 4 out of 15
+0m 23s
+Epoch 48/199
+----------
+LR 1e-05
+train: bce: 0.019916, dice: 0.218430, loss: 0.158876
+val: bce: 0.019358, dice: 0.232750, loss: 0.168732
+EarlyStopping counter: 5 out of 15
+0m 23s
+Epoch 49/199
+----------
+LR 1.0000000000000002e-06
+train: bce: 0.019131, dice: 0.211783, loss: 0.153987
+val: bce: 0.018898, dice: 0.228084, loss: 0.165328
+EarlyStopping counter: 6 out of 15
+0m 23s
+Epoch 50/199
+----------
+LR 1.0000000000000002e-06
+train: bce: 0.019125, dice: 0.212576, loss: 0.154540
+val: bce: 0.017919, dice: 0.221468, loss: 0.160404
+EarlyStopping counter: 7 out of 15
+0m 24s
+Epoch 51/199
+----------
+LR 1.0000000000000002e-06
+train: bce: 0.019306, dice: 0.215355, loss: 0.156540
+val: bce: 0.018714, dice: 0.227991, loss: 0.165208
+EarlyStopping counter: 8 out of 15
+0m 24s
+Epoch 52/199
+----------
+LR 1.0000000000000002e-06
+train: bce: 0.019657, dice: 0.210385, loss: 0.153167
+val: bce: 0.017938, dice: 0.224339, loss: 0.162419
+EarlyStopping counter: 9 out of 15
+0m 24s
+Epoch 53/199
+----------
+LR 1.0000000000000002e-06
+train: bce: 0.019867, dice: 0.216437, loss: 0.157466
+val: bce: 0.019068, dice: 0.228597, loss: 0.165739
+EarlyStopping counter: 10 out of 15
+0m 23s
+Epoch 54/199
+----------
+LR 1.0000000000000002e-07
+train: bce: 0.018709, dice: 0.212204, loss: 0.154155
+val: bce: 0.019097, dice: 0.225997, loss: 0.163927
+EarlyStopping counter: 11 out of 15
+0m 24s
+Epoch 55/199
+----------
+LR 1.0000000000000002e-07
+train: bce: 0.019016, dice: 0.212550, loss: 0.154490
+val: bce: 0.018226, dice: 0.225024, loss: 0.162985
+EarlyStopping counter: 12 out of 15
+0m 24s
+Epoch 56/199
+----------
+LR 1.0000000000000002e-07
+train: bce: 0.019588, dice: 0.217473, loss: 0.158108
+val: bce: 0.018827, dice: 0.231935, loss: 0.168003
+EarlyStopping counter: 13 out of 15
+0m 24s
+Epoch 57/199
+----------
+LR 1.0000000000000002e-07
+train: bce: 0.019687, dice: 0.215591, loss: 0.156820
+val: bce: 0.019707, dice: 0.224506, loss: 0.163066
+EarlyStopping counter: 14 out of 15
+0m 23s
+Epoch 58/199
+----------
+LR 1.0000000000000002e-07
+train: bce: 0.019404, dice: 0.217513, loss: 0.158080
+val: bce: 0.018752, dice: 0.229444, loss: 0.166236
+EarlyStopping counter: 15 out of 15
+0m 23s
+Early stopping
+Best val loss: 0.156377
+
+----------------------------------------------------------------
+The number of test set: 3205
+----------------------------------------------------------------
+----------
+The Evaluation Starts ...
+----------
+The total samples: 3205
+The average dice score is 0.5601212978363037.
+The number of tumor samples: 239
+The average tumor dice score is 0.509972333908081.
+The number of non-tumor samples: 2966
+The average non tumor dice score is 0.5641620755195618.
+0m 56s
+
+----------------------------------------------------------------
+Fine Tuning
+----------------------------------------------------------------
+chan@chan-desktop:~/Desktop/DLD1$ python train.py --epochs 50 --lr 0.00001 --model resnetunet --freeze False --dataset-type only_tumor --load True --load-epoch 200
+----------------------------------------------------------------
+----------------------------------------------------------------
+The number of train set: 840
+The number of valid set: 216
+----------------------------------------------------------------
+Epoch 0/49
+----------
+LR 1e-05
+train: bce: 0.019675, dice: 0.222229, loss: 0.161463
+val: bce: 0.019594, dice: 0.215343, loss: 0.156618
+Validation loss decreased (inf --> 0.156618).  Saving best model ...
+0m 20s
+Epoch 1/49
+----------
+LR 1e-05
+train: bce: 0.020153, dice: 0.226377, loss: 0.164510
+val: bce: 0.018157, dice: 0.207742, loss: 0.150866
+Validation loss decreased (0.156618 --> 0.150866).  Saving best model ...
+0m 20s
+Epoch 2/49
+----------
+LR 1e-05
+train: bce: 0.020090, dice: 0.224005, loss: 0.162830
+val: bce: 0.018647, dice: 0.211066, loss: 0.153340
+EarlyStopping counter: 1 out of 15
+0m 19s
+Epoch 3/49
+----------
+LR 1e-05
+train: bce: 0.019142, dice: 0.220007, loss: 0.159747
+val: bce: 0.018453, dice: 0.212338, loss: 0.154173
+EarlyStopping counter: 2 out of 15
+0m 19s
+Epoch 4/49
+----------
+LR 1e-05
+train: bce: 0.019447, dice: 0.218003, loss: 0.158436
+val: bce: 0.018276, dice: 0.206333, loss: 0.149916
+Validation loss decreased (0.150866 --> 0.149916).  Saving best model ...
+0m 20s
+Epoch 5/49
+----------
+LR 1e-05
+train: bce: 0.019854, dice: 0.223032, loss: 0.162078
+val: bce: 0.018079, dice: 0.204769, loss: 0.148762
+Validation loss decreased (0.149916 --> 0.148762).  Saving best model ...
+0m 20s
+Epoch 6/49
+----------
+LR 1e-05
+train: bce: 0.019647, dice: 0.219882, loss: 0.159812
+val: bce: 0.018322, dice: 0.208627, loss: 0.151536
+EarlyStopping counter: 1 out of 15
+0m 20s
+Epoch 7/49
+----------
+LR 1e-05
+train: bce: 0.019717, dice: 0.224129, loss: 0.162805
+val: bce: 0.019832, dice: 0.212791, loss: 0.154904
+EarlyStopping counter: 2 out of 15
+0m 20s
+Epoch 8/49
+----------
+LR 1e-05
+train: bce: 0.019390, dice: 0.216609, loss: 0.157443
+val: bce: 0.019657, dice: 0.205089, loss: 0.149460
+EarlyStopping counter: 3 out of 15
+0m 20s
+Epoch 9/49
+----------
+LR 1e-05
+train: bce: 0.019276, dice: 0.218598, loss: 0.158802
+val: bce: 0.018392, dice: 0.210683, loss: 0.152996
+EarlyStopping counter: 4 out of 15
+0m 20s
+Epoch 10/49
+----------
+LR 1e-05
+train: bce: 0.019551, dice: 0.219715, loss: 0.159666
+val: bce: 0.018656, dice: 0.209235, loss: 0.152061
+EarlyStopping counter: 5 out of 15
+0m 19s
+Epoch 11/49
+----------
+LR 1.0000000000000002e-06
+train: bce: 0.019552, dice: 0.223011, loss: 0.161973
+val: bce: 0.018400, dice: 0.200953, loss: 0.146187
+Validation loss decreased (0.148762 --> 0.146187).  Saving best model ...
+0m 20s
+Epoch 12/49
+----------
+LR 1.0000000000000002e-06
+train: bce: 0.019899, dice: 0.222566, loss: 0.161766
+val: bce: 0.017828, dice: 0.203433, loss: 0.147751
+EarlyStopping counter: 1 out of 15
+0m 19s
+Epoch 13/49
+----------
+LR 1.0000000000000002e-06
+train: bce: 0.019631, dice: 0.216530, loss: 0.157460
+val: bce: 0.018135, dice: 0.204600, loss: 0.148661
+EarlyStopping counter: 2 out of 15
+0m 20s
+Epoch 14/49
+----------
+LR 1.0000000000000002e-06
+train: bce: 0.019389, dice: 0.216425, loss: 0.157315
+val: bce: 0.018113, dice: 0.205980, loss: 0.149620
+EarlyStopping counter: 3 out of 15
+0m 20s
+Epoch 15/49
+----------
+LR 1.0000000000000002e-06
+train: bce: 0.019362, dice: 0.216522, loss: 0.157374
+val: bce: 0.018509, dice: 0.212957, loss: 0.154623
+EarlyStopping counter: 4 out of 15
+0m 20s
+Epoch 16/49
+----------
+LR 1.0000000000000002e-06
+train: bce: 0.019313, dice: 0.218192, loss: 0.158528
+val: bce: 0.018526, dice: 0.212963, loss: 0.154632
+EarlyStopping counter: 5 out of 15
+0m 20s
+Epoch 17/49
+----------
+LR 1.0000000000000002e-07
+train: bce: 0.019444, dice: 0.219864, loss: 0.159738
+val: bce: 0.017943, dice: 0.206232, loss: 0.149746
+EarlyStopping counter: 6 out of 15
+0m 19s
+Epoch 18/49
+----------
+LR 1.0000000000000002e-07
+train: bce: 0.018977, dice: 0.214951, loss: 0.156159
+val: bce: 0.018369, dice: 0.204450, loss: 0.148625
+EarlyStopping counter: 7 out of 15
+0m 19s
+Epoch 19/49
+----------
+LR 1.0000000000000002e-07
+train: bce: 0.018886, dice: 0.213700, loss: 0.155256
+val: bce: 0.019845, dice: 0.217113, loss: 0.157932
+EarlyStopping counter: 8 out of 15
+0m 19s
+Epoch 20/49
+----------
+LR 1.0000000000000002e-07
+train: bce: 0.019878, dice: 0.221138, loss: 0.160760
+val: bce: 0.018824, dice: 0.212463, loss: 0.154371
+EarlyStopping counter: 9 out of 15
+0m 19s
+Epoch 21/49
+----------
+LR 1.0000000000000002e-07
+train: bce: 0.019474, dice: 0.218065, loss: 0.158487
+val: bce: 0.019009, dice: 0.209049, loss: 0.152037
+EarlyStopping counter: 10 out of 15
+0m 20s
+Epoch 22/49
+----------
+LR 1.0000000000000004e-08
+train: bce: 0.019300, dice: 0.218180, loss: 0.158516
+val: bce: 0.020404, dice: 0.214471, loss: 0.156251
+EarlyStopping counter: 11 out of 15
+0m 19s
+Epoch 23/49
+----------
+LR 1.0000000000000004e-08
+train: bce: 0.019509, dice: 0.221294, loss: 0.160759
+val: bce: 0.019273, dice: 0.210859, loss: 0.153384
+EarlyStopping counter: 12 out of 15
+0m 20s
+Epoch 24/49
+----------
+LR 1.0000000000000004e-08
+train: bce: 0.019284, dice: 0.219967, loss: 0.159762
+val: bce: 0.017874, dice: 0.200316, loss: 0.145583
+Validation loss decreased (0.146187 --> 0.145583).  Saving best model ...
+0m 20s
+Epoch 25/49
+----------
+LR 1.0000000000000004e-08
+train: bce: 0.019834, dice: 0.224282, loss: 0.162947
+val: bce: 0.019416, dice: 0.211275, loss: 0.153717
+EarlyStopping counter: 1 out of 15
+0m 19s
+Epoch 26/49
+----------
+LR 1.0000000000000004e-08
+train: bce: 0.018972, dice: 0.218736, loss: 0.158807
+val: bce: 0.018091, dice: 0.208929, loss: 0.151678
+EarlyStopping counter: 2 out of 15
+0m 20s
+Epoch 27/49
+----------
+LR 1.0000000000000004e-08
+train: bce: 0.019813, dice: 0.221435, loss: 0.160948
+val: bce: 0.018393, dice: 0.205398, loss: 0.149296
+EarlyStopping counter: 3 out of 15
+0m 20s
+Epoch 28/49
+----------
+LR 1.0000000000000004e-08
+train: bce: 0.019451, dice: 0.216502, loss: 0.157386
+val: bce: 0.018153, dice: 0.210809, loss: 0.153013
+EarlyStopping counter: 4 out of 15
+0m 20s
+Epoch 29/49
+----------
+LR 1.0000000000000004e-08
+train: bce: 0.018999, dice: 0.216787, loss: 0.157451
+val: bce: 0.018251, dice: 0.210685, loss: 0.152955
+EarlyStopping counter: 5 out of 15
+0m 20s
+Epoch 30/49
+----------
+LR 1.0000000000000004e-08
+train: bce: 0.019138, dice: 0.219081, loss: 0.159098
+val: bce: 0.018138, dice: 0.208085, loss: 0.151101
+EarlyStopping counter: 6 out of 15
+0m 20s
+Epoch 31/49
+----------
+LR 1.0000000000000004e-08
+train: bce: 0.019221, dice: 0.220642, loss: 0.160215
+val: bce: 0.018161, dice: 0.206225, loss: 0.149806
+EarlyStopping counter: 7 out of 15
+0m 20s
+Epoch 32/49
+----------
+LR 1.0000000000000004e-08
+train: bce: 0.019175, dice: 0.219449, loss: 0.159367
+val: bce: 0.017894, dice: 0.203364, loss: 0.147723
+EarlyStopping counter: 8 out of 15
+0m 20s
+Epoch 33/49
+----------
+LR 1.0000000000000004e-08
+train: bce: 0.019371, dice: 0.220451, loss: 0.160127
+val: bce: 0.017619, dice: 0.204473, loss: 0.148416
+EarlyStopping counter: 9 out of 15
+0m 20s
+Epoch 34/49
+----------
+LR 1.0000000000000004e-08
+train: bce: 0.019180, dice: 0.216699, loss: 0.157443
+val: bce: 0.018558, dice: 0.211613, loss: 0.153696
+EarlyStopping counter: 10 out of 15
+0m 19s
+Epoch 35/49
+----------
+LR 1.0000000000000004e-08
+train: bce: 0.019709, dice: 0.218963, loss: 0.159187
+val: bce: 0.018264, dice: 0.207921, loss: 0.151024
+EarlyStopping counter: 11 out of 15
+0m 19s
+Epoch 36/49
+----------
+LR 1.0000000000000004e-08
+train: bce: 0.019562, dice: 0.221441, loss: 0.160877
+val: bce: 0.017366, dice: 0.202914, loss: 0.147249
+EarlyStopping counter: 12 out of 15
+0m 20s
+Epoch 37/49
+----------
+LR 1.0000000000000004e-08
+train: bce: 0.019597, dice: 0.219396, loss: 0.159456
+val: bce: 0.019789, dice: 0.209503, loss: 0.152588
+EarlyStopping counter: 13 out of 15
+0m 20s
+Epoch 38/49
+----------
+LR 1.0000000000000004e-08
+train: bce: 0.019555, dice: 0.217326, loss: 0.157994
+val: bce: 0.018274, dice: 0.207500, loss: 0.150732
+EarlyStopping counter: 14 out of 15
+0m 20s
+Epoch 39/49
+----------
+LR 1.0000000000000004e-08
+train: bce: 0.019481, dice: 0.216287, loss: 0.157245
+val: bce: 0.018622, dice: 0.211475, loss: 0.153619
+EarlyStopping counter: 15 out of 15
+0m 21s
+Early stopping
+Best val loss: 0.145583
+
+----------------------------------------------------------------
+The number of test set: 3205
+----------------------------------------------------------------
+----------
+The Evaluation Starts ...
+----------
+The total samples: 3205
+The average dice score is 0.5582964420318604.
+The number of tumor samples: 239
+The average tumor dice score is 0.5100328326225281.
+The number of non-tumor samples: 2966
+The average non tumor dice score is 0.5621856451034546.
+0m 58s

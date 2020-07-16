@@ -209,7 +209,7 @@ def main(args):
     #exp_lr_scheduler = lr_scheduler.StepLR(optimizer_ft, step_size=args.step_size)
     scheduler = lr_scheduler.ReduceLROnPlateau(optimizer_ft, 'min', patience=args.sched_patience)
     if args.load:
-        model.load_state_dict(torch.load(f"{args.weights}best_metric_model_{args.model}_{args.dataset_type}_{args.epochs}.pth")) 
+        model.load_state_dict(torch.load(f"{args.weights}best_metric_model_{args.model}_{args.dataset_type}_{args.load_epoch}.pth")) 
 
     model, metric_t, metric_v = train_model(model, optimizer_ft, scheduler, device, args.epochs, colon_dataloader)
 
@@ -310,6 +310,9 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--load", type=bool, default=False, help="continute training from the best model"
+    )
+    parser.add_argument(
+        "--load-epoch", type=int, default=200, help="continute training from the best model"
     )
     parser.add_argument(
         "--step-size", type=int, default=50, help="step size of StepLR scheduler"

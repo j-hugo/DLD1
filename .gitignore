@@ -8,3 +8,4 @@ __pycache__/
 runs/
 eval_plot/
 data/
+weights/
