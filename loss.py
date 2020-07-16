@@ -15,7 +15,7 @@ def dice_coeff(pred, target, smooth = 1.):
     dice = ((2. * intersection + smooth) / (pred.sum(dim=2).sum(dim=2) + target.sum(dim=2).sum(dim=2) + smooth))
     return dice.mean()
 
-def calc_loss(pred, target, metrics, bce_weight=0.5):
+def calc_loss(pred, target, metrics, bce_weight=0.3):
     bce = F.binary_cross_entropy_with_logits(pred, target)
     pred = torch.sigmoid(pred)
     dice = dice_loss(pred, target)

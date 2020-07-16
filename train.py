@@ -83,7 +83,7 @@ class EarlyStopping:
         '''Saves model when validation loss decrease.'''
         if self.verbose:
             print(f'Validation loss decreased ({self.val_loss_min:.6f} --> {val_loss:.6f}).  Saving best model ...')
-        torch.save(model.state_dict(), f"{args.weights}best_metric_model_{args.model}_{args.dataset_type}.pth")
+        torch.save(model.state_dict(), f"{args.weights}best_metric_model_{args.model}_{args.dataset_type}_{args.epochs}.pth")
         self.val_loss_min = val_loss
 
 def train_model(model, optimizer, scheduler, device, num_epochs, dataloaders):
@@ -191,7 +191,10 @@ def main(args):
         print(model)
     else:
         summary(model, input_size=(args.num_channel, args.image_size, args.image_size))  
-
+    print('----------------------------------------------------------------')
+    print(f"The number of train set: {len(colon_dataloader['train'])*args.train_batch}")
+    print(f"The number of valid set: {len(colon_dataloader['val'])*args.valid_batch}")
+    print('----------------------------------------------------------------')
     # to freeze weights of pretrained resnet layers
     if args.freeze and args.model == 'resnetunet':
         for l in model.base_layers:
