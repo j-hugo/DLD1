@@ -1,0 +1,545 @@
+(torch) chan@chan-desktop:~/Desktop/DLD1$ python train.py --epochs 200 --lr 0.001 --dataset-type only_tumor
+----------------------------------------------------------------
+        Layer (type)               Output Shape         Param #
+================================================================
+            Conv2d-1         [-1, 64, 256, 256]             640
+              ReLU-2         [-1, 64, 256, 256]               0
+            Conv2d-3         [-1, 64, 256, 256]          36,928
+              ReLU-4         [-1, 64, 256, 256]               0
+         MaxPool2d-5         [-1, 64, 128, 128]               0
+            Conv2d-6        [-1, 128, 128, 128]          73,856
+              ReLU-7        [-1, 128, 128, 128]               0
+            Conv2d-8        [-1, 128, 128, 128]         147,584
+              ReLU-9        [-1, 128, 128, 128]               0
+        MaxPool2d-10          [-1, 128, 64, 64]               0
+           Conv2d-11          [-1, 256, 64, 64]         295,168
+             ReLU-12          [-1, 256, 64, 64]               0
+           Conv2d-13          [-1, 256, 64, 64]         590,080
+             ReLU-14          [-1, 256, 64, 64]               0
+        MaxPool2d-15          [-1, 256, 32, 32]               0
+           Conv2d-16          [-1, 512, 32, 32]       1,180,160
+             ReLU-17          [-1, 512, 32, 32]               0
+           Conv2d-18          [-1, 512, 32, 32]       2,359,808
+             ReLU-19          [-1, 512, 32, 32]               0
+         Upsample-20          [-1, 512, 64, 64]               0
+           Conv2d-21          [-1, 256, 64, 64]       1,769,728
+             ReLU-22          [-1, 256, 64, 64]               0
+           Conv2d-23          [-1, 256, 64, 64]         590,080
+             ReLU-24          [-1, 256, 64, 64]               0
+         Upsample-25        [-1, 256, 128, 128]               0
+           Conv2d-26        [-1, 128, 128, 128]         442,496
+             ReLU-27        [-1, 128, 128, 128]               0
+           Conv2d-28        [-1, 128, 128, 128]         147,584
+             ReLU-29        [-1, 128, 128, 128]               0
+         Upsample-30        [-1, 128, 256, 256]               0
+           Conv2d-31         [-1, 64, 256, 256]         110,656
+             ReLU-32         [-1, 64, 256, 256]               0
+           Conv2d-33         [-1, 64, 256, 256]          36,928
+             ReLU-34         [-1, 64, 256, 256]               0
+           Conv2d-35          [-1, 2, 256, 256]             130
+================================================================
+Total params: 7,781,826
+Trainable params: 7,781,826
+Non-trainable params: 0
+----------------------------------------------------------------
+Input size (MB): 0.25
+Forward/backward pass size (MB): 591.00
+Params size (MB): 29.69
+Estimated Total Size (MB): 620.94
+----------------------------------------------------------------
+----------------------------------------------------------------
+The number of train set: 840
+The number of valid set: 216
+----------------------------------------------------------------
+Epoch 0/199
+----------
+LR 0.001
+train: bce: 0.077685, dice: 0.499346, loss: 0.372848
+val: bce: 0.046362, dice: 0.493507, loss: 0.359363
+Validation loss decreased (inf --> 0.359363).  Saving best model ...
+0m 26s
+Epoch 1/199
+----------
+LR 0.001
+train: bce: 0.043563, dice: 0.484003, loss: 0.351871
+val: bce: 0.058876, dice: 0.470384, loss: 0.346932
+Validation loss decreased (0.359363 --> 0.346932).  Saving best model ...
+0m 26s
+Epoch 2/199
+----------
+LR 0.001
+train: bce: 0.052433, dice: 0.470182, loss: 0.344857
+val: bce: 0.044807, dice: 0.436531, loss: 0.319014
+Validation loss decreased (0.346932 --> 0.319014).  Saving best model ...
+0m 26s
+Epoch 3/199
+----------
+LR 0.001
+train: bce: 0.056338, dice: 0.433609, loss: 0.320428
+val: bce: 0.054094, dice: 0.401710, loss: 0.297425
+Validation loss decreased (0.319014 --> 0.297425).  Saving best model ...
+0m 26s
+Epoch 4/199
+----------
+LR 0.001
+train: bce: 0.053410, dice: 0.415126, loss: 0.306611
+val: bce: 0.074991, dice: 0.397732, loss: 0.300910
+EarlyStopping counter: 1 out of 15
+0m 26s
+Epoch 5/199
+----------
+LR 0.001
+train: bce: 0.053291, dice: 0.405919, loss: 0.300131
+val: bce: 0.049149, dice: 0.383097, loss: 0.282913
+Validation loss decreased (0.297425 --> 0.282913).  Saving best model ...
+0m 26s
+Epoch 6/199
+----------
+LR 0.001
+train: bce: 0.048487, dice: 0.391554, loss: 0.288634
+val: bce: 0.041711, dice: 0.366175, loss: 0.268836
+Validation loss decreased (0.282913 --> 0.268836).  Saving best model ...
+0m 27s
+Epoch 7/199
+----------
+LR 0.001
+train: bce: 0.049345, dice: 0.381273, loss: 0.281694
+val: bce: 0.041621, dice: 0.378629, loss: 0.277527
+EarlyStopping counter: 1 out of 15
+0m 27s
+Epoch 8/199
+----------
+LR 0.001
+train: bce: 0.046966, dice: 0.368577, loss: 0.272094
+val: bce: 0.048089, dice: 0.356496, loss: 0.263974
+Validation loss decreased (0.268836 --> 0.263974).  Saving best model ...
+0m 26s
+Epoch 9/199
+----------
+LR 0.001
+train: bce: 0.045353, dice: 0.357341, loss: 0.263744
+val: bce: 0.056492, dice: 0.341122, loss: 0.255733
+Validation loss decreased (0.263974 --> 0.255733).  Saving best model ...
+0m 27s
+Epoch 10/199
+----------
+LR 0.001
+train: bce: 0.047094, dice: 0.356926, loss: 0.263976
+val: bce: 0.048951, dice: 0.362501, loss: 0.268436
+EarlyStopping counter: 1 out of 15
+0m 26s
+Epoch 11/199
+----------
+LR 0.001
+train: bce: 0.043971, dice: 0.353357, loss: 0.260541
+val: bce: 0.040743, dice: 0.339521, loss: 0.249888
+Validation loss decreased (0.255733 --> 0.249888).  Saving best model ...
+0m 26s
+Epoch 12/199
+----------
+LR 0.001
+train: bce: 0.040854, dice: 0.328450, loss: 0.242171
+val: bce: 0.041698, dice: 0.329133, loss: 0.242903
+Validation loss decreased (0.249888 --> 0.242903).  Saving best model ...
+0m 27s
+Epoch 13/199
+----------
+LR 0.001
+train: bce: 0.041853, dice: 0.327195, loss: 0.241593
+val: bce: 0.047097, dice: 0.323106, loss: 0.240304
+Validation loss decreased (0.242903 --> 0.240304).  Saving best model ...
+0m 26s
+Epoch 14/199
+----------
+LR 0.001
+train: bce: 0.038508, dice: 0.323811, loss: 0.238220
+val: bce: 0.040913, dice: 0.315755, loss: 0.233303
+Validation loss decreased (0.240304 --> 0.233303).  Saving best model ...
+0m 26s
+Epoch 15/199
+----------
+LR 0.001
+train: bce: 0.037391, dice: 0.312774, loss: 0.230159
+val: bce: 0.032518, dice: 0.279609, loss: 0.205482
+Validation loss decreased (0.233303 --> 0.205482).  Saving best model ...
+0m 26s
+Epoch 16/199
+----------
+LR 0.001
+train: bce: 0.034374, dice: 0.300544, loss: 0.220693
+val: bce: 0.030485, dice: 0.294025, loss: 0.214963
+EarlyStopping counter: 1 out of 15
+0m 26s
+Epoch 17/199
+----------
+LR 0.001
+train: bce: 0.035489, dice: 0.297722, loss: 0.219052
+val: bce: 0.032030, dice: 0.264736, loss: 0.194924
+Validation loss decreased (0.205482 --> 0.194924).  Saving best model ...
+0m 26s
+Epoch 18/199
+----------
+LR 0.001
+train: bce: 0.031836, dice: 0.278505, loss: 0.204505
+val: bce: 0.033997, dice: 0.260744, loss: 0.192720
+Validation loss decreased (0.194924 --> 0.192720).  Saving best model ...
+0m 26s
+Epoch 19/199
+----------
+LR 0.001
+train: bce: 0.033825, dice: 0.286938, loss: 0.211004
+val: bce: 0.032337, dice: 0.267438, loss: 0.196908
+EarlyStopping counter: 1 out of 15
+0m 26s
+Epoch 20/199
+----------
+LR 0.001
+train: bce: 0.032088, dice: 0.280822, loss: 0.206202
+val: bce: 0.051747, dice: 0.309886, loss: 0.232444
+EarlyStopping counter: 2 out of 15
+0m 26s
+Epoch 21/199
+----------
+LR 0.001
+train: bce: 0.036582, dice: 0.288624, loss: 0.213012
+val: bce: 0.034385, dice: 0.294188, loss: 0.216247
+EarlyStopping counter: 3 out of 15
+0m 26s
+Epoch 22/199
+----------
+LR 0.001
+train: bce: 0.035327, dice: 0.294798, loss: 0.216957
+val: bce: 0.031957, dice: 0.265249, loss: 0.195261
+EarlyStopping counter: 4 out of 15
+0m 27s
+Epoch 23/199
+----------
+LR 0.001
+train: bce: 0.031168, dice: 0.274922, loss: 0.201796
+val: bce: 0.035024, dice: 0.265830, loss: 0.196588
+EarlyStopping counter: 5 out of 15
+0m 26s
+Epoch 24/199
+----------
+LR 0.0001
+train: bce: 0.026007, dice: 0.247210, loss: 0.180849
+val: bce: 0.025440, dice: 0.236078, loss: 0.172887
+Validation loss decreased (0.192720 --> 0.172887).  Saving best model ...
+0m 26s
+Epoch 25/199
+----------
+LR 0.0001
+train: bce: 0.023657, dice: 0.230977, loss: 0.168781
+val: bce: 0.025808, dice: 0.238912, loss: 0.174981
+EarlyStopping counter: 1 out of 15
+0m 26s
+Epoch 26/199
+----------
+LR 0.0001
+train: bce: 0.023509, dice: 0.229388, loss: 0.167624
+val: bce: 0.024853, dice: 0.235109, loss: 0.172032
+Validation loss decreased (0.172887 --> 0.172032).  Saving best model ...
+0m 26s
+Epoch 27/199
+----------
+LR 0.0001
+train: bce: 0.023569, dice: 0.224974, loss: 0.164553
+val: bce: 0.025468, dice: 0.230149, loss: 0.168745
+Validation loss decreased (0.172032 --> 0.168745).  Saving best model ...
+0m 26s
+Epoch 28/199
+----------
+LR 0.0001
+train: bce: 0.022969, dice: 0.222306, loss: 0.162505
+val: bce: 0.026063, dice: 0.222065, loss: 0.163264
+Validation loss decreased (0.168745 --> 0.163264).  Saving best model ...
+0m 26s
+Epoch 29/199
+----------
+LR 0.0001
+train: bce: 0.022984, dice: 0.221256, loss: 0.161774
+val: bce: 0.026437, dice: 0.232601, loss: 0.170752
+EarlyStopping counter: 1 out of 15
+0m 26s
+Epoch 30/199
+----------
+LR 0.0001
+train: bce: 0.022610, dice: 0.218157, loss: 0.159493
+val: bce: 0.024259, dice: 0.227166, loss: 0.166294
+EarlyStopping counter: 2 out of 15
+0m 26s
+Epoch 31/199
+----------
+LR 0.0001
+train: bce: 0.022316, dice: 0.218459, loss: 0.159616
+val: bce: 0.025052, dice: 0.228580, loss: 0.167522
+EarlyStopping counter: 3 out of 15
+0m 26s
+Epoch 32/199
+----------
+LR 0.0001
+train: bce: 0.022126, dice: 0.219361, loss: 0.160191
+val: bce: 0.024529, dice: 0.227408, loss: 0.166544
+EarlyStopping counter: 4 out of 15
+0m 26s
+Epoch 33/199
+----------
+LR 0.0001
+train: bce: 0.022720, dice: 0.217616, loss: 0.159147
+val: bce: 0.026744, dice: 0.227197, loss: 0.167061
+EarlyStopping counter: 5 out of 15
+0m 26s
+Epoch 34/199
+----------
+LR 1e-05
+train: bce: 0.022938, dice: 0.214311, loss: 0.156899
+val: bce: 0.024775, dice: 0.220106, loss: 0.161507
+Validation loss decreased (0.163264 --> 0.161507).  Saving best model ...
+0m 26s
+Epoch 35/199
+----------
+LR 1e-05
+train: bce: 0.021961, dice: 0.211405, loss: 0.154572
+val: bce: 0.024151, dice: 0.221652, loss: 0.162402
+EarlyStopping counter: 1 out of 15
+0m 25s
+Epoch 36/199
+----------
+LR 1e-05
+train: bce: 0.021816, dice: 0.211424, loss: 0.154541
+val: bce: 0.024442, dice: 0.226050, loss: 0.165567
+EarlyStopping counter: 2 out of 15
+0m 26s
+Epoch 37/199
+----------
+LR 1e-05
+train: bce: 0.021564, dice: 0.209931, loss: 0.153421
+val: bce: 0.023218, dice: 0.218046, loss: 0.159598
+Validation loss decreased (0.161507 --> 0.159598).  Saving best model ...
+0m 26s
+Epoch 38/199
+----------
+LR 1e-05
+train: bce: 0.021657, dice: 0.213036, loss: 0.155622
+val: bce: 0.023551, dice: 0.218822, loss: 0.160241
+EarlyStopping counter: 1 out of 15
+0m 26s
+Epoch 39/199
+----------
+LR 1e-05
+train: bce: 0.020822, dice: 0.205747, loss: 0.150270
+val: bce: 0.023379, dice: 0.216863, loss: 0.158818
+Validation loss decreased (0.159598 --> 0.158818).  Saving best model ...
+0m 26s
+Epoch 40/199
+----------
+LR 1e-05
+train: bce: 0.021696, dice: 0.210950, loss: 0.154174
+val: bce: 0.023949, dice: 0.227575, loss: 0.166487
+EarlyStopping counter: 1 out of 15
+0m 27s
+Epoch 41/199
+----------
+LR 1e-05
+train: bce: 0.021415, dice: 0.208161, loss: 0.152137
+val: bce: 0.024790, dice: 0.229060, loss: 0.167779
+EarlyStopping counter: 2 out of 15
+0m 26s
+Epoch 42/199
+----------
+LR 1e-05
+train: bce: 0.020948, dice: 0.206948, loss: 0.151148
+val: bce: 0.024665, dice: 0.226184, loss: 0.165728
+EarlyStopping counter: 3 out of 15
+0m 26s
+Epoch 43/199
+----------
+LR 1e-05
+train: bce: 0.021127, dice: 0.208838, loss: 0.152525
+val: bce: 0.024798, dice: 0.224930, loss: 0.164890
+EarlyStopping counter: 4 out of 15
+0m 26s
+Epoch 44/199
+----------
+LR 1e-05
+train: bce: 0.021432, dice: 0.209139, loss: 0.152827
+val: bce: 0.023436, dice: 0.218876, loss: 0.160244
+EarlyStopping counter: 5 out of 15
+0m 26s
+Epoch 45/199
+----------
+LR 1.0000000000000002e-06
+train: bce: 0.021377, dice: 0.207089, loss: 0.151376
+val: bce: 0.024094, dice: 0.219107, loss: 0.160603
+EarlyStopping counter: 6 out of 15
+0m 26s
+Epoch 46/199
+----------
+LR 1.0000000000000002e-06
+train: bce: 0.021409, dice: 0.208737, loss: 0.152538
+val: bce: 0.024136, dice: 0.223363, loss: 0.163595
+EarlyStopping counter: 7 out of 15
+0m 26s
+Epoch 47/199
+----------
+LR 1.0000000000000002e-06
+train: bce: 0.021288, dice: 0.210825, loss: 0.153964
+val: bce: 0.024042, dice: 0.218581, loss: 0.160220
+EarlyStopping counter: 8 out of 15
+0m 26s
+Epoch 48/199
+----------
+LR 1.0000000000000002e-06
+train: bce: 0.021457, dice: 0.211231, loss: 0.154299
+val: bce: 0.024476, dice: 0.224870, loss: 0.164752
+EarlyStopping counter: 9 out of 15
+0m 26s
+Epoch 49/199
+----------
+LR 1.0000000000000002e-06
+train: bce: 0.021286, dice: 0.210706, loss: 0.153880
+val: bce: 0.023374, dice: 0.219431, loss: 0.160614
+EarlyStopping counter: 10 out of 15
+0m 26s
+Epoch 50/199
+----------
+LR 1.0000000000000002e-07
+train: bce: 0.021378, dice: 0.209140, loss: 0.152812
+val: bce: 0.023752, dice: 0.224001, loss: 0.163926
+EarlyStopping counter: 11 out of 15
+0m 26s
+Epoch 51/199
+----------
+LR 1.0000000000000002e-07
+train: bce: 0.021132, dice: 0.206419, loss: 0.150833
+val: bce: 0.023488, dice: 0.216926, loss: 0.158894
+EarlyStopping counter: 12 out of 15
+0m 26s
+Epoch 52/199
+----------
+LR 1.0000000000000002e-07
+train: bce: 0.021068, dice: 0.206545, loss: 0.150902
+val: bce: 0.023519, dice: 0.216451, loss: 0.158571
+Validation loss decreased (0.158818 --> 0.158571).  Saving best model ...
+0m 26s
+Epoch 53/199
+----------
+LR 1.0000000000000002e-07
+train: bce: 0.021130, dice: 0.204412, loss: 0.149427
+val: bce: 0.024155, dice: 0.222644, loss: 0.163097
+EarlyStopping counter: 1 out of 15
+0m 26s
+Epoch 54/199
+----------
+LR 1.0000000000000002e-07
+train: bce: 0.021262, dice: 0.208456, loss: 0.152298
+val: bce: 0.023924, dice: 0.218230, loss: 0.159938
+EarlyStopping counter: 2 out of 15
+0m 25s
+Epoch 55/199
+----------
+LR 1.0000000000000002e-07
+train: bce: 0.021071, dice: 0.207939, loss: 0.151878
+val: bce: 0.023485, dice: 0.222449, loss: 0.162759
+EarlyStopping counter: 3 out of 15
+0m 26s
+Epoch 56/199
+----------
+LR 1.0000000000000002e-07
+train: bce: 0.021264, dice: 0.209604, loss: 0.153102
+val: bce: 0.023983, dice: 0.226449, loss: 0.165709
+EarlyStopping counter: 4 out of 15
+0m 26s
+Epoch 57/199
+----------
+LR 1.0000000000000002e-07
+train: bce: 0.021044, dice: 0.207439, loss: 0.151521
+val: bce: 0.023892, dice: 0.219125, loss: 0.160555
+EarlyStopping counter: 5 out of 15
+0m 26s
+Epoch 58/199
+----------
+LR 1.0000000000000004e-08
+train: bce: 0.020889, dice: 0.206509, loss: 0.150823
+val: bce: 0.023786, dice: 0.219963, loss: 0.161109
+EarlyStopping counter: 6 out of 15
+0m 26s
+Epoch 59/199
+----------
+LR 1.0000000000000004e-08
+train: bce: 0.021333, dice: 0.209145, loss: 0.152802
+val: bce: 0.023573, dice: 0.217388, loss: 0.159243
+EarlyStopping counter: 7 out of 15
+0m 26s
+Epoch 60/199
+----------
+LR 1.0000000000000004e-08
+train: bce: 0.021284, dice: 0.209392, loss: 0.152960
+val: bce: 0.023783, dice: 0.222340, loss: 0.162773
+EarlyStopping counter: 8 out of 15
+0m 26s
+Epoch 61/199
+----------
+LR 1.0000000000000004e-08
+train: bce: 0.021254, dice: 0.208021, loss: 0.151991
+val: bce: 0.023526, dice: 0.219927, loss: 0.161007
+EarlyStopping counter: 9 out of 15
+0m 26s
+Epoch 62/199
+----------
+LR 1.0000000000000004e-08
+train: bce: 0.021095, dice: 0.207293, loss: 0.151434
+val: bce: 0.024238, dice: 0.222894, loss: 0.163297
+EarlyStopping counter: 10 out of 15
+0m 27s
+Epoch 63/199
+----------
+LR 1.0000000000000004e-08
+train: bce: 0.021202, dice: 0.207966, loss: 0.151937
+val: bce: 0.024431, dice: 0.223642, loss: 0.163879
+EarlyStopping counter: 11 out of 15
+0m 27s
+Epoch 64/199
+----------
+LR 1.0000000000000004e-08
+train: bce: 0.020944, dice: 0.206503, loss: 0.150835
+val: bce: 0.023651, dice: 0.219563, loss: 0.160789
+EarlyStopping counter: 12 out of 15
+0m 27s
+Epoch 65/199
+----------
+LR 1.0000000000000004e-08
+train: bce: 0.021301, dice: 0.208953, loss: 0.152658
+val: bce: 0.024518, dice: 0.228402, loss: 0.167237
+EarlyStopping counter: 13 out of 15
+0m 27s
+Epoch 66/199
+----------
+LR 1.0000000000000004e-08
+train: bce: 0.021175, dice: 0.209378, loss: 0.152917
+val: bce: 0.024144, dice: 0.223497, loss: 0.163691
+EarlyStopping counter: 14 out of 15
+0m 26s
+Epoch 67/199
+----------
+LR 1.0000000000000004e-08
+train: bce: 0.021329, dice: 0.210234, loss: 0.153563
+val: bce: 0.023426, dice: 0.217935, loss: 0.159582
+EarlyStopping counter: 15 out of 15
+0m 26s
+Early stopping
+Best val loss: 0.158571
+
+----------------------------------------------------------------
+The number of test set: 3205
+----------------------------------------------------------------
+----------
+The Evaluation Starts ...
+----------
+The total samples: 3205
+The average dice score is 0.6251185536384583.
+The number of tumor samples: 239
+The average tumor dice score is 0.5105406045913696.
+The number of non-tumor samples: 2966
+The average non tumor dice score is 0.6343515515327454.
+0m 58s

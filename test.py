@@ -53,32 +53,50 @@ def plot_result(img, label, pred, index, path, dice_score):
 def test_model(model, device, dataloaders, plot_path):
     model.load_state_dict(torch.load(f"{args.weights}best_metric_model_{args.model}_{args.metric_dataset_type}_{args.epochs}.pth")) 
     test_dice = list()
+    test_tumor_dice = list()
+    test_non_tumor_dice = list()
+    print('-' * 10)
+    print('The Evaluation Starts ...')
     print('-' * 10)
     since = time.time()
     # Test Phase
     model.eval()   # Set model to evaluate mode
     metrics = defaultdict(float)
     test_samples = 0
+    test_tumor_samples = 0
+    test_non_tumor_samples = 0
     i = 0
     for inputs, labels in dataloaders['test']:
-        inputs = inputs
-        labels = labels
+        inputs = inputs.to(device)
+        labels = labels.to(device)
         with torch.set_grad_enabled(False):
             outputs = model(inputs)
             preds = torch.sigmoid(outputs)
             dice_score = dice_coeff(preds, labels)
         #if i % 100 == 0:
         #    plot_result(inputs, labels, preds, i, plot_path, dice_score)
-        #print(np.unique(labels))
-        if len(np.unique(labels)) != 1:
-            plot_result(inputs, labels, preds, i, plot_path, dice_score)
+        if len(np.unique((torch.argmax(labels, dim=1).cpu()))) != 1:
+            test_tumor_dice.append(dice_score)
+            test_tumor_samples += 1
+        else:
+            test_non_tumor_dice.append(dice_score)
+            test_non_tumor_samples += 1
+        #if len(np.unique(labels)) != 1:
+        #    plot_result(inputs, labels, preds, i, plot_path, dice_score)
         # statistics
         #print(f"The {i} image's dice score is {dice_score}.")
         test_dice.append(dice_score)
-        test_samples += inputs.size(0)
+        test_samples += 1
         i += 1
     average_dice_score = sum(test_dice) / test_samples
+    average_tumor_dice_score = sum(test_tumor_dice) / test_tumor_samples
+    average_non_tumor_dice_score = sum(test_non_tumor_dice) / test_non_tumor_samples
+    print(f"The total samples: {test_samples}")
     print(f"The average dice score is {average_dice_score}.")
+    print(f"The number of tumor samples: {test_tumor_samples}")
+    print(f"The average tumor dice score is {average_tumor_dice_score}.")
+    print(f"The number of non-tumor samples: {test_non_tumor_samples}")
+    print(f"The average non tumor dice score is {average_non_tumor_dice_score}.")
     time_elapsed = time.time() - since
     print('{:.0f}m {:.0f}s'.format(time_elapsed // 60, time_elapsed % 60))
 
@@ -93,11 +111,14 @@ def main(args):
     dataset = load_datasets(args)
     colon_dataloader = load_dataloader(args, dataset)
     if args.model == 'unet':
-        model = UNet(args.num_channel, args.num_class)
+        model = UNet(args.num_channel, args.num_class).to(device)
     elif args.model == 'resnetunet':
         base_net = models.resnet34(pretrained=True)
         base_net.conv1 = torch.nn.Conv2d(1, 64, (7, 7), (2, 2), (3, 3), bias=False)
-        model = ResNetUNet(base_net,args.num_class)
+        model = ResNetUNet(base_net,args.num_class).to(device)
+    print('----------------------------------------------------------------')
+    print(f"The number of test set: {len(colon_dataloader['test'])*args.test_batch}")
+    print('----------------------------------------------------------------')
     result = test_model(model, device, colon_dataloader, args.eval_plot)
 
 if __name__ == "__main__":
@@ -119,8 +140,8 @@ if __name__ == "__main__":
     parser.add_argument(
         "--test-batch",
         type=int,
-        default=12,
-        help="input batch size for test (default: 12)",
+        default=1,
+        help="input batch size for test (default: 1)",
     )
     parser.add_argument(
         "--epochs",
