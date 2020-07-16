@@ -154,8 +154,8 @@ def train_model(model, optimizer, scheduler, device, num_epochs, dataloaders):
                     #if args.freeze != True:
                     #    writer.add_histogram('grads/' + tag, value.grad.data.cpu().numpy(), epoch)
                 writer.add_scalar('learning_rate', optimizer.param_groups[0]['lr'], epoch)
-                writer.add_scalar('Loss/test', metrics['loss']/ epoch_samples, epoch)
-                writer.add_scalar('Dice/test', metrics['dice']/ epoch_samples, epoch)
+                writer.add_scalar('Loss/valid', metrics['loss']/ epoch_samples, epoch)
+                writer.add_scalar('Dice/valid', metrics['dice']/ epoch_samples, epoch)
                 early_stopping(epoch_loss, model)
             # deep copy the model
             if phase == 'val' and epoch_loss < best_loss:
