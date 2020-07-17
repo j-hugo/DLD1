@@ -39,8 +39,8 @@ def load_datasets(args):
 
 def load_dataloader(args, train, valid):
     dataloader = {
-       'train': DataLoader(train, shuffle=args.shuffle, batch_size=args.train_batch, num_workers=args.num_workers),
-        'val': DataLoader(valid, shuffle=args.shuffle, batch_size=args.valid_batch, num_workers=args.num_workers)
+       'train': DataLoader(train, shuffle=args.shuffle, batch_size=args.train_batch, num_workers=args.workers),
+        'val': DataLoader(valid, shuffle=args.shuffle, batch_size=args.valid_batch, num_workers=args.workers)
     }
     return dataloader
 
@@ -222,20 +222,20 @@ if __name__ == "__main__":
     parser.add_argument(
         "--train-batch",
         type=int,
-        default=12,
+        default=16,
         help="input batch size for train (default: 16)",
     )
     parser.add_argument(
         "--valid-batch",
         type=int,
-        default=12,
+        default=16,
         help="input batch size for valid (default: 16)",
     )
     parser.add_argument(
         "--epochs",
         type=int,
-        default=100,
-        help="number of epochs to train (default: 100)",
+        default=300,
+        help="number of epochs to train (default: 300)",
     )
     parser.add_argument(
         "--lr",
