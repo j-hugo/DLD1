@@ -138,8 +138,8 @@ def train_model(model, optimizer, scheduler, device, num_epochs, dataloaders):
             print_metrics(metrics, epoch_samples, phase)
             epoch_loss = metrics['loss'] / epoch_samples
             writer.add_scalar('Loss(BCE+DICE)/train', epoch_loss, epoch)
-            writer.add_scalar('BCE/train', metrics['bce']/ epoch_samples, epoch)
             writer.add_scalar('Dice Loss/train', metrics['dice']/ epoch_samples, epoch)
+            writer.add_scalar('BCE/train', metrics['bce']/ epoch_samples, epoch)
             if phase == 'train':
                 epoch_train_loss.append(metrics['loss']/ epoch_samples)
                 epoch_train_bce.append(metrics['bce']/ epoch_samples)
@@ -148,7 +148,7 @@ def train_model(model, optimizer, scheduler, device, num_epochs, dataloaders):
                 epoch_valid_loss.append(metrics['loss']/ epoch_samples)
                 epoch_valid_bce.append(metrics['bce']/ epoch_samples)
                 epoch_valid_dice.append(metrics['dice']/ epoch_samples)
-                scheduler.step(metrics['loss']/ epoch_samples)
+                scheduler.step(epoch_loss)
                 for tag, value in model.named_parameters():
                     tag = tag.replace('.', '/')
                     writer.add_histogram('weights/' + tag, value.data.cpu().numpy(), epoch)
