@@ -128,7 +128,7 @@ if __name__ == "__main__":
         "--datapath", type=dir_path, default='./Task10_Colon', help="path to the dataset"
     )
     parser.add_argument(
-        "--split", type=float, default=0.2, help="ratio for testset"
+        "--split", type=float, default=0.1, help="ratio for testset"
     )
     makedirs("./data/")
     args = parser.parse_args()

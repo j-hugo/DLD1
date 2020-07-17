@@ -39,8 +39,8 @@ def load_datasets(args):
 
 def load_dataloader(args, train, valid):
     dataloader = {
-       'train': DataLoader(train, shuffle=args.shuffle, batch_size=args.train_batch),
-        'val': DataLoader(valid, shuffle=args.shuffle, batch_size=args.valid_batch)
+       'train': DataLoader(train, shuffle=args.shuffle, batch_size=args.train_batch, num_workers=args.num_workers),
+        'val': DataLoader(valid, shuffle=args.shuffle, batch_size=args.valid_batch, num_workers=args.num_workers)
     }
     return dataloader
 
@@ -137,8 +137,9 @@ def train_model(model, optimizer, scheduler, device, num_epochs, dataloaders):
 
             print_metrics(metrics, epoch_samples, phase)
             epoch_loss = metrics['loss'] / epoch_samples
-            writer.add_scalar('Loss/train', epoch_loss, epoch)
-            writer.add_scalar('Dice/train', metrics['dice']/ epoch_samples, epoch)
+            writer.add_scalar('Loss(BCE+DICE)/train', epoch_loss, epoch)
+            writer.add_scalar('BCE/train', metrics['bce']/ epoch_samples, epoch)
+            writer.add_scalar('Dice Loss/train', metrics['dice']/ epoch_samples, epoch)
             if phase == 'train':
                 epoch_train_loss.append(metrics['loss']/ epoch_samples)
                 epoch_train_bce.append(metrics['bce']/ epoch_samples)
@@ -154,8 +155,9 @@ def train_model(model, optimizer, scheduler, device, num_epochs, dataloaders):
                     #if args.freeze != True:
                     #    writer.add_histogram('grads/' + tag, value.grad.data.cpu().numpy(), epoch)
                 writer.add_scalar('learning_rate', optimizer.param_groups[0]['lr'], epoch)
-                writer.add_scalar('Loss/valid', metrics['loss']/ epoch_samples, epoch)
-                writer.add_scalar('Dice/valid', metrics['dice']/ epoch_samples, epoch)
+                writer.add_scalar('Loss(BCE+Dice)/valid', metrics['loss']/ epoch_samples, epoch)
+                writer.add_scalar('Dice Loss/valid', metrics['dice']/ epoch_samples, epoch)
+                writer.add_scalar('BCE/valid', metrics['bce']/ epoch_samples, epoch)
                 early_stopping(epoch_loss, model)
             # deep copy the model
             if phase == 'val' and epoch_loss < best_loss:
@@ -221,13 +223,13 @@ if __name__ == "__main__":
         "--train-batch",
         type=int,
         default=12,
-        help="input batch size for train (default: 12)",
+        help="input batch size for train (default: 16)",
     )
     parser.add_argument(
         "--valid-batch",
         type=int,
         default=12,
-        help="input batch size for valid (default: 12)",
+        help="input batch size for valid (default: 16)",
     )
     parser.add_argument(
         "--epochs",
@@ -238,8 +240,8 @@ if __name__ == "__main__":
     parser.add_argument(
         "--lr",
         type=float,
-        default=0.0001,
-        help="initial learning rate (default: 0.0001)",
+        default=0.001,
+        help="initial learning rate (default: 0.001)",
     )
     parser.add_argument(
         "--device",
@@ -255,9 +257,6 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--weights", type=str, default="./weights/", help="folder to save weights"
-    )
-    parser.add_argument(
-        "--logs", type=str, default="./logs", help="folder to save logs"
     )
     parser.add_argument(
         "--image-size",
@@ -294,7 +293,7 @@ if __name__ == "__main__":
         only_tumor=take only images which have tumor"
     )
     parser.add_argument(
-        "--split-ratio", type=float, default=0.8, help="the ratio to split the dataset into training and valid"
+        "--split-ratio", type=float, default=0.9, help="the ratio to split the dataset into training and valid"
     )
     parser.add_argument(
         "--shuffle", type=bool, default=True, help="shuffle the datset or not"
@@ -312,7 +311,7 @@ if __name__ == "__main__":
         "--load", type=bool, default=False, help="continute training from the best model"
     )
     parser.add_argument(
-        "--load-epoch", type=int, default=200, help="continute training from the best model"
+        "--load-epoch", type=int, default=300, help="continute training from the best model"
     )
     parser.add_argument(
         "--step-size", type=int, default=50, help="step size of StepLR scheduler"
@@ -321,10 +320,10 @@ if __name__ == "__main__":
         "--model", type=str, default='unet', help="choose the model between unet and resnet+unet; UNet-> unet, Resnet+Unet-> resnetunet"
     )
     parser.add_argument(
-        "--earlystop", type=int, default=15, help="the number of patience for early stopping"
+        "--earlystop", type=int, default=40, help="the number of patience for early stopping"
     )
     parser.add_argument(
-        "--sched-patience", type=int, default=4, help="the number of patience for scheduler"
+        "--sched-patience", type=int, default=15, help="the number of patience for scheduler"
     )
     args = parser.parse_args()
     main(args)
