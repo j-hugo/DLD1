@@ -23,6 +23,9 @@ def load_datasets(args):
         image_dir=args.testimages,
         label_dir=args.testlabels,
         csv_dir=args.testcsv,
+        #image_dir=args.trainimages,
+        #label_dir=args.trainlabels,
+        #csv_dir=args.traincsv,
         image_size=args.image_size,
         torch_transform=args.transform,
         balance_dataset=args.dataset_type,
@@ -96,9 +99,9 @@ def test_model(model, device, dataloaders, plot_path):
     print(f"The total samples: {test_samples}")
     print(f"The average dice score is {average_dice_score}.")
     print(f"The number of tumor samples: {test_tumor_samples}")
-    print(f"The average tumor dice score is {average_tumor_dice_score}.")
+    print(f"The average dice score of the slices which have tumor is {average_tumor_dice_score}.")
     print(f"The number of non-tumor samples: {test_non_tumor_samples}")
-    print(f"The average non tumor dice score is {average_non_tumor_dice_score}.")
+    print(f"The average dice score of the slices which have non-tumor is {average_non_tumor_dice_score}.")
     time_elapsed = time.time() - since
     print('{:.0f}m {:.0f}s'.format(time_elapsed // 60, time_elapsed % 60))
 

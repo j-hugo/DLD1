@@ -197,22 +197,29 @@ def main(args):
     print(f"The number of valid set: {len(colon_dataloader['val'])*args.valid_batch}")
     print('----------------------------------------------------------------')
     # to freeze weights of pretrained resnet layers
-    if args.freeze and args.model == 'resnetunet':
-        for l in model.base_layers:
-            for param in l.parameters():
-                param.requires_grad = False
-    if args.freeze == False and args.model == 'resnetunet':
-        for l in model.base_layers:
-            for param in l.parameters():
-                param.requires_grad = True
-
+    
     optimizer_ft = SGD(filter(lambda p: p.requires_grad, model.parameters()), lr=args.lr, momentum=0.9)
     scheduler = lr_scheduler.ReduceLROnPlateau(optimizer_ft, 'min', threshold_mode='abs', min_lr=1e-8, factor=0.5, patience=args.sched_patience)
     if args.load:
-        model.load_state_dict(torch.load(f"{args.weights}best_metric_model_{args.model}_{args.dataset_type}_{args.load_epoch}.pth")) 
+        model.load_state_dict(torch.load(f"{args.weights}best_metric_model_{args.model}_{args.dataset_type}_{args.epochs}.pth")) 
+    
+    if args.model == 'resnetunet':    
+        for l in model.base_layers:
+            for param in l.parameters():
+                param.requires_grad = False
 
     model, metric_t, metric_v = train_model(model, optimizer_ft, scheduler, device, args.epochs, colon_dataloader)
+    
 
+    if args.model == 'resnetunet':
+        print('----------------------------------------------------------------')
+        print(f"Fine Tuning starts ...")
+        print('----------------------------------------------------------------')
+        for l in model.base_layers:
+            for param in l.parameters():
+                param.requires_grad = True
+        model, metric_t, metric_v = train_model(model, optimizer_ft, scheduler, device, int(args.epochs/5), colon_dataloader)
+    
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Training the model for image segmentation of Colon"
@@ -269,16 +276,7 @@ if __name__ == "__main__":
         "--trainlabels", type=str, default="./data/npy_train_labels", help="root folder with labels"
     )
     parser.add_argument(
-        "--testimages", type=str, default="./data/npy_test_images", help="root folder with images"
-    )
-    parser.add_argument(
-        "--testlabels", type=str, default="./data/npy_test_labels", help="root folder with labels"
-    )
-    parser.add_argument(
         "--traincsv", type=str, default="./data/contains_cancer_train_index.csv", help="root folder with csv"
-    )
-    parser.add_argument(
-        "--testcsv", type=str, default="./data/contains_cancer_test_index.csv", help="root folder with csv"
     )
     parser.add_argument(
         "--transform", type=bool, default=True, help="activate data augmentation"
@@ -303,13 +301,7 @@ if __name__ == "__main__":
         "--num-channel", type=int, default=1, help="the number of channel of the image"
     )
     parser.add_argument(
-        "--freeze", type=bool, default=True, help="freeze the pretrained weights of resnet"
-    )
-    parser.add_argument(
         "--load", type=bool, default=False, help="continute training from the best model"
-    )
-    parser.add_argument(
-        "--load-epoch", type=int, default=300, help="continute training from the best model"
     )
     parser.add_argument(
         "--model", type=str, default='unet', help="choose the model between unet and resnet+unet; UNet-> unet, Resnet+Unet-> resnetunet"
