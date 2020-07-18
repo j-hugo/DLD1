@@ -289,7 +289,7 @@ if __name__ == "__main__":
         "--dataset-type", type=str, default=None, help="choose what type of dataset you need; \
         None=original dataset, \
         undersample=adjust to the number of non tumor images to the number of tumor images, \
-        upsample=adjust to the number of tumor images to the number of non-tumor data, \
+        oversample=adjust to the number of tumor images to the number of non-tumor data, \
         only_tumor=take only images which have tumor"
     )
     parser.add_argument(
