@@ -14,10 +14,10 @@ import torchvision.transforms.functional as TF
 # preprocessing, data iterators
 # informative description of content
 
-# get_undersample_files() and get_upsample_files() are functions used in the dataset class that return a list of files. In this list 
+# get_undersample_files() and get_oversample_files() are functions used in the dataset class that return a list of files. In this list 
 # slices with and without cancer tissue are represented in the same quantity.
 # get_undersample_files() will return all files of the minority class and randomly choose files from the majority class
-# get_upsample_files() will return all files of the majority class and randomly choose files from the minority class
+# get_oversample_files() will return all files of the majority class and randomly choose files from the minority class
 # both functions return a list of files with exactly equal number of image slices with or without cancer tissue
 
 # undersample
@@ -50,8 +50,8 @@ def get_undersample_files(csv_file):
   
   return(image_files,label_files)
 
-# upsample
-def get_upsample_files(csv_file):
+# oversample
+def get_oversample_files(csv_file):
 
   # import csv file as np array
   csv_list = np.genfromtxt(csv_file,delimiter=',')
@@ -113,7 +113,7 @@ class ColonDataset(Dataset):
             csv_dir: Path to csv file, which gives information whether slice contains annotated cancer pixels.
             balance_dataset (optional): options to create a dataset with balanced numbers of slices
                 containing cancer tissue or not containing cancer
-                'upsample': uniformly draws samples from minority class to reach equal size
+                'oversample': uniformly draws samples from minority class to reach equal size
                 'undersample': uniformly draws samples from majority class to reach equal size
                 'only_tumor': only includes slices with cancer tissue
                 None: no balance method is applied
@@ -127,8 +127,8 @@ class ColonDataset(Dataset):
         self.torch_transform = torch_transform
         if self.balance_dataset == "undersample":
           self.image_files, self.label_files = get_undersample_files(self.csv_dir)
-        if self.balance_dataset == "upsample":
-          self.image_files, self.label_files = get_upsample_files(self.csv_dir)
+        if self.balance_dataset == "oversample":
+          self.image_files, self.label_files = get_oversample_files(self.csv_dir)
         if self.balance_dataset == 'only_tumor':
           self.image_files, self.label_files = only_tumor_files(self.csv_dir)
         if self.balance_dataset == None:
