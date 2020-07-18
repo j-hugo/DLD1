@@ -113,7 +113,7 @@ class ColonDataset(Dataset):
             csv_dir: Path to csv file, which gives information whether slice contains annotated cancer pixels.
             balance_dataset (optional): options to create a dataset with balanced numbers of slices
                 containing cancer tissue or not containing cancer
-                'upsample': uniformly draws samples from minority class to reach equal size
+                'oversample': uniformly draws samples from minority class to reach equal size
                 'undersample': uniformly draws samples from majority class to reach equal size
                 'only_tumor': only includes slices with cancer tissue
                 None: no balance method is applied
@@ -127,8 +127,8 @@ class ColonDataset(Dataset):
         self.torch_transform = torch_transform
         if self.balance_dataset == "undersample":
           self.image_files, self.label_files = get_undersample_files(self.csv_dir)
-        if self.balance_dataset == "upsample":
-          self.image_files, self.label_files = get_upsample_files(self.csv_dir)
+        if self.balance_dataset == "oversample":
+          self.image_files, self.label_files = get_oversample_files(self.csv_dir)
         if self.balance_dataset == 'only_tumor':
           self.image_files, self.label_files = only_tumor_files(self.csv_dir)
         if self.balance_dataset == None:
