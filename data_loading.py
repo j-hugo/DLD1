@@ -14,10 +14,10 @@ import torchvision.transforms.functional as TF
 # preprocessing, data iterators
 # informative description of content
 
-# get_undersample_files() and get_upsample_files() are functions used in the dataset class that return a list of files. In this list 
+# get_undersample_files() and get_oversample_files() are functions used in the dataset class that return a list of files. In this list 
 # slices with and without cancer tissue are represented in the same quantity.
 # get_undersample_files() will return all files of the minority class and randomly choose files from the majority class
-# get_upsample_files() will return all files of the majority class and randomly choose files from the minority class
+# get_oversample_files() will return all files of the majority class and randomly choose files from the minority class
 # both functions return a list of files with exactly equal number of image slices with or without cancer tissue
 
 # undersample
@@ -50,8 +50,8 @@ def get_undersample_files(csv_file):
   
   return(image_files,label_files)
 
-# upsample
-def get_upsample_files(csv_file):
+# oversample
+def get_oversample_files(csv_file):
 
   # import csv file as np array
   csv_list = np.genfromtxt(csv_file,delimiter=',')
