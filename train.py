@@ -17,7 +17,7 @@ from torchsummary import summary
 from architecture import UNet, ResNetUNet
 from loss import calc_loss, print_metrics
 from torchvision import models
-from torch.optim import lr_scheduler, Adam
+from torch.optim import lr_scheduler, SGD
 
 def makedirs(args):
     os.makedirs(args.weights, exist_ok=True)
@@ -131,13 +131,12 @@ def train_model(model, optimizer, scheduler, device, num_epochs, dataloaders):
                     if phase == 'train':
                         loss.backward()
                         optimizer.step()
-                    
                 # statistics
                 epoch_samples += inputs.size(0)
 
             print_metrics(metrics, epoch_samples, phase)
             epoch_loss = metrics['loss'] / epoch_samples
-            writer.add_scalar('Loss(BCE+DICE)/train', epoch_loss, epoch)
+            writer.add_scalar('Loss(BCE+Dice)/train', epoch_loss, epoch)
             writer.add_scalar('Dice Loss/train', metrics['dice']/ epoch_samples, epoch)
             writer.add_scalar('BCE/train', metrics['bce']/ epoch_samples, epoch)
             if phase == 'train':
@@ -207,9 +206,8 @@ def main(args):
             for param in l.parameters():
                 param.requires_grad = True
 
-    optimizer_ft = Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=args.lr)
-    #exp_lr_scheduler = lr_scheduler.StepLR(optimizer_ft, step_size=args.step_size)
-    scheduler = lr_scheduler.ReduceLROnPlateau(optimizer_ft, 'min', patience=args.sched_patience)
+    optimizer_ft = SGD(filter(lambda p: p.requires_grad, model.parameters()), lr=args.lr, momentum=0.9)
+    scheduler = lr_scheduler.ReduceLROnPlateau(optimizer_ft, 'min', threshold_mode='abs', min_lr=1e-8, factor=0.5, patience=args.sched_patience)
     if args.load:
         model.load_state_dict(torch.load(f"{args.weights}best_metric_model_{args.model}_{args.dataset_type}_{args.load_epoch}.pth")) 
 
@@ -240,7 +238,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--lr",
         type=float,
-        default=0.001,
+        default=0.003,
         help="initial learning rate (default: 0.001)",
     )
     parser.add_argument(
@@ -305,7 +303,7 @@ if __name__ == "__main__":
         "--num-channel", type=int, default=1, help="the number of channel of the image"
     )
     parser.add_argument(
-        "--freeze", type=bool, default=False, help="freeze the pretrained weights of resnet"
+        "--freeze", type=bool, default=True, help="freeze the pretrained weights of resnet"
     )
     parser.add_argument(
         "--load", type=bool, default=False, help="continute training from the best model"
@@ -314,16 +312,13 @@ if __name__ == "__main__":
         "--load-epoch", type=int, default=300, help="continute training from the best model"
     )
     parser.add_argument(
-        "--step-size", type=int, default=50, help="step size of StepLR scheduler"
-    )
-    parser.add_argument(
         "--model", type=str, default='unet', help="choose the model between unet and resnet+unet; UNet-> unet, Resnet+Unet-> resnetunet"
     )
     parser.add_argument(
-        "--earlystop", type=int, default=40, help="the number of patience for early stopping"
+        "--earlystop", type=int, default=15, help="the number of patience for early stopping"
     )
     parser.add_argument(
-        "--sched-patience", type=int, default=15, help="the number of patience for scheduler"
+        "--sched-patience", type=int, default=5, help="the number of patience for scheduler"
     )
     args = parser.parse_args()
     main(args)

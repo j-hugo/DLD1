@@ -14,7 +14,7 @@ import torch
 from torch.utils.data import DataLoader
 from torchsummary import summary
 from architecture import UNet, ResNetUNet
-from loss import calc_loss, print_metrics, dice_coeff
+from loss import calc_loss, print_metrics, dice_coeff, dice_coef
 from torchvision import models
 from torch.optim import lr_scheduler, Adam
 
@@ -37,16 +37,18 @@ def load_dataloader(args, dataset):
     return dataloader
 
 def plot_result(img, label, pred, index, path, dice_score):
-    result = torch.argmax(pred, dim=1)
+    img = img.cpu()
+    result = torch.argmax(pred, dim=1).cpu()
+    label = torch.argmax(label, dim=1).cpu()
     plt.figure('check', (18, 6))
     ax1 = plt.subplot(1, 3, 1)
     ax1.set_title('image')
     ax1.imshow(img[0][0][ :, :])
     ax2 = plt.subplot(1, 3, 2)
     ax2.set_title('label')
-    ax2.imshow(label[0][1][ :, :])
+    ax2.imshow(label[0][ :, :])
     ax3 = plt.subplot(1, 3, 3)
-    ax3.set_title(f'output: dice_score{dice_score}')
+    ax3.set_title(f'prediction: dice_score ({dice_score[0][1]:.4f})')
     ax3.imshow(result[0][:, :])
     plt.savefig(f'{path}eval_plot_{index}.png')
 
@@ -72,20 +74,20 @@ def test_model(model, device, dataloaders, plot_path):
         with torch.set_grad_enabled(False):
             outputs = model(inputs)
             preds = torch.sigmoid(outputs)
-            dice_score = dice_coeff(preds, labels)
-        #if i % 100 == 0:
+            preds = torch.round(preds)
+            dice_score = dice_coef(preds, labels)
+        #if i % 20 == 0:
+        #    plot_result(inputs, labels, preds, i, plot_path, dice_score)
+        #if len(np.unique((torch.argmax(labels, dim=1).cpu()))) != 1:
         #    plot_result(inputs, labels, preds, i, plot_path, dice_score)
         if len(np.unique((torch.argmax(labels, dim=1).cpu()))) != 1:
-            test_tumor_dice.append(dice_score)
+            test_tumor_dice.append(dice_score[0][1])
             test_tumor_samples += 1
         else:
-            test_non_tumor_dice.append(dice_score)
+            test_non_tumor_dice.append(dice_score[0][1])
             test_non_tumor_samples += 1
-        #if len(np.unique(labels)) != 1:
-        #    plot_result(inputs, labels, preds, i, plot_path, dice_score)
-        # statistics
         #print(f"The {i} image's dice score is {dice_score}.")
-        test_dice.append(dice_score)
+        test_dice.append(dice_score[0][1])
         test_samples += 1
         i += 1
     average_dice_score = sum(test_dice) / test_samples
