@@ -120,7 +120,17 @@ if __name__ == "__main__":
     parser.add_argument(
         "--split_on", type=str, default="examples", help="apply split ratio on number of slices (slices) or number of examples/patients (examples)"
     )
+    parser.add_argument(
+        "--method", type=str, default=None,
+        help="create npy dataset (create_dataset) or assign training examples to subsets (assign_subsets)"
+    )
     makedirs("./data/")
     args = parser.parse_args()
-    convert_to_npy(args)
-    create_data_subsets(args)
+
+    if args.method == "create_dataset":
+        convert_to_npy(args)
+    if args.method == "assign_subsets":
+        create_data_subsets(args)
+    else:
+        print("Please select whether you want to convert nifti files to npy files (create_dataset) or assign slices to test or train data-subset (assign_subsets) via --method argument")
+
