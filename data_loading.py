@@ -100,6 +100,26 @@ def only_tumor_files(json_dir):
   
   return(image_files,label_files)
 
+def get_original_dataset(json_dir, test):
+    with open(json_dir) as json_file:
+        data_index = json.load(json_file)
+
+    if test is True:
+        file_index = [k for k, v in data_index.items() if v['subset'] == 'test']
+    else:
+        file_index = [k for k,v in data_index.items() if v['subset']=='train']
+
+    image_files, label_files = [], []
+
+    # add file names of images and labels to list
+    for slice_index in file_index:
+        image = 'image_' + slice_index + '.npy'
+        label = 'label_' + slice_index + '.npy'
+        image_files.append(image)
+        label_files.append(label)
+
+    return(image_files, label_files)
+
 # dataset class for primary colon cancer dataset
 
 class ColonDataset(Dataset):
@@ -131,9 +151,8 @@ class ColonDataset(Dataset):
           self.image_files, self.label_files = get_oversample_files(self.json_dir)
         if self.balance_dataset == 'only_tumor':
           self.image_files, self.label_files = only_tumor_files(self.json_dir)
-        if self.balance_dataset == None:
-          self.image_files = os.listdir(self.image_dir)
-          self.label_files = os.listdir(self.label_dir)
+        if self.balance_dataset is None:
+          self.image_files, self.label_files = get_original_dataset(self.json_dir, self.test)
 
     def __len__(self):
       return len(self.image_files)

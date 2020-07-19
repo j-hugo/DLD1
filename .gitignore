@@ -9,3 +9,5 @@ runs/
 eval_plot/
 data/
 weights/
+.idea/
+.DS_Store
