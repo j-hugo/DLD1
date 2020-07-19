@@ -21,60 +21,60 @@ import torchvision.transforms.functional as TF
 # both functions return a list of files with exactly equal number of image slices with or without cancer tissue
 
 # undersample
-def get_undersample_files(csv_file):
+def get_undersample_files(json_dir):
+  with open(json_dir) as json_file:
+    data_index = json.load(json_file)
 
-  # import csv file as np array
-  csv_list = np.genfromtxt(csv_file,delimiter=',')
-
-  index_with_cancer = np.where(csv_list[:,2]==1)[0] # indeces in csv table of slices containing cancer tissue
-  index_no_cancer = np.where(csv_list[:,2]==0)[0] # indeces in csv table of slices not containing cancer tissue
+  index_with_cancer = [k for k,v in data_index.items() if v['cancer'] == True]
+  index_no_cancer = [k for k,v in data_index.items() if v['cancer'] == False]
 
   # randomly draw indices from set of indices of slices without cancer
   # same number of slices with and without cancer tissue
-  rand_index_no_cancer = np.random.choice(index_no_cancer,size=index_with_cancer.shape[0])
+  rand_index_no_cancer = random.choices(index_no_cancer,k=len(index_with_cancer))
 
   image_files, label_files = [], []
 
   # add file names of images and labels to list
-  for image_numb, slice_numb in csv_list[rand_index_no_cancer,0:2]:
-    image = 'image_'+str(int(image_numb)).zfill(3) + '_' + str(int(slice_numb)).zfill(3) + '.npy'
-    label = 'label_'+str(int(image_numb)).zfill(3) + '_' + str(int(slice_numb)).zfill(3) + '.npy'
+  for slice_index in rand_index_no_cancer:
+    image = 'image_'+slice_index + '.npy'
+    label = 'label_'+slice_index + '.npy'
     image_files.append(image)
     label_files.append(label)
 
-  for image_numb, slice_numb in csv_list[index_with_cancer,0:2]:
-    image = 'image_'+str(int(image_numb)).zfill(3) + '_' + str(int(slice_numb)).zfill(3) + '.npy'
-    label = 'label_'+str(int(image_numb)).zfill(3) + '_' + str(int(slice_numb)).zfill(3) + '.npy'
+  for slice_index in index_with_cancer:
+    image = 'image_'+slice_index + '.npy'
+    label = 'label_'+slice_index+ '.npy'
     image_files.append(image)
     label_files.append(label)
   
   return(image_files,label_files)
 
 # oversample
-def get_oversample_files(csv_file):
+def get_oversample_files(json_dir):
 
-  # import csv file as np array
-  csv_list = np.genfromtxt(csv_file,delimiter=',')
+  with open(json_dir) as json_file:
+    data_index = json.load(json_file)
 
-  index_with_cancer = np.where(csv_list[:,2]==1)[0] # indeces in csv table of slices containing cancer tissue
-  index_no_cancer = np.where(csv_list[:,2]==0)[0] # indeces in csv table of slices not containing cancer tissue
+  index_with_cancer = [k for k,v in data_index.items() if v['cancer'] == True]
+  index_no_cancer = [k for k,v in data_index.items() if v['cancer'] == False]
 
   # randomly draw indices from set of indices of slices without cancer
   # same number of slices with and without cancer tissue
-  rand_index_with_cancer = np.random.choice(index_with_cancer,size=index_no_cancer.shape[0])
+  rand_index_with_cancer = random.choices(index_with_cancer,k=len(index_no_cancer))
 
   image_files, label_files = [], []
 
   # add file names of images and labels to list
-  for image_numb, slice_numb in csv_list[rand_index_with_cancer,0:2]:
-    image = 'image_'+str(int(image_numb)).zfill(3) + '_' + str(int(slice_numb)).zfill(3) + '.npy'
-    label = 'label_'+str(int(image_numb)).zfill(3) + '_' + str(int(slice_numb)).zfill(3) + '.npy'
+
+  for slice_index in rand_index_with_cancer:
+    image = 'image_'+slice_index + '.npy'
+    label = 'label_'+slice_index + '.npy'
     image_files.append(image)
     label_files.append(label)
 
-  for image_numb, slice_numb in csv_list[index_no_cancer,0:2]:
-    image = 'image_'+str(int(image_numb)).zfill(3) + '_' + str(int(slice_numb)).zfill(3) + '.npy'
-    label = 'label_'+str(int(image_numb)).zfill(3) + '_' + str(int(slice_numb)).zfill(3) + '.npy'
+  for slice_index in index_no_cancer:
+    image = 'image_'+slice_index + '.npy'
+    label = 'label_'+slice_index+ '.npy'
     image_files.append(image)
     label_files.append(label)
   
@@ -83,18 +83,18 @@ def get_oversample_files(csv_file):
 # only_tumor_files() returns a list of all files that contain cancer tissue.
 # no files without cancer tissue will be returned
 
-def only_tumor_files(csv_file):
-  # import csv file as np array
-  csv_list = np.genfromtxt(csv_file,delimiter=',')
+def only_tumor_files(json_dir):
+  with open(json_dir) as json_file:
+    data_index = json.load(json_file)
 
-  index_with_cancer = np.where(csv_list[:,2]==1)[0] # indeces in csv table of slices containing cancer tissue
+  index_with_cancer = [k for k,v in data_index.items() if v['cancer'] == True]
 
   image_files, label_files = [], []
 
   # add file names of images and labels to list
-  for image_numb, slice_numb in csv_list[index_with_cancer,0:2]:
-    image = 'image_'+str(int(image_numb)).zfill(3) + '_' + str(int(slice_numb)).zfill(3) + '.npy'
-    label = 'label_'+str(int(image_numb)).zfill(3) + '_' + str(int(slice_numb)).zfill(3) + '.npy'
+  for slice_index in index_with_cancer:
+    image = 'image_'+slice_index + '.npy'
+    label = 'label_'+slice_index+ '.npy'
     image_files.append(image)
     label_files.append(label)
   
@@ -105,7 +105,7 @@ def only_tumor_files(csv_file):
 class ColonDataset(Dataset):
     """Colon Cancer dataset."""
 
-    def __init__(self, image_dir, label_dir, csv_dir, image_size, torch_transform, balance_dataset=None, test=None):
+    def __init__(self, image_dir, label_dir, json_dir, image_size, torch_transform, balance_dataset=None, test=None):
         """
         Args:
             image_dir: Path to image folder.
@@ -120,17 +120,17 @@ class ColonDataset(Dataset):
         """
         self.image_dir = image_dir
         self.label_dir = label_dir
-        self.csv_dir = csv_dir
+        self.json_dir = json_dir
         self.image_size = image_size
         self.test = test
         self.balance_dataset = balance_dataset
         self.torch_transform = torch_transform
         if self.balance_dataset == "undersample":
-          self.image_files, self.label_files = get_undersample_files(self.csv_dir)
+          self.image_files, self.label_files = get_undersample_files(self.json_dir)
         if self.balance_dataset == "oversample":
-          self.image_files, self.label_files = get_oversample_files(self.csv_dir)
+          self.image_files, self.label_files = get_oversample_files(self.json_dir)
         if self.balance_dataset == 'only_tumor':
-          self.image_files, self.label_files = only_tumor_files(self.csv_dir)
+          self.image_files, self.label_files = only_tumor_files(self.json_dir)
         if self.balance_dataset == None:
           self.image_files = os.listdir(self.image_dir)
           self.label_files = os.listdir(self.label_dir)
@@ -200,7 +200,7 @@ if __name__ == "__main__":
   path = os.path.abspath(".") + "/"
   image_dir = path+'npy_images'
   label_dir = path+'npy_labels'
-  csv_dir = path+'contains_cancer_index.csv'
+  json_dir = path+'data_index.json'
 
   data = ColonDataset(image_dir,label_dir,csv_dir, 256,torch_transform=True, balance_dataset="only_tumor")
   single_example = data[1]
