@@ -104,6 +104,7 @@ def create_data_subsets(args):
     with open(data_index_file, "w") as json_file:
         json.dump(data_index, json_file)
 
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Slicing dataset for image segmentation of Colon"
