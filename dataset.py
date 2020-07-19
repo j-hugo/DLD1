@@ -101,7 +101,7 @@ def create_data_subsets(args):
             else:
               data_index[k]['subset'] = 'train'
 
-    with open(data_index_file, "w") as json_file:
+    with open("assigned_subsets_"+data_index_file, "w") as json_file:
         json.dump(data_index, json_file)
 
 
