@@ -15,17 +15,14 @@ def dir_path(string):
     else:
         raise NotADirectoryError(string)
 
-def convert_to_npy_train(args):
+def convert_to_npy(args):
     train_data_path = os.path.join(args.datapath, 'imagesTr')
     label_data_path = os.path.join(args.datapath, 'labelsTr')
     images = sorted(os.listdir(train_data_path))
     labels = sorted(os.listdir(label_data_path))
-    
-    split = int(len(images)*args.split)
-    images = images[:-split]
-    labels = labels[:-split]
 
-    image_saved_path =args.path +'npy_train_images/'
+    image_saved_path =args.path +'npy_images/'
+    
     try:
         os.mkdir(image_saved_path)
     except OSError:
@@ -33,14 +30,15 @@ def convert_to_npy_train(args):
     else:
         print ("Successfully created the directory %s " % image_saved_path)
         
-    label_saved_path = args.path + 'npy_train_labels/'
+    label_saved_path = args.path + 'npy_labels/'
     try:
         os.mkdir(label_saved_path)
     except OSError:
         print ("Creation of the directory %s failed" % label_saved_path)
     else:
         print ("Successfully created the directory %s " % label_saved_path)
-    contains_cancer = []
+        
+    data_index = {}
 
     for img, label in zip(images,labels):
         # Load 3D training image
@@ -53,69 +51,57 @@ def convert_to_npy_train(args):
             image_2d = np.array(training_image.get_fdata()[:, :, k], dtype='int16') # I checked: all values in the nifti files were integers, ranging from -1024 to approx 3000
             label_2d = np.array(training_label.get_fdata()[:, :, k], dtype='uint8') # only contains 1s and 0s
             slice_number = str(k).zfill(3)
+            slice_index = image_number+'_'+slice_number
+            
             if len(np.unique(label_2d))!=1:
-              contains_cancer.append([image_number,slice_number,1])
+              contains_cancer = True
             else:
-              contains_cancer.append([image_number,slice_number,0])
+              contains_cancer = False
+
+            data_index[slice_index] = {
+                'image': int(image_number),
+                'slice': int(slice_number),
+                'cancer': contains_cancer,
+                'subset': None
+            }
 
             np.save((image_saved_path+'image_{}_{}.npy'.format(image_number,slice_number)), image_2d)
             np.save((label_saved_path +'label_{}_{}.npy'.format(image_number,slice_number)), label_2d)
             print(f'Saved image {image_number}, slice {slice_number}')
     
-    with open(args.path+"contains_cancer_train_index.csv", "w", newline="") as f:
-        writer = csv.writer(f)
-        writer.writerows(contains_cancer)
+    with open(args.path+"data_index.json", "w") as json_file:
+        json.dump(data_index,json_file)
 
-def convert_to_npy_test(args):
-    train_data_path = os.path.join(args.datapath, 'imagesTr')
-    label_data_path = os.path.join(args.datapath, 'labelsTr')
-    images = sorted(os.listdir(train_data_path))
-    labels = sorted(os.listdir(label_data_path))
+def create_data_subsets(args):
+    data_index_file = args.path+"data_index.json"
     
-    split = int(len(images)*args.split)
-    images = images[-split:]
-    labels = labels[-split:]
-    
-    image_saved_path = args.path +'npy_test_images/'
-    try:
-        os.mkdir(image_saved_path)
-    except OSError:
-        print ("Creation of the directory %s failed" % image_saved_path)
-    else:
-        print ("Successfully created the directory %s " % image_saved_path)
-        
-    label_saved_path = args.path + 'npy_test_labels/'
-    try:
-        os.mkdir(label_saved_path)
-    except OSError:
-        print ("Creation of the directory %s failed" % label_saved_path)
-    else:
-        print ("Successfully created the directory %s " % label_saved_path)
-    contains_cancer = []
+    with open(data_index_file) as json_file:
+        data_index = json.load(json_file)
 
-    for img, label in zip(images,labels):
-        # Load 3D training image
-        image_number = str(''.join(filter(str.isdigit, img))).zfill(3)
-        training_image = nibabel.load(os.path.join(train_data_path, img))
-        training_label = nibabel.load(os.path.join(label_data_path, label))
-
-        for k in range(training_label.shape[2]):
-            # axial cuts are made along the z axis (slice) 
-            image_2d = np.array(training_image.get_fdata()[:, :, k], dtype='int16') # I checked: all values in the nifti files were integers, ranging from -1024 to approx 3000
-            label_2d = np.array(training_label.get_fdata()[:, :, k], dtype='uint8') # only contains 1s and 0s
-            slice_number = str(k).zfill(3)
-            if len(np.unique(label_2d))!=1:
-              contains_cancer.append([image_number,slice_number,1])
+        if args.split_on == "examples":
+          image_index = [v['image'] for _, v in data_index.items()]
+          unique_images = set(image_index)
+          test_length = int(len(unique_images)*args.split)
+          test_images = random.sample(unique_images,test_length)
+          test_slices = [k for k,v in data_index.items() if v['image'] in test_images]
+          for k,_ in data_index.items():
+            if k in test_slices:
+              data_index[k]['subset'] = 'test'
             else:
-              contains_cancer.append([image_number,slice_number,0])
+              data_index[k]['subset'] = 'train'
 
-            np.save((image_saved_path+'image_{}_{}.npy'.format(image_number,slice_number)), image_2d)
-            np.save((label_saved_path +'label_{}_{}.npy'.format(image_number,slice_number)), label_2d)
-            print(f'Saved image {image_number}, slice {slice_number}')
-    
-    with open(args.path+"contains_cancer_test_index.csv", "w", newline="") as f:
-        writer = csv.writer(f)
-        writer.writerows(contains_cancer)
+        if args.split_on == "slices":
+          slice_index = [k for k,_ in data_index.items()]
+          test_length = int(len(slice_index)*args.split)
+          test_slices = random.sample(slice_index,test_length)
+          for k,_ in data_index.items():
+            if k in test_slices:
+              data_index[k]['subset'] = 'test'
+            else:
+              data_index[k]['subset'] = 'train'
+
+      with open(data_index_file, "w") as json_file:
+          json.dump(data_index,json_file)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -130,7 +116,10 @@ if __name__ == "__main__":
     parser.add_argument(
         "--split", type=float, default=0.1, help="ratio for testset"
     )
+    parser.add_argument(
+        "--split_on", type=str, default="examples", help="apply split ratio on number of slices (slices) or number of examples/patients (examples)"
+    )
     makedirs("./data/")
     args = parser.parse_args()
-    convert_to_npy_train(args)
-    convert_to_npy_test(args)
+    convert_to_npy(args)
+    create_data_subsets(args)
