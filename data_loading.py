@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import os
 import random
 import PIL
+import json
 
 import torch
 from torch.utils.data import Dataset
@@ -209,9 +210,10 @@ class ColonDataset(Dataset):
       image = torch.from_numpy(np.array(image)) # to_tensor: /opt/conda/conda-bld/pytorch_1587428094786/work/torch/csrc/utils/tensor_numpy.cpp:141: UserWarning: The given NumPy array is not writeable, and PyTorch does not support non-writeable tensors. 
       image = image.unsqueeze(0).type(torch.FloatTensor)
       label = torch.from_numpy(np.moveaxis(to_categorical(label, num_classes=2), -1, 0)).type(torch.FloatTensor)
-
+      print("print1:"+str(image.shape))
       # Normalize
-      image = TF.normalize(image, mean=-531.28, std=499.68)
+      image = TF.normalize(image, mean=(-531.28,), std=(499.68,))
+      print("print2:"+str(image.shape))
 
       return image, label
       
