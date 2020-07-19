@@ -25,8 +25,8 @@ def get_undersample_files(json_dir):
   with open(json_dir) as json_file:
     data_index = json.load(json_file)
 
-  index_with_cancer = [k for k,v in data_index.items() if v['cancer'] == True]
-  index_no_cancer = [k for k,v in data_index.items() if v['cancer'] == False]
+  index_with_cancer = [k for k,v in data_index.items() if (v['cancer'] == True) & (v['subset']=='train')]
+  index_no_cancer = [k for k,v in data_index.items() if (v['cancer'] == False) & (v['subset']=='train')]
 
   # randomly draw indices from set of indices of slices without cancer
   # same number of slices with and without cancer tissue
@@ -55,8 +55,8 @@ def get_oversample_files(json_dir):
   with open(json_dir) as json_file:
     data_index = json.load(json_file)
 
-  index_with_cancer = [k for k,v in data_index.items() if v['cancer'] == True]
-  index_no_cancer = [k for k,v in data_index.items() if v['cancer'] == False]
+  index_with_cancer = [k for k,v in data_index.items() if (v['cancer'] == True) & (v['subset']=='train')]
+  index_no_cancer = [k for k,v in data_index.items() if (v['cancer'] == False) & (v['subset']=='train')]
 
   # randomly draw indices from set of indices of slices without cancer
   # same number of slices with and without cancer tissue
@@ -87,7 +87,7 @@ def only_tumor_files(json_dir):
   with open(json_dir) as json_file:
     data_index = json.load(json_file)
 
-  index_with_cancer = [k for k,v in data_index.items() if v['cancer'] == True]
+  index_with_cancer = [k for k,v in data_index.items() if (v['cancer'] == True) & (v['subset']=='train')]
 
   image_files, label_files = [], []
 
