@@ -64,6 +64,7 @@ def test_model(model, device, dataloaders, plot_path):
     print('The Evaluation Starts ...')
     print('-' * 10)
     since = time.time()
+    print(since)
     # Test Phase
     model.eval()   # Set model to evaluate mode
     metrics = defaultdict(float)
@@ -93,6 +94,7 @@ def test_model(model, device, dataloaders, plot_path):
         test_dice.append(dice_score[0][1])
         test_samples += 1
         i += 1
+        print(i)
     average_dice_score = sum(test_dice) / test_samples
     average_tumor_dice_score = sum(test_tumor_dice) / test_tumor_samples
     average_non_tumor_dice_score = sum(test_non_tumor_dice) / test_non_tumor_samples
