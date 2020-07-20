@@ -33,9 +33,9 @@ def load_datasets(args):
     )
     return dataset
 
-def load_dataloader(args, dataset):
+def load_dataloader(dataset):
     dataloader = {
-       'test': DataLoader(dataset, shuffle=args.shuffle, batch_size=1)
+       'test': DataLoader(dataset, shuffle=False, batch_size=1)
     }
     return dataloader
 
@@ -115,15 +115,15 @@ def main(args):
     makedirs(args)
     device = torch.device("cpu" if not torch.cuda.is_available() else args.device)
     dataset = load_datasets(args)
-    colon_dataloader = load_dataloader(args, dataset)
+    colon_dataloader = load_dataloader(dataset)
     if args.model == 'unet':
-        model = UNet(args.num_channel, args.num_class).to(device)
+        model = UNet(n_channel=1,n_class=1).to(device)
     elif args.model == 'resnetunet':
         base_net = models.resnet34(pretrained=True)
         base_net.conv1 = torch.nn.Conv2d(1, 64, (7, 7), (2, 2), (3, 3), bias=False)
         model = ResNetUNet(base_net,args.num_class).to(device)
     print('----------------------------------------------------------------')
-    print(f"The number of test set: {len(colon_dataloader['test'])*args.test_batch}")
+    print(f"The number of test set: {len(colon_dataloader['test'])}")
     print('----------------------------------------------------------------')
     result = test_model(model, device, colon_dataloader, args.eval_plot)
 
@@ -132,34 +132,10 @@ if __name__ == "__main__":
         description="Testing the model for image segmentation of Colon"
     )
     parser.add_argument(
-        "--train-batch",
-        type=int,
-        default=12,
-        help="input batch size for train (default: 12)",
-    )
-    parser.add_argument(
-        "--valid-batch",
-        type=int,
-        default=12,
-        help="input batch size for valid (default: 12)",
-    )
-    parser.add_argument(
-        "--test-batch",
-        type=int,
-        default=1,
-        help="input batch size for test (default: 1)",
-    )
-    parser.add_argument(
         "--epochs",
         type=int,
         default=300,
         help="number of epochs to train (default: 100)",
-    )
-    parser.add_argument(
-        "--lr",
-        type=float,
-        default=0.001,
-        help="initial learning rate (default: 0.001)",
     )
     parser.add_argument(
         "--device",
@@ -187,12 +163,6 @@ if __name__ == "__main__":
         type=int,
         default=256,
         help="target input image size (default: 256)",
-    )
-    parser.add_argument(
-        "--trainimages", type=str, default="./data/npy_train_images", help="root folder with images"
-    )
-    parser.add_argument(
-        "--trainlabels", type=str, default="./data/npy_train_labels", help="root folder with labels"
     )
     parser.add_argument(
         "--testimages", type=str, default="./data/npy_images", help="root folder with images"
@@ -224,19 +194,7 @@ if __name__ == "__main__":
         "--split-ratio", type=float, default=0.8, help="the ratio to split the dataset into training and valid"
     )
     parser.add_argument(
-        "--shuffle", type=bool, default=False, help="shuffle the datset or not"
-    )
-    parser.add_argument(
-        "--num_class", type=int, default=1, help="the number of class for image segmentation"
-    )
-    parser.add_argument(
-        "--num_channel", type=int, default=1, help="the number of channel of the image"
-    )
-    parser.add_argument(
         "--freeze", type=bool, default=False, help="freeze the pretrained weights of resnet"
-    )
-    parser.add_argument(
-        "--step-size", type=int, default=50, help="step size of StepLR scheduler"
     )
     parser.add_argument(
         "--model", type=str, default='unet', help="choose the model between unet and resnet+unet; UNet-> unet, Resnet+Unet-> resnetunet"
