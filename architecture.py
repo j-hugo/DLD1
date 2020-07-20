@@ -156,16 +156,16 @@ class UNet2(nn.Module):
          """
         This function creates one expansive block
         """
-            block = torch.nn.Sequential(
-                    torch.nn.Conv2d(kernel_size=kernel_size, in_channels=in_channels, out_channels=mid_channel),
-                    torch.nn.ReLU(),
-                    torch.nn.BatchNorm2d(mid_channel),
-                    torch.nn.Conv2d(kernel_size=kernel_size, in_channels=mid_channel, out_channels=mid_channel),
-                    torch.nn.ReLU(),
-                    torch.nn.BatchNorm2d(mid_channel),
-                    torch.nn.ConvTranspose2d(in_channels=mid_channel, out_channels=out_channels, kernel_size=3, stride=2, padding=1, output_padding=1)
-                    )
-            return  block
+        block = torch.nn.Sequential(
+                torch.nn.Conv2d(kernel_size=kernel_size, in_channels=in_channels, out_channels=mid_channel),
+                torch.nn.ReLU(),
+                torch.nn.BatchNorm2d(mid_channel),
+                torch.nn.Conv2d(kernel_size=kernel_size, in_channels=mid_channel, out_channels=mid_channel),
+                torch.nn.ReLU(),
+                torch.nn.BatchNorm2d(mid_channel),
+                torch.nn.ConvTranspose2d(in_channels=mid_channel, out_channels=out_channels, kernel_size=3, stride=2, padding=1, output_padding=1)
+                )
+        return  block
 
     def final_block(self, in_channels, mid_channel, out_channels, kernel_size=3):
          """
