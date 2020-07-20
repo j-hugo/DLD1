@@ -185,7 +185,7 @@ class UNet2(nn.Module):
         return block
 
     def __init__(self, in_channel, out_channel):
-        super(UNet2, self).__init__()
+        super().__init__()
         #Encode
         self.conv_encode1 = self.contracting_block(in_channels=in_channel, out_channels=64)
         self.conv_maxpool1 = torch.nn.MaxPool2d(kernel_size=2)
