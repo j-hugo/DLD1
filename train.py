@@ -9,7 +9,6 @@ import time
 import os
 import numpy as np
 from collections import defaultdict
-
 import torch 
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
@@ -188,6 +187,7 @@ def main(args):
         base_net = models.resnet34(pretrained=True)
         base_net.conv1 = torch.nn.Conv2d(1, 64, (7, 7), (2, 2), (3, 3), bias=False)
         model = ResNetUNet(base_net,args.num_class).to(device)
+
     if args.device == 'cpu':
         print(model)
     else:
@@ -227,13 +227,13 @@ if __name__ == "__main__":
     parser.add_argument(
         "--train-batch",
         type=int,
-        default=16,
+        default=12,
         help="input batch size for train (default: 16)",
     )
     parser.add_argument(
         "--valid-batch",
         type=int,
-        default=16,
+        default=12,
         help="input batch size for valid (default: 16)",
     )
     parser.add_argument(
@@ -295,7 +295,7 @@ if __name__ == "__main__":
         "--shuffle", type=bool, default=True, help="shuffle the datset or not"
     )
     parser.add_argument(
-        "--num-class", type=int, default=2, help="the number of class for image segmentation"
+        "--num-class", type=int, default=1, help="the number of class for image segmentation"
     )
     parser.add_argument(
         "--num-channel", type=int, default=1, help="the number of channel of the image"

@@ -41,18 +41,18 @@ def load_dataloader(args, dataset):
 
 def plot_result(img, label, pred, index, path, dice_score):
     img = img.cpu()
-    result = torch.argmax(pred, dim=1).cpu()
-    label = torch.argmax(label, dim=1).cpu()
+    result = pred.cpu()
+    label = label.cpu()
     plt.figure('check', (18, 6))
     ax1 = plt.subplot(1, 3, 1)
     ax1.set_title('image')
     ax1.imshow(img[0][0][ :, :])
     ax2 = plt.subplot(1, 3, 2)
     ax2.set_title('label')
-    ax2.imshow(label[0][ :, :])
+    ax2.imshow(label[0][0][ :, :])
     ax3 = plt.subplot(1, 3, 3)
-    ax3.set_title(f'prediction: dice_score ({dice_score[0][1]:.4f})')
-    ax3.imshow(result[0][:, :])
+    ax3.set_title(f'prediction: dice_score ({dice_score.item():.4f})')
+    ax3.imshow(result[0][0][:, :])
     plt.savefig(f'{path}eval_plot_{index}.png')
 
 def test_model(model, device, dataloaders, plot_path):
@@ -64,7 +64,6 @@ def test_model(model, device, dataloaders, plot_path):
     print('The Evaluation Starts ...')
     print('-' * 10)
     since = time.time()
-    print(since)
     # Test Phase
     model.eval()   # Set model to evaluate mode
     metrics = defaultdict(float)
@@ -80,21 +79,21 @@ def test_model(model, device, dataloaders, plot_path):
             preds = torch.sigmoid(outputs)
             preds = torch.round(preds)
             dice_score = dice_coef(preds, labels)
-        #if i % 20 == 0:
+        #if len(torch.unique(labels)) != 1:
         #    plot_result(inputs, labels, preds, i, plot_path, dice_score)
-        #if len(np.unique((torch.argmax(labels, dim=1).cpu()))) != 1:
+        #if i % 50 == 0:
         #    plot_result(inputs, labels, preds, i, plot_path, dice_score)
-        if len(np.unique((torch.argmax(labels, dim=1).cpu()))) != 1:
-            test_tumor_dice.append(dice_score[0][1])
+        if len(torch.unique(labels)) != 1:
+            test_tumor_dice.append(dice_score)
             test_tumor_samples += 1
         else:
-            test_non_tumor_dice.append(dice_score[0][1])
+            test_non_tumor_dice.append(dice_score)
             test_non_tumor_samples += 1
         #print(f"The {i} image's dice score is {dice_score}.")
-        test_dice.append(dice_score[0][1])
+        test_dice.append(dice_score)
         test_samples += 1
         i += 1
-        print(i)
+
     average_dice_score = sum(test_dice) / test_samples
     average_tumor_dice_score = sum(test_tumor_dice) / test_tumor_samples
     average_non_tumor_dice_score = sum(test_non_tumor_dice) / test_non_tumor_samples
@@ -228,7 +227,7 @@ if __name__ == "__main__":
         "--shuffle", type=bool, default=False, help="shuffle the datset or not"
     )
     parser.add_argument(
-        "--num_class", type=int, default=2, help="the number of class for image segmentation"
+        "--num_class", type=int, default=1, help="the number of class for image segmentation"
     )
     parser.add_argument(
         "--num_channel", type=int, default=1, help="the number of channel of the image"

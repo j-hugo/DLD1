@@ -210,8 +210,7 @@ class ColonDataset(Dataset):
       # Transform to tensor
       image = torch.from_numpy(np.array(image)) # to_tensor: /opt/conda/conda-bld/pytorch_1587428094786/work/torch/csrc/utils/tensor_numpy.cpp:141: UserWarning: The given NumPy array is not writeable, and PyTorch does not support non-writeable tensors. 
       image = image.unsqueeze(0).type(torch.FloatTensor)
-      label = torch.from_numpy(np.moveaxis(to_categorical(label, num_classes=2), -1, 0)).type(torch.FloatTensor)
-
+      label = torch.from_numpy(np.array(np.expand_dims(label, 0))).type(torch.FloatTensor)
       # Normalize
       image = TF.normalize(image, mean=(-531.28,), std=(499.68,))
 
