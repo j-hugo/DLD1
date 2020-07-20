@@ -108,7 +108,7 @@ def get_original_dataset(json_dir, test):
     if test is True:
         file_index = [k for k, v in data_index.items() if v['subset'] == 'test']
     else:
-        file_index = [k for k,v in data_index.items() if v['subset']=='train']
+        file_index = [k for k,v in data_index.items() if v['subset'] == 'train']
 
     image_files, label_files = [], []
 
@@ -146,14 +146,15 @@ class ColonDataset(Dataset):
         self.test = test
         self.balance_dataset = balance_dataset
         self.torch_transform = torch_transform
-        if self.balance_dataset == "undersample":
-          self.image_files, self.label_files = get_undersample_files(self.json_dir)
-        if self.balance_dataset == "oversample":
-          self.image_files, self.label_files = get_oversample_files(self.json_dir)
-        if self.balance_dataset == 'only_tumor':
-          self.image_files, self.label_files = only_tumor_files(self.json_dir)
+        if self.test is None:
+            if self.balance_dataset == "undersample":
+                self.image_files, self.label_files = get_undersample_files(self.json_dir)
+            if self.balance_dataset == "oversample":
+                self.image_files, self.label_files = get_oversample_files(self.json_dir)
+            if self.balance_dataset == 'only_tumor':
+                self.image_files, self.label_files = only_tumor_files(self.json_dir)
         if self.balance_dataset is None:
-          self.image_files, self.label_files = get_original_dataset(self.json_dir, self.test)
+            self.image_files, self.label_files = get_original_dataset(self.json_dir, self.test)
 
     def __len__(self):
       return len(self.image_files)
@@ -210,10 +211,10 @@ class ColonDataset(Dataset):
       image = torch.from_numpy(np.array(image)) # to_tensor: /opt/conda/conda-bld/pytorch_1587428094786/work/torch/csrc/utils/tensor_numpy.cpp:141: UserWarning: The given NumPy array is not writeable, and PyTorch does not support non-writeable tensors. 
       image = image.unsqueeze(0).type(torch.FloatTensor)
       label = torch.from_numpy(np.moveaxis(to_categorical(label, num_classes=2), -1, 0)).type(torch.FloatTensor)
-      print("print1:"+str(image.shape))
+
       # Normalize
       image = TF.normalize(image, mean=(-531.28,), std=(499.68,))
-      print("print2:"+str(image.shape))
+
 
       return image, label
       

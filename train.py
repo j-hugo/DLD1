@@ -276,7 +276,7 @@ if __name__ == "__main__":
         "--trainlabels", type=str, default="./data/npy_labels", help="root folder with labels"
     )
     parser.add_argument(
-        "--jsonfile", type=str, default="./data/data_index.json", help="root folder with json"
+        "--jsonfile", type=str, default="./data/data_index_subsets.json", help="root folder with json with assigned subsets"
     )
     parser.add_argument(
         "--transform", type=bool, default=True, help="activate data augmentation"

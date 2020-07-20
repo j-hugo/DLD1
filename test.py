@@ -22,7 +22,7 @@ def load_datasets(args):
     dataset = ColonDataset(
         image_dir=args.testimages,
         label_dir=args.testlabels,
-        csv_dir=args.testcsv,
+        json_dir=args.jsonfile,
         #image_dir=args.trainimages,
         #label_dir=args.trainlabels,
         #csv_dir=args.traincsv,
@@ -194,16 +194,13 @@ if __name__ == "__main__":
         "--trainlabels", type=str, default="./data/npy_train_labels", help="root folder with labels"
     )
     parser.add_argument(
-        "--testimages", type=str, default="./data/npy_test_images", help="root folder with images"
+        "--testimages", type=str, default="./data/npy_images", help="root folder with images"
     )
     parser.add_argument(
-        "--testlabels", type=str, default="./data/npy_test_labels", help="root folder with labels"
+        "--testlabels", type=str, default="./data/npy_labels", help="root folder with labels"
     )
     parser.add_argument(
-        "--traincsv", type=str, default="./data/contains_cancer_train_index.csv", help="root folder with csv"
-    )
-    parser.add_argument(
-        "--testcsv", type=str, default="./data/contains_cancer_test_index.csv", help="root folder with csv"
+        "--jsonfile", type=str, default="./data/data_index_subsets.json", help="json file with assigned subsets"
     )
     parser.add_argument(
         "--transform", type=bool, default=True, help="activate data augmentation"
