@@ -191,7 +191,7 @@ def main(args):
     if args.device == 'cpu':
         print(model)
     else:
-        summary(model, input_data=(args.num_channel, args.image_size, args.image_size))
+        summary(model, input_size=(args.num_channel, args.image_size, args.image_size))
     print('----------------------------------------------------------------')
     print(f"The number of train set: {len(colon_dataloader['train'])*args.train_batch}")
     print(f"The number of valid set: {len(colon_dataloader['val'])*args.valid_batch}")
