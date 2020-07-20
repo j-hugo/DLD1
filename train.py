@@ -26,7 +26,7 @@ def load_datasets(args):
     dataset = ColonDataset(
         image_dir=args.trainimages,
         label_dir=args.trainlabels,
-        csv_dir=args.traincsv,
+        json_dir=args.jsonfile,
         image_size=args.image_size,
         torch_transform=args.transform,
         balance_dataset=args.dataset_type
@@ -191,7 +191,7 @@ def main(args):
     if args.device == 'cpu':
         print(model)
     else:
-        summary(model, input_size=(args.num_channel, args.image_size, args.image_size))  
+        summary(model, input_size=(args.num_channel, args.image_size, args.image_size))
     print('----------------------------------------------------------------')
     print(f"The number of train set: {len(colon_dataloader['train'])*args.train_batch}")
     print(f"The number of valid set: {len(colon_dataloader['val'])*args.valid_batch}")
@@ -270,13 +270,13 @@ if __name__ == "__main__":
         help="target input image size (default: 256)",
     )
     parser.add_argument(
-        "--trainimages", type=str, default="./data/npy_train_images", help="root folder with images"
+        "--trainimages", type=str, default="./data/npy_images", help="root folder with images"
     )
     parser.add_argument(
-        "--trainlabels", type=str, default="./data/npy_train_labels", help="root folder with labels"
+        "--trainlabels", type=str, default="./data/npy_labels", help="root folder with labels"
     )
     parser.add_argument(
-        "--traincsv", type=str, default="./data/contains_cancer_train_index.csv", help="root folder with csv"
+        "--jsonfile", type=str, default="./data/data_index_subsets.json", help="root folder with json with assigned subsets"
     )
     parser.add_argument(
         "--transform", type=bool, default=True, help="activate data augmentation"
