@@ -93,14 +93,26 @@ def create_data_subsets(args):
               data_index[k]['subset'] = 'train'
 
         if args.split_on == "slices":
-          slice_index = [k for k,_ in data_index.items()]
-          test_length = int(len(slice_index)*args.split)
-          test_slices = random.sample(slice_index,test_length)
-          for k,_ in data_index.items():
-            if k in test_slices:
-              data_index[k]['subset'] = 'test'
-            else:
-              data_index[k]['subset'] = 'train'
+
+            cancer_slice_index = [k for k,v  in data_index.items() if v['cancer'] is True]
+            non_cancer_slice_index = [k for k, v in data_index.items() if v['cancer'] is False]
+            cancer_slice_length = len(cancer_slice_index)
+            non_cancer_slice_length = len(non_cancer_slice_index)
+            slice_length = cancer_slice_length + non_cancer_slice_length
+
+            proportion_cancer = cancer_slice_length/(non_cancer_slice_length+cancer_slice_length)
+            test_length = int(slice_length*args.split)
+            test_cancer_slices_length = int(test_length*proportion_cancer)
+            test_non_cancer_slices_length = test_length-test_cancer_slices_length
+
+            test_slices = [random.sample(cancer_slice_index, test_cancer_slices_length),
+                           random.sample(non_cancer_slice_index,test_non_cancer_slices_length)]
+
+            for k,_ in data_index.items():
+                if k in test_slices:
+                    data_index[k]['subset'] = 'test'
+                else:
+                    data_index[k]['subset'] = 'train'
 
     with open(args.path+"data_index_subsets.json", "w") as json_file:
         json.dump(data_index, json_file)
