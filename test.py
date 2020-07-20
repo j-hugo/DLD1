@@ -14,7 +14,7 @@ import torch
 from torch.utils.data import DataLoader
 from torchsummary import summary
 from architecture import UNet, ResNetUNet
-from loss import calc_loss, print_metrics, dice_coeff, dice_coef
+from loss import calc_loss, print_metrics, dice_coef
 from torchvision import models
 from torch.optim import lr_scheduler, Adam
 
