@@ -105,8 +105,8 @@ def create_data_subsets(args):
             test_cancer_slices_length = int(test_length*proportion_cancer)
             test_non_cancer_slices_length = test_length-test_cancer_slices_length
 
-            test_slices = [random.sample(cancer_slice_index, test_cancer_slices_length),
-                           random.sample(non_cancer_slice_index,test_non_cancer_slices_length)]
+            test_slices = [*random.sample(cancer_slice_index, test_cancer_slices_length),
+                           *random.sample(non_cancer_slice_index,test_non_cancer_slices_length)]
 
             for k,_ in data_index.items():
                 if k in test_slices:
