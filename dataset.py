@@ -68,6 +68,7 @@ def convert_to_npy(args):
 
             np.save((image_saved_path+'image_{}_{}.npy'.format(image_number,slice_number)), image_2d)
             np.save((label_saved_path +'label_{}_{}.npy'.format(image_number,slice_number)), label_2d)
+            
         print(f'Saved slices of image {image_number}')
     
     with open(args.path+"data_index.json", "w") as json_file:
@@ -101,7 +102,7 @@ def create_data_subsets(args):
             else:
               data_index[k]['subset'] = 'train'
 
-    with open("assigned_subsets_"+data_index_file, "w") as json_file:
+    with open(args.path+"data_index_subsets.json", "w") as json_file:
         json.dump(data_index, json_file)
 
 
