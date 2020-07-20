@@ -153,7 +153,7 @@ class ColonDataset(Dataset):
                 self.image_files, self.label_files = get_oversample_files(self.json_dir)
             if self.balance_dataset == 'only_tumor':
                 self.image_files, self.label_files = only_tumor_files(self.json_dir)
-        if self.balance_dataset is None or self.test is True:
+        if (self.balance_dataset is None) or (self.test is True):
             self.image_files, self.label_files = get_original_dataset(self.json_dir, self.test)
 
     def __len__(self):
