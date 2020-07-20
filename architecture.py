@@ -153,7 +153,7 @@ class UNet2(nn.Module):
         return block
 
     def expansive_block(self, in_channels, mid_channel, out_channels, kernel_size=3):
-         """
+        """
         This function creates one expansive block
         """
         block = torch.nn.Sequential(
@@ -165,10 +165,10 @@ class UNet2(nn.Module):
                 torch.nn.BatchNorm2d(mid_channel),
                 torch.nn.ConvTranspose2d(in_channels=mid_channel, out_channels=out_channels, kernel_size=3, stride=2, padding=1, output_padding=1)
                 )
-        return  block
+        return block
 
     def final_block(self, in_channels, mid_channel, out_channels, kernel_size=3):
-         """
+        """
         This returns final block
         """
         block = torch.nn.Sequential(
@@ -182,7 +182,7 @@ class UNet2(nn.Module):
                 torch.nn.ReLU(),
                 torch.nn.BatchNorm2d(out_channels),
                 )
-        return  block
+        return block
 
     def __init__(self, in_channel, out_channel):
         super(UNet, self).__init__()
