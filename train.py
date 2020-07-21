@@ -304,7 +304,7 @@ def main(args):
     optimizer = SGD(filter(lambda p: p.requires_grad, model.parameters()), lr=args.lr, momentum=0.9)
 
     # initialise learning rate scheduler
-    scheduler = lr_scheduler.ReduceLROnPlateau(optimizer_ft, 'min', threshold_mode='abs', min_lr=1e-8, factor=0.1, patience=args.sched_patience)
+    scheduler = lr_scheduler.ReduceLROnPlateau(optimizer, 'min', threshold_mode='abs', min_lr=1e-8, factor=0.1, patience=args.sched_patience)
 
     # continue to train the trained model
     if args.load:
@@ -319,7 +319,12 @@ def main(args):
                 param.requires_grad = False
 
     # train starts
-    model, metric_t, metric_v = train_model(model, optimizer, scheduler, device, args.epochs, colon_dataloader, info_train)
+    if args.model == 'resnetunet':
+        num_epochs = args.epochs - 50
+    else:
+        num_epochs = args.epochs
+
+    model, metric_t, metric_v = train_model(model, optimizer, scheduler, device, num_epochs, colon_dataloader, info_train)
     
     # for fine tuning restnetunet model
     if args.model == 'resnetunet':
@@ -333,7 +338,7 @@ def main(args):
         optimizer_ft = SGD(filter(lambda p: p.requires_grad, model.parameters()), lr=args.lr*0.01, momentum=0.9)
         # initialise learning rate scheduler
         scheduler_ft = lr_scheduler.ReduceLROnPlateau(optimizer_ft, 'min', threshold_mode='abs', min_lr=1e-8, factor=0.1, patience=args.sched_patience)
-        model, metric_ft, metric_fv = train_model(model, optimizer_ft, scheduler_ft, device, int(args.epochs/4), colon_dataloader, info_train, True)
+        model, metric_ft, metric_fv = train_model(model, optimizer_ft, scheduler_ft, device, int(num_epochs/3), colon_dataloader, info_train, True)
     
     # create json file from save information about the model, dataset, and metrics.
     with open(f"{args.metric_path}best_metric_{args.model}_{args.dataset_type}_{args.epochs}.json", "w") as json_file:
