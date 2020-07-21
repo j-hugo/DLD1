@@ -174,24 +174,24 @@ def train_model(model, optimizer, scheduler, device, num_epochs, dataloaders, in
 
         if early_stopping.early_stop:
             print(f"Early stopping after epoch {epoch}")
-            if fine_tune:
+            if fine_tune == False:
                 info['stopping LR'] = optimizer.param_groups[0]['lr']
-                info['stopping epoch'] = epoch
+                info['stopping epoch'] = epoch+1
                 info['best loss'] = best_loss
             else:
                 info['fine_tune_stopping LR'] = optimizer.param_groups[0]['lr']
-                info['fine_tune_stopping epoch'] = epoch
+                info['fine_tune_stopping epoch'] = epoch+1
                 info['fine_tune_best loss'] = best_loss
             break   
 
     if early_stopping.early_stop != True:
-        if fine_tune != True:
+        if fine_tune == False:
             info['stopping LR'] = optimizer.param_groups[0]['lr']
-            info['stopping epoch'] = epoch+1
+            info['stopping epoch'] = num_epochs
             info['best loss'] = best_loss
         else:
             info['fine_tune_stopping LR'] = optimizer.param_groups[0]['lr']
-            info['fine_tune_stopping epoch'] = epoch+1
+            info['fine_tune_stopping epoch'] = num_epochs
             info['fine_tune_best loss'] = best_loss
     
     print('Best val loss: {:4f}'.format(best_loss))
@@ -216,6 +216,7 @@ def main(args):
 
     info_train['model'] = args.model
     info_train['dataset'] = args.dataset_type
+    info_train['image_size'] = args.image_size
 
     if args.model == 'unet':
         model = UNet(n_channel=1, n_class=1).to(device)
