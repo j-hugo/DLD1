@@ -240,7 +240,7 @@ def main(args):
     elif args.model == 'resnetunet':
         base_net = models.resnet34(pretrained=True)
         base_net.conv1 = torch.nn.Conv2d(1, 64, (7, 7), (2, 2), (3, 3), bias=False)
-        model = ResNetUNet(base_net,args.num_class).to(device)
+        model = ResNetUNet(base_net, n_class=1).to(device)
     print('----------------------------------------------------------------')
     print(f"The number of test set: {len(colon_dataloader['test'])}")
     print('----------------------------------------------------------------')
