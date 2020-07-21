@@ -1,5 +1,7 @@
 # evaluation 
 from data_loading import ColonDataset
+from architecture import UNet, ResNetUNet
+from loss import calc_loss, print_metrics, dice_coef
 
 import argparse
 import _osx_support
@@ -13,19 +15,14 @@ import numpy as np
 import torch 
 from torch.utils.data import DataLoader
 from torchsummary import summary
-from architecture import UNet, ResNetUNet
-from loss import calc_loss, print_metrics, dice_coef
 from torchvision import models
-from torch.optim import lr_scheduler, Adam
+
 
 def load_datasets(args):
     dataset = ColonDataset(
         image_dir=args.testimages,
         label_dir=args.testlabels,
         json_dir=args.jsonfile,
-        #image_dir=args.trainimages,
-        #label_dir=args.trainlabels,
-        #csv_dir=args.traincsv,
         image_size=args.image_size,
         torch_transform=args.transform,
         balance_dataset=args.dataset_type,
@@ -66,7 +63,7 @@ def test_model(model, device, dataloaders, plot_path):
     since = time.time()
     # Test Phase
     model.eval()   # Set model to evaluate mode
-    metrics = defaultdict(float)
+    test_metrics = {}
     test_samples = 0
     test_tumor_samples = 0
     test_non_tumor_samples = 0
@@ -94,6 +91,7 @@ def test_model(model, device, dataloaders, plot_path):
         test_samples += 1
         i += 1
 
+    test_metrics[]
     average_dice_score = sum(test_dice) / test_samples
     average_tumor_dice_score = sum(test_tumor_dice) / test_tumor_samples
     average_non_tumor_dice_score = sum(test_non_tumor_dice) / test_non_tumor_samples
@@ -105,6 +103,13 @@ def test_model(model, device, dataloaders, plot_path):
     print(f"The average dice score of the slices which have non-tumor is {average_non_tumor_dice_score}.")
     time_elapsed = time.time() - since
     print('{:.0f}m {:.0f}s'.format(time_elapsed // 60, time_elapsed % 60))
+
+    if args.savemetrics is True:
+        with open("sample_file.json", "r+") as file:
+            data = json.load(file)
+            data.update(test_metrics)
+            file.seek(0)
+            json.dump(data, file)
 
     return test_dice
 
@@ -198,6 +203,14 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--model", type=str, default='unet', help="choose the model between unet and resnet+unet; UNet-> unet, Resnet+Unet-> resnetunet"
+    )
+    parser.add_argument(
+        "--savemetrics", type=bool, default=False,
+        help="save test metrics to json"
+    )
+    parser.add_argument(
+        "--savemetricspath", type=str, default="./metrics/",
+        help="metrics json dir"
     )
     args = parser.parse_args()
     main(args)

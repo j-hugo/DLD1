@@ -30,6 +30,8 @@ def load_datasets(args):
         torch_transform=args.transform,
         balance_dataset=args.dataset_type
     )
+
+    # determine train and validation set size and split randomly
     train_size = int(args.split_ratio*len(dataset))
     val_size = len(dataset)-train_size
     train_dataset, val_dataset = torch.utils.data.random_split(dataset, [train_size, val_size])
@@ -38,8 +40,8 @@ def load_datasets(args):
 
 def load_dataloader(args, train, valid):
     dataloader = {
-       'train': DataLoader(train, shuffle=args.shuffle, batch_size=args.train_batch, num_workers=args.workers),
-        'val': DataLoader(valid, shuffle=args.shuffle, batch_size=args.valid_batch, num_workers=args.workers)
+       'train': DataLoader(train, shuffle=True, batch_size=args.train_batch, num_workers=4),
+        'val': DataLoader(valid, shuffle=True, batch_size=args.valid_batch, num_workers=4)
     }
     return dataloader
 
@@ -82,7 +84,8 @@ class EarlyStopping:
         '''Saves model when validation loss decrease.'''
         if self.verbose:
             print(f'Validation loss decreased ({self.val_loss_min:.6f} --> {val_loss:.6f}).  Saving best model ...')
-        torch.save(model.state_dict(), f"{args.weights}best_metric_model_{args.model}_{args.dataset_type}_{args.epochs}.pth")
+        torch.save({'model_state_dict':model.state_dict(),
+                    'epoch':epoch}, f"{args.weights}best_metric_model_{args.model}_{args.dataset_type}_{args.epochs}.pth")
         self.val_loss_min = val_loss
 
 def train_model(model, optimizer, scheduler, device, num_epochs, dataloaders):
@@ -177,21 +180,24 @@ def train_model(model, optimizer, scheduler, device, num_epochs, dataloaders):
     return model, metric_train, metric_valid
 
 def main(args):
-    makedirs(args)
-    device = torch.device("cpu" if not torch.cuda.is_available() else args.device)
-    train, valid = load_datasets(args)
+    makedirs(args) # create necessary directories
+    device = torch.device("cpu" if not torch.cuda.is_available() else "cuda:0") # set device to GPU if available
+
+    train, valid = load_datasets(args) # get train and val dataset
+
     colon_dataloader = load_dataloader(args, train, valid)
+
     if args.model == 'unet':
-        model = UNet(args.num_channel, args.num_class).to(device)
+        model = UNet(n_channel=1, n_class=1).to(device)
     elif args.model == 'resnetunet':
         base_net = models.resnet34(pretrained=True)
-        base_net.conv1 = torch.nn.Conv2d(1, 64, (7, 7), (2, 2), (3, 3), bias=False)
-        model = ResNetUNet(base_net,args.num_class).to(device)
+        base_net.conv1 = torch.nn.Conv2d(1, 64, (7, 7), (2, 2), (3, 3), bias=False) # adjust first layer of ResNet to allow input of 1 channel
+        model = ResNetUNet(base_net,n_class=1).to(device)
 
     if args.device == 'cpu':
         print(model)
     else:
-        summary(model, input_size=(args.num_channel, args.image_size, args.image_size))
+        summary(model, input_size=(1, args.image_size, args.image_size))
     print('----------------------------------------------------------------')
     print(f"The number of train set: {len(colon_dataloader['train'])*args.train_batch}")
     print(f"The number of valid set: {len(colon_dataloader['val'])*args.valid_batch}")
@@ -247,12 +253,6 @@ if __name__ == "__main__":
         type=float,
         default=0.003,
         help="initial learning rate (default: 0.001)",
-    )
-    parser.add_argument(
-        "--device",
-        type=str,
-        default="cuda:0",
-        help="device for training (default: cuda:0)",
     )
     parser.add_argument(
         "--workers",
