@@ -20,10 +20,22 @@ from torch.optim import lr_scheduler, SGD
 import json
 
 def makedirs(args):
+    """create directories to save model and metric  
+
+    Args:
+        args: arguments from the parser.
+        
+    """
     os.makedirs(args.model_path, exist_ok=True)
     os.makedirs(args.metric_path, exist_ok=True)
 
 def load_datasets(args):
+    """load the dataset and split the dataset into train and validation set   
+
+    Args:
+        args: arguments from the parser.
+        
+    """
     dataset = ColonDataset(
         image_dir=args.trainimages,
         label_dir=args.trainlabels,
@@ -32,7 +44,6 @@ def load_datasets(args):
         torch_transform=args.transform,
         balance_dataset=args.dataset_type
     )
-
     # determine train and validation set size and split randomly
     train_size = int(args.split_ratio*len(dataset))
     val_size = len(dataset)-train_size
@@ -41,6 +52,14 @@ def load_datasets(args):
     return train_dataset, val_dataset
 
 def load_dataloader(args, train, valid):
+    """load a dataloader using train dataset and validation dataset  
+
+    Args:
+        args: the object which store arguments from the parser
+        train: train dataset (ColonDataset)
+        valid: validation dataset (ColonDataset)
+        
+    """
     dataloader = {
        'train': DataLoader(train, shuffle=True, batch_size=args.train_batch, num_workers=4),
         'val': DataLoader(valid, shuffle=True, batch_size=args.valid_batch, num_workers=4)
@@ -53,8 +72,8 @@ class EarlyStopping:
     def __init__(self, patience, verbose=False):
         """
         Args:
-            patience (int): How long to wait after last time validation loss improved.
-            verbose (bool): If True, prints a message for each validation loss improvement. 
+            patience (int): How long to wait after last time validation loss improved
+            verbose (bool): If True, prints a message for each validation loss improvement.
                             Default: False
         """
         self.patience = patience
@@ -65,7 +84,6 @@ class EarlyStopping:
         self.val_loss_min = np.Inf
 
     def __call__(self, val_loss, model, optimizer):
-
         if self.best_val_loss is None:
             self.best_val_loss = val_loss
             self.save_checkpoint(val_loss, model, optimizer)
@@ -89,17 +107,42 @@ class EarlyStopping:
         self.val_loss_min = val_loss
 
 def train_model(model, optimizer, scheduler, device, num_epochs, dataloaders, info, fine_tune=False):
+    """
+        Train the model
+
+        Args:
+            model: A neural netowrk model for training
+            optimizer: A optimizer to calculate gradients
+            scheduler: A scheduler to change a learning rate
+            device: gpu or cpu
+            num_epochs: a number of epochs
+            dataloaders: a data loader
+            info: a dictionary to save metrics
+            fine_tune: If True, the fine tuning phase starts after first training.
+
+        Return:
+            model: A trained model
+            metric_train: Metrics from training phase
+            metric_valid: Metrics from validation phase
+        """
     best_model_wts = copy.deepcopy(model.state_dict())
     best_loss = 1e10
+
+    # Initialize list to save loss from train and validation phase
     epoch_train_loss = list()
     epoch_valid_loss = list()
     epoch_train_dice_loss = list()
     epoch_valid_dice_loss = list()
     epoch_train_bce = list()
     epoch_valid_bce = list()
+    
+    # Initialize SummaryWriter to visualize losses on Tensorboard
     writer = SummaryWriter()
 
+    # Initialize EarlyStopping
     early_stopping = EarlyStopping(patience=args.earlystop, verbose=True)
+    
+    # Training starts
     for epoch in range(num_epochs):
         print('Epoch {}/{}'.format(epoch+1, num_epochs))
         print('-' * 10)
@@ -113,11 +156,13 @@ def train_model(model, optimizer, scheduler, device, num_epochs, dataloaders, in
             else:
                 model.eval()   # Set model to evaluate mode
 
+            # initialize metric dict to save losses for each epoch
             metrics = defaultdict(float)
             epoch_samples = 0
 
-            for inputs, labels in dataloaders[phase]:
-                inputs = inputs.to(device)
+            # Load a batch of images and labels 
+            for images, labels in dataloaders[phase]:
+                images = images.to(device)
                 labels = labels.to(device)
 
                 # zero the parameter gradients
@@ -126,16 +171,18 @@ def train_model(model, optimizer, scheduler, device, num_epochs, dataloaders, in
                 # forward
                 # track history if only in train
                 with torch.set_grad_enabled(phase == 'train'):
-                    outputs = model(inputs)
+                    outputs = model(images)
                     loss = calc_loss(outputs, labels, metrics)
                     # backward + optimize only if in training phase
                     if phase == 'train':
                         loss.backward()
                         optimizer.step()
-                # statistics
-                epoch_samples += inputs.size(0)
+                epoch_samples += images.size(0)
 
+            # print metrics 
             print_metrics(metrics, epoch_samples, phase)
+
+            # save the loss of the current epoch
             epoch_loss = metrics['loss'] / epoch_samples
 
             if phase == 'train':
@@ -165,7 +212,7 @@ def train_model(model, optimizer, scheduler, device, num_epochs, dataloaders, in
 
                 early_stopping(epoch_loss, model, optimizer) #  evaluate early stopping criterion
 
-                # deep copy the model
+                # compare loss and deep copy the model
                 if epoch_loss < best_loss:
                     best_loss = epoch_loss
                     best_model_wts = copy.deepcopy(model.state_dict())
@@ -173,6 +220,7 @@ def train_model(model, optimizer, scheduler, device, num_epochs, dataloaders, in
         time_elapsed = time.time() - since # compute time of epoch
         print('{:.0f}m {:.0f}s'.format(time_elapsed // 60, time_elapsed % 60))
 
+        # check early stop is True or not
         if early_stopping.early_stop:
             print(f"Early stopping after epoch {epoch}")
             if fine_tune == False:
@@ -187,6 +235,7 @@ def train_model(model, optimizer, scheduler, device, num_epochs, dataloaders, in
                 info['fine_tune_best loss'] = best_loss
             break   
 
+    # check early stop is True or not
     if early_stopping.early_stop != True:
         if fine_tune == False:
             info['early stop'] = 'False'
@@ -215,9 +264,12 @@ def train_model(model, optimizer, scheduler, device, num_epochs, dataloaders, in
 def main(args):
     makedirs(args) # create necessary directories
     device = torch.device("cpu" if not torch.cuda.is_available() else "cuda:0") # set device to GPU if available
-    info = {'train': {}}
+    
     train, valid = load_datasets(args) # get train and val dataset
-    colon_dataloader = load_dataloader(args, train, valid)
+    colon_dataloader = load_dataloader(args, train, valid) # load dataloader 
+    
+    # initialize dictionary to save informations about the model, dataset, and metrics at the end.
+    info = {'train': {}}
     info_train = info['train']
     info_train['model'] = args.model
     info_train['dataset'] = args.dataset_type
@@ -225,6 +277,7 @@ def main(args):
     info_train['train set size'] = len(train)
     info_train['val set size'] = len(valid)
     
+    # initialze a model for training
     if args.model == 'unet':
         model = UNet(n_channel=1, n_class=1).to(device)
     elif args.model == 'resnetunet':
@@ -232,10 +285,12 @@ def main(args):
         base_net.conv1 = torch.nn.Conv2d(1, 64, (7, 7), (2, 2), (3, 3), bias=False) # adjust first layer of ResNet to allow input of 1 channel
         model = ResNetUNet(base_net,n_class=1).to(device)
 
+    # describe the model
     if device == 'cpu':
         print(model)
     else:
         summary(model, input_size=(1, args.image_size, args.image_size))
+    
     print('----------------------------------------------------------------')
     print(f"The number of train set: {len(train)}")
     print(f"The number of valid set: {len(valid)}")
@@ -247,18 +302,22 @@ def main(args):
     # initialise learning rate scheduler
     scheduler = lr_scheduler.ReduceLROnPlateau(optimizer_ft, 'min', threshold_mode='abs', min_lr=1e-8, factor=0.1, patience=args.sched_patience)
 
+    # continue to train the trained model
     if args.load:
         checkpoint = torch.load(f"{args.model_path}best_metric_{args.model}_{args.dataset_type}_{args.epochs}.pth")
         model.load_state_dict(checkpoint['model_state_dict'])
         optimizer_ft.load_state_dict(checkpoint['optimizer_state_dict'])
     
+    # freeze pretrained laeyrs
     if args.model == 'resnetunet':    
         for l in model.base_layers:
             for param in l.parameters():
                 param.requires_grad = False
 
+    # train starts
     model, metric_t, metric_v = train_model(model, optimizer_ft, scheduler, device, args.epochs, colon_dataloader, info_train)
     
+    # for fine tuning restnetunet model
     if args.model == 'resnetunet':
         print('----------------------------------------------------------------')
         print("Fine Tuning of ResNet starts ...")
@@ -268,6 +327,7 @@ def main(args):
                 param.requires_grad = True
         model, metric_ft, metric_fv = train_model(model, optimizer_ft, scheduler, device, int(args.epochs/5), colon_dataloader, info_train, True)
     
+    # create json file from save information about the model, dataset, and metrics.
     with open(f"{args.metric_path}best_metric_{args.model}_{args.dataset_type}_{args.epochs}.json", "w") as json_file:
         json.dump(info, json_file, indent=4)
 

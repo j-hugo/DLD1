@@ -11,7 +11,6 @@ import torch
 from torch.utils.data import Dataset
 from torchvision import transforms
 import torchvision.transforms.functional as TF
-
 # preprocessing, data iterators
 # informative description of content
 
@@ -83,7 +82,6 @@ def get_oversample_files(json_dir):
 
 # only_tumor_files() returns a list of all files that contain cancer tissue.
 # no files without cancer tissue will be returned
-
 def only_tumor_files(json_dir):
   with open(json_dir) as json_file:
     data_index = json.load(json_file)
@@ -101,6 +99,7 @@ def only_tumor_files(json_dir):
   
   return(image_files,label_files)
 
+# get_original_dataset() returns a dataset without any sampling method
 def get_original_dataset(json_dir, test):
     with open(json_dir) as json_file:
         data_index = json.load(json_file)
@@ -122,10 +121,8 @@ def get_original_dataset(json_dir, test):
     return(image_files, label_files)
 
 # dataset class for primary colon cancer dataset
-
 class ColonDataset(Dataset):
     """Colon Cancer dataset."""
-
     def __init__(self, image_dir, label_dir, json_dir, image_size, torch_transform, balance_dataset=None, test=None):
         """
         Args:

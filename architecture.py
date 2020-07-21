@@ -3,6 +3,7 @@ import torch
 import torch.nn as nn
 from torchsummary import summary
 
+# convolution blocks for contracting path of unet
 def double_conv(in_channels, out_channels):
     return nn.Sequential(
         nn.Conv2d(in_channels, out_channels, 3, padding=1),
@@ -13,6 +14,7 @@ def double_conv(in_channels, out_channels):
         nn.ReLU(inplace=True)
     )
 
+# convolution blocks for expansive path of unet
 def double_conv_up(in_channels, out_channels):
     return nn.Sequential(
         nn.Conv2d(in_channels, out_channels, 3, padding=1),
@@ -21,6 +23,7 @@ def double_conv_up(in_channels, out_channels):
         nn.ReLU(inplace=True),
     )
 
+# Unet architecture
 class UNet(nn.Module):
     def __init__(self, n_channel, n_class):
         super().__init__()
@@ -40,8 +43,7 @@ class UNet(nn.Module):
         self.dconv_up1 = double_conv_up(128 + 64, 64)
         
         self.conv_last = nn.Conv2d(64, n_class, 1)
-        
-        
+                
     def forward(self, x):
         conv1 = self.dconv_down1(x)
         x = self.maxpool(conv1)
@@ -75,12 +77,14 @@ class UNet(nn.Module):
         
         return out
 
+# convolution blocks for resnetunet
 def convrelu(in_channels, out_channels, kernel, padding):
     return nn.Sequential(
         nn.Conv2d(in_channels, out_channels, kernel, padding=padding),
         nn.ReLU(inplace=True),
     )
 
+# ResNetUnet architecture
 class ResNetUNet(nn.Module):
     def __init__(self, base_model, n_class):
         super().__init__()
