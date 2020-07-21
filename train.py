@@ -122,7 +122,7 @@ def train_model(model, optimizer, scheduler, device, num_epochs, dataloaders, in
             num_epochs: a number of epochs
             dataloaders: a data loader
             info: a dictionary to save metrics
-            fine_tune: If True, the fine tuning phase starts after first training.
+            fine_tune: If True, it saved metrics of the fine tuning phase
 
         Return:
             model: A trained model
@@ -301,7 +301,7 @@ def main(args):
     print('----------------------------------------------------------------')
 
     # specify optimizer function
-    optimizer_ft = SGD(filter(lambda p: p.requires_grad, model.parameters()), lr=args.lr, momentum=0.9)
+    optimizer = SGD(filter(lambda p: p.requires_grad, model.parameters()), lr=args.lr, momentum=0.9)
 
     # initialise learning rate scheduler
     scheduler = lr_scheduler.ReduceLROnPlateau(optimizer_ft, 'min', threshold_mode='abs', min_lr=1e-8, factor=0.1, patience=args.sched_patience)
@@ -319,17 +319,21 @@ def main(args):
                 param.requires_grad = False
 
     # train starts
-    model, metric_t, metric_v = train_model(model, optimizer_ft, scheduler, device, args.epochs, colon_dataloader, info_train)
+    model, metric_t, metric_v = train_model(model, optimizer, scheduler, device, args.epochs, colon_dataloader, info_train)
     
     # for fine tuning restnetunet model
     if args.model == 'resnetunet':
         print('----------------------------------------------------------------')
-        print("Fine Tuning of ResNet starts ...")
+        print("Fine Tuning of ResNetUnet starts ...")
         print('----------------------------------------------------------------')
         for l in model.base_layers:
             for param in l.parameters():
                 param.requires_grad = True
-        model, metric_ft, metric_fv = train_model(model, optimizer_ft, scheduler, device, int(args.epochs/5), colon_dataloader, info_train, True)
+        # specify optimizer function
+        optimizer_ft = SGD(filter(lambda p: p.requires_grad, model.parameters()), lr=args.lr*0.01, momentum=0.9)
+        # initialise learning rate scheduler
+        scheduler_ft = lr_scheduler.ReduceLROnPlateau(optimizer_ft, 'min', threshold_mode='abs', min_lr=1e-8, factor=0.1, patience=args.sched_patience)
+        model, metric_ft, metric_fv = train_model(model, optimizer_ft, scheduler_ft, device, int(args.epochs/4), colon_dataloader, info_train, True)
     
     # create json file from save information about the model, dataset, and metrics.
     with open(f"{args.metric_path}best_metric_{args.model}_{args.dataset_type}_{args.epochs}.json", "w") as json_file:

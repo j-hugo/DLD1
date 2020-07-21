@@ -17,21 +17,33 @@ def dir_path(string):
         raise NotADirectoryError(string)
 
 def convert_to_npy(args):
+    """
+        Convert nitfi image files to numpy files
+
+        Args:
+            args: arguments from the parser. 
+
+    """
+    # load a path of image files and sort them
     train_data_path = os.path.join(args.datapath, 'imagesTr')
     label_data_path = os.path.join(args.datapath, 'labelsTr')
     images = sorted(os.listdir(train_data_path))
     labels = sorted(os.listdir(label_data_path))
 
+    # set the location to converted image files
     image_saved_path =args.path +'npy_images/'
     
+    # create a directory of the converted image files
     try:
         os.mkdir(image_saved_path)
     except OSError:
         print ("Creation of the directory %s failed" % image_saved_path)
     else:
         print ("Successfully created the directory %s " % image_saved_path)
-        
+
+    # set the location to converted label files
     label_saved_path = args.path + 'npy_labels/'
+    # create a directory of the converted label files
     try:
         os.mkdir(label_saved_path)
     except OSError:
@@ -42,7 +54,7 @@ def convert_to_npy(args):
     data_index = {}
 
     for img, label in zip(images,labels):
-        # Load 3D training image
+        # Load 3D CT images
         image_number = str(''.join(filter(str.isdigit, img))).zfill(3)
         training_image = nibabel.load(os.path.join(train_data_path, img))
         training_label = nibabel.load(os.path.join(label_data_path, label))
@@ -75,6 +87,15 @@ def convert_to_npy(args):
         json.dump(data_index,json_file)
 
 def create_data_subsets(args):
+    """
+        Split the data for test and train. 
+        You can choose how to split the data by examples(patients) or by slices.
+        It saved as json file and the json file is used one of arguments of ConlonDataset on dataset.py
+
+        Args:
+            args: arguments from the parser. 
+
+    """
     data_index_file = args.path+"data_index.json"
     
     with open(data_index_file) as json_file:

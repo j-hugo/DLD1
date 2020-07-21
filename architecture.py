@@ -27,6 +27,10 @@ def double_conv_up(in_channels, out_channels):
 
 # Unet architecture
 class UNet(nn.Module):
+    """
+    A unet architecture implementation
+    http://lmb.informatik.uni-freiburg.de/Publications/2015/RFB15a
+    """
     def __init__(self, n_channel, n_class):
         super().__init__()
                 
