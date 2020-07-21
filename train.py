@@ -196,8 +196,7 @@ def main(args):
     print(f"The number of train set: {len(colon_dataloader['train'])*args.train_batch}")
     print(f"The number of valid set: {len(colon_dataloader['val'])*args.valid_batch}")
     print('----------------------------------------------------------------')
-    # to freeze weights of pretrained resnet layers
-    
+
     optimizer_ft = SGD(filter(lambda p: p.requires_grad, model.parameters()), lr=args.lr, momentum=0.9)
     scheduler = lr_scheduler.ReduceLROnPlateau(optimizer_ft, 'min', threshold_mode='abs', min_lr=1e-8, factor=0.5, patience=args.sched_patience)
     if args.load:
@@ -210,7 +209,6 @@ def main(args):
 
     model, metric_t, metric_v = train_model(model, optimizer_ft, scheduler, device, args.epochs, colon_dataloader)
     
-
     if args.model == 'resnetunet':
         print('----------------------------------------------------------------')
         print(f"Fine Tuning starts ...")
@@ -218,7 +216,7 @@ def main(args):
         for l in model.base_layers:
             for param in l.parameters():
                 param.requires_grad = True
-        model, metric_t, metric_v = train_model(model, optimizer_ft, scheduler, device, int(args.epochs/5), colon_dataloader)
+        model, metric_ft, metric_fv = train_model(model, optimizer_ft, scheduler, device, int(args.epochs/5), colon_dataloader)
     
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
