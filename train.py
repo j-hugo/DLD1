@@ -76,7 +76,7 @@ class EarlyStopping:
                 self.early_stop = True
         else:
             self.best_val_loss = val_loss
-            self.save_checkpoint(val_loss, model)
+            self.save_checkpoint(val_loss, model, optimizer)
             self.counter = 0
 
     def save_checkpoint(self, val_loss, model, optimizer):
