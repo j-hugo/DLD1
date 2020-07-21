@@ -180,7 +180,7 @@ def main(args):
     print('----------------------------------------------------------------')
     result = test_model(model, device, colon_dataloader, args.plot_path, info_test)
     
-    with open(f"{args.weights}best_metric_{args.model}_{args.metric_dataset_type}_{args.epochs}.json", 'ab+') as f:
+    with open(f"{args.metric_path}best_metric_{args.model}_{args.metric_dataset_type}_{args.epochs}.json", 'ab+') as f:
         f.seek(0,2)                                #Go to the end of file    
         if f.tell() == 0 :                         #Check if file is empty
             f.write(json.dumps(info_test, indent=4).encode())  #If empty, write an array
@@ -202,9 +202,6 @@ if __name__ == "__main__":
         help="number of epochs to train (default: 100)",
     )
     parser.add_argument(
-        "--weights", type=str, default="./weights/", help="folder to save weights"
-    )
-    parser.add_argument(
         "--device",
         type=str,
         default="cuda:0",
@@ -217,7 +214,11 @@ if __name__ == "__main__":
         help="number of workers for data loading (default: 4)",
     )
     parser.add_argument(
-        "--model-path", type=str, default="./weights/", help="folder to save weights"
+        "--model-path", type=str, default="./save/models/", help="folder to load model"
+    )
+    parser.add_argument(
+        "--metric-path", type=str, default="./save/metrics/",
+        help="to save metrics result"
     )
     parser.add_argument(
         "--plot-path", type=str, default="./eval_plot/", help="folder to save eval plots"
@@ -253,10 +254,6 @@ if __name__ == "__main__":
     parser.add_argument(
         "--savemetrics", type=bool, default=False,
         help="save test metrics to json"
-    )
-    parser.add_argument(
-        "--savemetricspath", type=str, default="./metrics/",
-        help="metrics json dir"
     )
     args = parser.parse_args()
     main(args)

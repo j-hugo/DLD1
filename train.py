@@ -20,7 +20,8 @@ from torch.optim import lr_scheduler, SGD
 import json
 
 def makedirs(args):
-    os.makedirs(args.weights, exist_ok=True)
+    os.makedirs(args.model_path, exist_ok=True)
+    os.makedirs(args.metric_path, exist_ok=True)
 
 def load_datasets(args):
     dataset = ColonDataset(
@@ -84,7 +85,7 @@ class EarlyStopping:
             print(f'Validation loss decreased ({self.val_loss_min:.6f} --> {val_loss:.6f}).  Saving best model ...')
         torch.save({'model_state_dict':model.state_dict(),
                     'optimizer_state_dict': optimizer.state_dict()}, 
-                    f"{args.weights}best_metric_{args.model}_{args.dataset_type}_{args.epochs}.pth")
+                    f"{args.model_path}best_metric_{args.model}_{args.dataset_type}_{args.epochs}.pth")
         self.val_loss_min = val_loss
 
 def train_model(model, optimizer, scheduler, device, num_epochs, dataloaders, info, fine_tune=False):
@@ -247,7 +248,7 @@ def main(args):
     scheduler = lr_scheduler.ReduceLROnPlateau(optimizer_ft, 'min', threshold_mode='abs', min_lr=1e-8, factor=0.1, patience=args.sched_patience)
 
     if args.load:
-        checkpoint = torch.load(f"{args.weights}best_metric_{args.model}_{args.dataset_type}_{args.epochs}.pth")
+        checkpoint = torch.load(f"{args.model_path}best_metric_{args.model}_{args.dataset_type}_{args.epochs}.pth")
         model.load_state_dict(checkpoint['model_state_dict'])
         optimizer_ft.load_state_dict(checkpoint['optimizer_state_dict'])
     
@@ -267,7 +268,7 @@ def main(args):
                 param.requires_grad = True
         model, metric_ft, metric_fv = train_model(model, optimizer_ft, scheduler, device, int(args.epochs/5), colon_dataloader, info_train, True)
     
-    with open(f"{args.weights}best_metric_{args.model}_{args.dataset_type}_{args.epochs}.json", "w") as json_file:
+    with open(f"{args.metric_path}best_metric_{args.model}_{args.dataset_type}_{args.epochs}.json", "w") as json_file:
         json.dump(info, json_file, indent=4)
 
 if __name__ == "__main__":
@@ -305,7 +306,11 @@ if __name__ == "__main__":
         help="number of workers for data loading (default: 4)",
     )
     parser.add_argument(
-        "--weights", type=str, default="./weights/", help="folder to save weights"
+        "--model-path", type=str, default="./save/models/", help="folder to save model"
+    )
+    parser.add_argument(
+        "--metric-path", type=str, default="./save/metrics/",
+        help="to save metrics result"
     )
     parser.add_argument(
         "--image-size",
