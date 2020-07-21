@@ -52,31 +52,28 @@ class EarlyStopping:
         """
         Args:
             patience (int): How long to wait after last time validation loss improved.
-                            Default: 7
             verbose (bool): If True, prints a message for each validation loss improvement. 
                             Default: False
         """
         self.patience = patience
         self.verbose = verbose
         self.counter = 0
-        self.best_score = None
+        self.best_val_loss = None
         self.early_stop = False
         self.val_loss_min = np.Inf
 
     def __call__(self, val_loss, model):
 
-        score = -val_loss
-
-        if self.best_score is None:
-            self.best_score = score
+        if self.best_val_loss is None:
+            self.best_val_loss = val_loss
             self.save_checkpoint(val_loss, model)
-        elif score < self.best_score:
+        elif val_loss > self.best_val_loss:
             self.counter += 1
             print(f'EarlyStopping counter: {self.counter} out of {self.patience}')
             if self.counter >= self.patience:
                 self.early_stop = True
         else:
-            self.best_score = score
+            self.best_val_loss = val_loss
             self.save_checkpoint(val_loss, model)
             self.counter = 0
 
@@ -85,7 +82,7 @@ class EarlyStopping:
         if self.verbose:
             print(f'Validation loss decreased ({self.val_loss_min:.6f} --> {val_loss:.6f}).  Saving best model ...')
         torch.save({'model_state_dict':model.state_dict(),
-                    'epoch':epoch}, f"{args.weights}best_metric_model_{args.model}_{args.dataset_type}_{args.epochs}.pth")
+                    'epoch':epoch}, f"{args.weights}best_metric_model_{args.model}_{args.dataset_type}_{args.epochs}.pth") # https://pytorch.org/tutorials/beginner/saving_loading_models.html#saving-loading-a-general-checkpoint-for-inference-and-or-resuming-training
         self.val_loss_min = val_loss
 
 def train_model(model, optimizer, scheduler, device, num_epochs, dataloaders):
@@ -102,7 +99,7 @@ def train_model(model, optimizer, scheduler, device, num_epochs, dataloaders):
     early_stopping = EarlyStopping(patience=args.earlystop, verbose=True)
 
     for epoch in range(num_epochs):
-        print('Epoch {}/{}'.format(epoch, num_epochs - 1))
+        print('Epoch {}/{}'.format(epoch+1, num_epochs))
         print('-' * 10)
         since = time.time()
         # Each epoch has a training and validation phase
@@ -138,45 +135,57 @@ def train_model(model, optimizer, scheduler, device, num_epochs, dataloaders):
 
             print_metrics(metrics, epoch_samples, phase)
             epoch_loss = metrics['loss'] / epoch_samples
-            writer.add_scalar('Loss(BCE+Dice)/train', epoch_loss, epoch)
-            writer.add_scalar('Dice Loss/train', metrics['dice_loss']/ epoch_samples, epoch)
-            writer.add_scalar('BCE/train', metrics['bce']/ epoch_samples, epoch)
+
             if phase == 'train':
+                # save training metrics for tensorboard
+                writer.add_scalar('Loss(BCE+Dice)/train', epoch_loss, epoch)
+                writer.add_scalar('Dice Loss/train', metrics['dice_loss']/ epoch_samples, epoch)
+                writer.add_scalar('BCE/train', metrics['bce']/ epoch_samples, epoch)
+
+                # save training metrics for later use ;)
                 epoch_train_loss.append(metrics['loss']/ epoch_samples)
                 epoch_train_bce.append(metrics['bce']/ epoch_samples)
                 epoch_train_dice_loss.append(metrics['dice_loss']/ epoch_samples)
+
             elif phase == 'val':
+                # save validation metrics for tensorboard
+                writer.add_scalar('learning_rate', optimizer.param_groups[0]['lr'], epoch) # to plot LR reduction
+                writer.add_scalar('Loss(BCE+Dice)/valid', metrics['loss'] / epoch_samples, epoch)
+                writer.add_scalar('Dice Loss/valid', metrics['dice_loss'] / epoch_samples, epoch)
+                writer.add_scalar('BCE/valid', metrics['bce'] / epoch_samples, epoch)
+
+                # save validation metrics for later use
                 epoch_valid_loss.append(metrics['loss']/ epoch_samples)
                 epoch_valid_bce.append(metrics['bce']/ epoch_samples)
                 epoch_valid_dice_loss.append(metrics['dice_loss']/ epoch_samples)
-                scheduler.step(epoch_loss)
-                for tag, value in model.named_parameters():
-                    tag = tag.replace('.', '/')
-                    writer.add_histogram('weights/' + tag, value.data.cpu().numpy(), epoch)
-                    #if args.freeze != True:
-                    #    writer.add_histogram('grads/' + tag, value.grad.data.cpu().numpy(), epoch)
-                writer.add_scalar('learning_rate', optimizer.param_groups[0]['lr'], epoch)
-                writer.add_scalar('Loss(BCE+Dice)/valid', metrics['loss']/ epoch_samples, epoch)
-                writer.add_scalar('Dice Loss/valid', metrics['dice_loss']/ epoch_samples, epoch)
-                writer.add_scalar('BCE/valid', metrics['bce']/ epoch_samples, epoch)
-                early_stopping(epoch_loss, model)
-            # deep copy the model
-            if phase == 'val' and epoch_loss < best_loss:
-                best_loss = epoch_loss
-                best_model_wts = copy.deepcopy(model.state_dict())
-        time_elapsed = time.time() - since
+
+                scheduler.step(epoch_loss) # pass loss to ReduceLROnPlateau scheduler
+
+                early_stopping(epoch_loss, model) #  evaluate early stopping criterion
+
+                # deep copy the model
+                if epoch_loss < best_loss:
+                    best_loss = epoch_loss
+                    best_model_wts = copy.deepcopy(model.state_dict())
+
+        time_elapsed = time.time() - since # compute time of epoch
         print('{:.0f}m {:.0f}s'.format(time_elapsed // 60, time_elapsed % 60))
 
         if early_stopping.early_stop:
-            print("Early stopping")
+            print(f"Early stopping after epoch {epoch}")
             break   
         
     print('Best val loss: {:4f}'.format(best_loss))
+
+    # collect all metrics
     metric_train = (epoch_train_loss, epoch_train_bce, epoch_train_dice_loss)
     metric_valid = (epoch_valid_loss, epoch_valid_bce, epoch_valid_dice_loss)
-    # load best model weights
+
+    # load best model weights (necessary for fine tuning of ResNet-UNet)
     model.load_state_dict(best_model_wts)
-    writer.close()
+
+    writer.close() # end tensorboard writing
+
     return model, metric_train, metric_valid
 
 def main(args):
@@ -203,8 +212,12 @@ def main(args):
     print(f"The number of valid set: {len(colon_dataloader['val'])*args.valid_batch}")
     print('----------------------------------------------------------------')
 
+    # specify optimizer function
     optimizer_ft = SGD(filter(lambda p: p.requires_grad, model.parameters()), lr=args.lr, momentum=0.9)
-    scheduler = lr_scheduler.ReduceLROnPlateau(optimizer_ft, 'min', threshold_mode='abs', min_lr=1e-8, factor=0.5, patience=args.sched_patience)
+
+    # initialise learning rate scheduler
+    scheduler = lr_scheduler.ReduceLROnPlateau(optimizer_ft, 'min', threshold_mode='abs', min_lr=1e-8, factor=0.1, patience=args.sched_patience)
+
     if args.load:
         model.load_state_dict(torch.load(f"{args.weights}best_metric_model_{args.model}_{args.dataset_type}_{args.epochs}.pth")) 
     
@@ -217,7 +230,7 @@ def main(args):
     
     if args.model == 'resnetunet':
         print('----------------------------------------------------------------')
-        print(f"Fine Tuning starts ...")
+        print("Fine Tuning of ResNet starts ...")
         print('----------------------------------------------------------------')
         for l in model.base_layers:
             for param in l.parameters():
@@ -232,24 +245,24 @@ if __name__ == "__main__":
         "--train-batch",
         type=int,
         default=12,
-        help="input batch size for train (default: 16)",
+        help="input batch size for train (default: 12)",
     )
     parser.add_argument(
         "--valid-batch",
         type=int,
         default=12,
-        help="input batch size for valid (default: 16)",
+        help="input batch size for valid (default: 12)",
     )
     parser.add_argument(
         "--epochs",
         type=int,
-        default=300,
-        help="number of epochs to train (default: 300)",
+        default=200,
+        help="number of epochs to train (default: 200)",
     )
     parser.add_argument(
         "--lr",
         type=float,
-        default=0.003,
+        default=0.001,
         help="initial learning rate (default: 0.001)",
     )
     parser.add_argument(
@@ -290,25 +303,16 @@ if __name__ == "__main__":
         "--split-ratio", type=float, default=0.9, help="the ratio to split the dataset into training and valid"
     )
     parser.add_argument(
-        "--shuffle", type=bool, default=True, help="shuffle the datset or not"
-    )
-    parser.add_argument(
-        "--num-class", type=int, default=1, help="the number of class for image segmentation"
-    )
-    parser.add_argument(
-        "--num-channel", type=int, default=1, help="the number of channel of the image"
-    )
-    parser.add_argument(
         "--load", type=bool, default=False, help="continute training from the best model"
     )
     parser.add_argument(
         "--model", type=str, default='unet', help="choose the model between unet and resnet+unet; UNet-> unet, Resnet+Unet-> resnetunet"
     )
     parser.add_argument(
-        "--earlystop", type=int, default=15, help="the number of patience for early stopping"
+        "--earlystop", type=int, default=30, help="the number of patience for early stopping"
     )
     parser.add_argument(
-        "--sched-patience", type=int, default=5, help="the number of patience for scheduler"
+        "--sched-patience", type=int, default=10, help="the number of patience for scheduler"
     )
     args = parser.parse_args()
     main(args)

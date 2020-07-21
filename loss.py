@@ -10,7 +10,7 @@ def dice_coef(pred, target, smooth = 1.):
     return dice.mean()
 
 
-def calc_loss(pred, target, metrics, bce_weight=2.0, dc_weight=1.0):
+def calc_loss(pred, target, metrics, bce_weight=1.0, dc_weight=1.0):
     bce = F.binary_cross_entropy_with_logits(pred, target)
     pred = torch.sigmoid(pred)
     dice_loss = 1 - dice_coef(pred, target)
