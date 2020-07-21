@@ -1,8 +1,10 @@
-# model architecture class
 import torch
 import torch.nn as nn
 from torchsummary import summary
 
+'''
+The unet and resnetunet architectures are adapted from https://github.com/usuyama/pytorch-unet
+'''
 # convolution blocks for contracting path of unet
 def double_conv(in_channels, out_channels):
     return nn.Sequential(

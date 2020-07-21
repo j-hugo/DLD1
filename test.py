@@ -223,7 +223,7 @@ def makedirs(args):
 
 def main(args):
     makedirs(args)
-    device = torch.device("cpu" if not torch.cuda.is_available() else args.device)
+    device = torch.device("cpu" if not torch.cuda.is_available() else "cuda:0")
     dataset = load_datasets(args)
     colon_dataloader = load_dataloader(dataset)
     # initialize a dictionary to save metrics for evaluation
@@ -269,12 +269,6 @@ if __name__ == "__main__":
         type=int,
         default=200,
         help="number of epochs to train (default: 100)",
-    )
-    parser.add_argument(
-        "--device",
-        type=str,
-        default="cuda:0",
-        help="device for training (default: cuda:0)",
     )
     parser.add_argument(
         "--workers",
