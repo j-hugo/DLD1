@@ -1,5 +1,3 @@
-# instantiates a model, conducts the training and saves the model
-# adapted from https://github.com/mateuszbuda/brain-segmentation-pytorch
 from data_loading import ColonDataset
 
 import argparse
@@ -111,6 +109,7 @@ class EarlyStopping:
                     f"{args.model_path}best_metric_{args.model}_{args.dataset_type}_{args.epochs}.pth")
         self.val_loss_min = val_loss
 
+# adapted from https://github.com/mateuszbuda/brain-segmentation-pytorch
 def train_model(model, optimizer, scheduler, device, num_epochs, dataloaders, info, fine_tune=False):
     """
         Train the model
