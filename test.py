@@ -11,6 +11,7 @@ import os
 from collections import defaultdict
 import matplotlib.pyplot as plt
 import numpy as np
+import json
 
 import torch 
 from torch.utils.data import DataLoader
@@ -52,10 +53,11 @@ def plot_result(img, label, pred, index, path, dice_score):
     plt.savefig(f'{path}eval_plot_{index}.png')
 
 def test_model(model, device, dataloaders, plot_path, info):
-    model.load_state_dict(torch.load(f"{args.model_path}best_metric_{args.model}_{args.metric_dataset_type}_{args.epochs}.pth")) 
+    check = torch.load(f"{args.model_path}best_metric_{args.model}_{args.metric_dataset_type}_{args.epochs}.pth")
+    model.load_state_dict(check['model_state_dict']) 
     test_dice = list()
-    test_tumor_dice = list()
-    test_non_tumor_dice = list()
+    test_cancer_dice = list()
+    test_non_cancer_dice = list()
     print('-' * 10)
     print('The Evaluation Starts ...')
     print('-' * 10)
@@ -64,15 +66,17 @@ def test_model(model, device, dataloaders, plot_path, info):
     model.eval()   # Set model to evaluate mode
     test_metrics = {}
     test_samples = 0
-    test_tumor_samples = 0
-    test_non_tumor_samples = 0
-    gt_tum_pd_tum_ok = 0
-    gt_tum_pd_tum_no = 0
-    gt_tum_pd_no = 0
-    gt_no_pd_tumor = 0
-    gt_no_pd_no = 0
+    test_cancer_samples = 0
+    test_non_cancer_samples = 0
+    gt_c_pd_c_overlap = 0
+    gt_c_pd_c_no_overlap = 0
+    gt_c_pd_no_c = 0
+    gt_n_pd_c = 0
+    gt_n_pd_n = 0
     i = 0
     for inputs, labels in dataloaders['test']:
+        cancer = 'non-cancer'
+        pd = 'non-cancer'
         inputs = inputs.to(device)
         labels = labels.to(device)
         with torch.set_grad_enabled(False):
@@ -87,53 +91,66 @@ def test_model(model, device, dataloaders, plot_path, info):
         #if i % 50 == 0:
         #    plot_result(inputs, labels, preds, i, plot_path, dice_score)
         if number_label_class != 1:
-            test_tumor_dice.append(dice_score)
-            test_tumor_samples += 1
+            cancer = 'cancer'
+            test_cancer_dice.append(dice_score)
+            test_cancer_samples += 1
             if predicted_num_class != 1 and dice_score >= 0.009:
-                gt_tum_pd_tum_ok += 1
+                gt_c_pd_c_overlap += 1
+                pd = 'cancer'
                 #plot_result(inputs, labels, preds, i, plot_path, dice_score)
             elif predicted_num_class == 1:
-                gt_tum_pd_no += 1
+                gt_c_pd_no_c += 1
                 #plot_result(inputs, labels, preds, i, plot_path, dice_score)
             else:
-                gt_tum_pd_tum_no += 1
+                gt_c_pd_c_no_overlap += 1
+                pd = 'cancer'
                 #plot_result(inputs, labels, preds, i, plot_path, dice_score)
         else:
-            test_non_tumor_dice.append(dice_score)
-            test_non_tumor_samples += 1
+            test_non_cancer_dice.append(dice_score)
+            test_non_cancer_samples += 1
             if predicted_num_class == 1:
-                gt_no_pd_no += 1
+                gt_n_pd_n += 1
             if predicted_num_class == 2:
-                gt_no_pd_tumor += 1
+                gt_n_pd_c += 1
         #print(f"The {i} image's dice score is {dice_score}.")
         test_dice.append(dice_score)
+        info['dice_score_each_slice'].append({i: dice_score.item(), "gt": cancer, 'pd': pd})
         test_samples += 1
         i += 1
 
     test_metrics = []
     average_dice_score = sum(test_dice) / test_samples
-    average_tumor_dice_score = sum(test_tumor_dice) / test_tumor_samples
-    average_non_tumor_dice_score = sum(test_non_tumor_dice) / test_non_tumor_samples
+    average_cancer_dice_score = sum(test_cancer_dice) / test_cancer_samples    
+    average_non_cancer_dice_score = sum(test_non_cancer_dice) / test_non_cancer_samples
+
+    info['number of cancer case'] = test_cancer_samples
+    info['number of non-cancer case'] = test_non_cancer_samples
+
+    info['average_dice_score'] = average_dice_score.item()
+    info['average_cancer_dice_score'] = average_cancer_dice_score.item()
+    info['average_non_cancer_dice_score'] = average_non_cancer_dice_score.item()
+
+    info['gt_c_pd_c_overlap'] = gt_c_pd_c_overlap
+    info['gt_c_pd_c_no_overlap'] = gt_c_pd_c_no_overlap
+    info['gt_c_pd_no_c'] = gt_c_pd_no_c
+
+    info['gt_n_pd_n'] = gt_n_pd_n
+    info['gt_n_pd_c'] = gt_n_pd_c
+
     print(f"The total samples: {test_samples}")
     print(f"The average dice score is {average_dice_score}.")
-    print(f"The number of tumor samples: {test_tumor_samples}")
-    print(f"The average dice score of the slices which have tumor is {average_tumor_dice_score}.")
-    print(f"The number of correct cases when the prediction predicts some poriton of the tumor: {gt_tum_pd_tum_ok}")
-    print(f"The number of incorrect cases when the prediction predicts some poriton of the tumor: {gt_tum_pd_tum_no}")
-    print(f"The number of cases when the prediction predicts no tumor but it has tumor: {gt_tum_pd_no}")
-    print(f"The number of non-tumor samples: {test_non_tumor_samples}")
-    print(f"The average dice score of the slices which have non-tumor is {average_non_tumor_dice_score}.")
-    print(f"The number of cases when the prediction predicts no tumor when it has no tumor: {gt_no_pd_no}")
-    print(f"The number of cases when the prediction predicts tumor when it has no tumor: {gt_no_pd_tumor}")
+    print(f"The number of cancer samples: {test_cancer_samples}")
+    print(f"The average dice score of the slices which have cancer is {average_cancer_dice_score}.")
+    print(f"The number of correct cases when the prediction predicts some poriton of the cancer: {gt_c_pd_c_overlap}")
+    print(f"The number of incorrect cases when the prediction predicts some poriton of the cancer: {gt_c_pd_c_no_overlap}")
+    print(f"The number of cases when the prediction predicts no cancer but it has cancer: {gt_c_pd_no_c}")
+    print(f"The number of non-cancer samples: {test_non_cancer_samples}")
+    print(f"The average dice score of the slices which have non-cancer is {average_non_cancer_dice_score}.")
+    print(f"The number of cases when the prediction predicts no cancer when it has no cancer: {gt_n_pd_n}")
+    print(f"The number of cases when the prediction predicts cancer when it has no cancer: {gt_n_pd_c}")
+    
     time_elapsed = time.time() - since
     print('{:.0f}m {:.0f}s'.format(time_elapsed // 60, time_elapsed % 60))
-
-    if args.savemetrics is True:
-        with open("sample_file.json", "r+") as file:
-            data = json.load(file)
-            data.update(test_metrics)
-            file.seek(0)
-            json.dump(data, file)
 
     return test_dice
 
@@ -145,7 +162,13 @@ def main(args):
     device = torch.device("cpu" if not torch.cuda.is_available() else args.device)
     dataset = load_datasets(args)
     colon_dataloader = load_dataloader(dataset)
-    info = {'average_dice_score':0, 'average_tumor_dice_score':0, 'average_non_tumor_dice_score':0}
+    info_test = {'test set size':0, 'average_dice_score':0, \
+                 'number of cancer case': 0, 'average_cancer_dice_score':0, \
+                 'number of non-cancer case': 0, 'average_non_cancer_dice_score':0, \
+                 'gt_c_pd_c_overlap':0, 'gt_c_pd_c_no_overlap':0, 'gt_c_pd_no_c':0, \
+                 'gt_n_pd_n': 0, 'gt_n_pd_c':0, 'dice_score_each_slice':[]}
+    info_test['test set size'] = len(colon_dataloader['test'])
+    
     if args.model == 'unet':
         model = UNet(n_channel=1,n_class=1).to(device)
     elif args.model == 'resnetunet':
@@ -155,17 +178,31 @@ def main(args):
     print('----------------------------------------------------------------')
     print(f"The number of test set: {len(colon_dataloader['test'])}")
     print('----------------------------------------------------------------')
-    result = test_model(model, device, colon_dataloader, args.plot_path, info)
+    result = test_model(model, device, colon_dataloader, args.plot_path, info_test)
+    
+    with open(f"{args.weights}best_metric_{args.model}_{args.metric_dataset_type}_{args.epochs}.json", 'ab+') as f:
+        f.seek(0,2)                                #Go to the end of file    
+        if f.tell() == 0 :                         #Check if file is empty
+            f.write(json.dumps(info_test, indent=4).encode())  #If empty, write an array
+        else:  
+            f.seek(-1,2)           
+            f.truncate() 
+            f.write(', "test": '.encode()) 
+            f.write(json.dumps(info_test, indent=4).encode())    #Dump the dictionary
+            f.write('}'.encode())  
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Testing the model for image segmentation of Colon"
+        description="Testing the model for image segmentation of Colon cancer"
     )
     parser.add_argument(
         "--epochs",
         type=int,
         default=300,
         help="number of epochs to train (default: 100)",
+    )
+    parser.add_argument(
+        "--weights", type=str, default="./weights/", help="folder to save weights"
     )
     parser.add_argument(
         "--device",
@@ -206,9 +243,9 @@ if __name__ == "__main__":
     parser.add_argument(
         "--metric-dataset-type", type=str, default=None, help="choose what type of dataset you need for loading best metric; \
         None=original dataset, \
-        undersample=adjust to the number of non tumor images to the number of tumor images, \
-        oversample=adjust to the number of tumor images to the number of non-tumor data, \
-        only_tumor=take only images which have tumor"
+        undersample=adjust to the number of non cancer images to the number of cancer images, \
+        oversample=adjust to the number of cancer images to the number of non-cancer data, \
+        only_tumor=take only images which have cancer"
     )
     parser.add_argument(
         "--model", type=str, default='unet', help="choose the model between unet and resnet+unet; UNet-> unet, Resnet+Unet-> resnetunet"

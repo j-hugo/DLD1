@@ -175,10 +175,12 @@ def train_model(model, optimizer, scheduler, device, num_epochs, dataloaders, in
         if early_stopping.early_stop:
             print(f"Early stopping after epoch {epoch}")
             if fine_tune == False:
+                info['early stop'] = 'True'
                 info['stopping LR'] = optimizer.param_groups[0]['lr']
                 info['stopping epoch'] = epoch+1
                 info['best loss'] = best_loss
             else:
+                info['fine_tune_early stop'] = 'True'
                 info['fine_tune_stopping LR'] = optimizer.param_groups[0]['lr']
                 info['fine_tune_stopping epoch'] = epoch+1
                 info['fine_tune_best loss'] = best_loss
@@ -186,10 +188,12 @@ def train_model(model, optimizer, scheduler, device, num_epochs, dataloaders, in
 
     if early_stopping.early_stop != True:
         if fine_tune == False:
+            info['early stop'] = 'False'
             info['stopping LR'] = optimizer.param_groups[0]['lr']
             info['stopping epoch'] = num_epochs
             info['best loss'] = best_loss
         else:
+            info['fine_tune_early stop'] = 'False'
             info['fine_tune_stopping LR'] = optimizer.param_groups[0]['lr']
             info['fine_tune_stopping epoch'] = num_epochs
             info['fine_tune_best loss'] = best_loss
@@ -210,14 +214,16 @@ def train_model(model, optimizer, scheduler, device, num_epochs, dataloaders, in
 def main(args):
     makedirs(args) # create necessary directories
     device = torch.device("cpu" if not torch.cuda.is_available() else "cuda:0") # set device to GPU if available
-    info_train = {}
+    info = {'train': {}}
     train, valid = load_datasets(args) # get train and val dataset
     colon_dataloader = load_dataloader(args, train, valid)
-
+    info_train = info['train']
     info_train['model'] = args.model
     info_train['dataset'] = args.dataset_type
     info_train['image_size'] = args.image_size
-
+    info_train['train set size'] = len(train)
+    info_train['val set size'] = len(valid)
+    
     if args.model == 'unet':
         model = UNet(n_channel=1, n_class=1).to(device)
     elif args.model == 'resnetunet':
@@ -230,8 +236,8 @@ def main(args):
     else:
         summary(model, input_size=(1, args.image_size, args.image_size))
     print('----------------------------------------------------------------')
-    print(f"The number of train set: {len(colon_dataloader['train'])*args.train_batch}")
-    print(f"The number of valid set: {len(colon_dataloader['val'])*args.valid_batch}")
+    print(f"The number of train set: {len(train)}")
+    print(f"The number of valid set: {len(valid)}")
     print('----------------------------------------------------------------')
 
     # specify optimizer function
@@ -262,11 +268,11 @@ def main(args):
         model, metric_ft, metric_fv = train_model(model, optimizer_ft, scheduler, device, int(args.epochs/5), colon_dataloader, info_train, True)
     
     with open(f"{args.weights}best_metric_{args.model}_{args.dataset_type}_{args.epochs}.json", "w") as json_file:
-        json.dump(info_train, json_file)
+        json.dump(info, json_file, indent=4)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Training the model for image segmentation of Colon"
+        description="Training the model for image segmentation of Colon cancer"
     )
     parser.add_argument(
         "--train-batch",
@@ -322,9 +328,9 @@ if __name__ == "__main__":
     parser.add_argument(
         "--dataset-type", type=str, default=None, help="choose what type of dataset you need; \
         None=original dataset, \
-        undersample=adjust to the number of non tumor images to the number of tumor images, \
-        oversample=adjust to the number of tumor images to the number of non-tumor data, \
-        only_tumor=take only images which have tumor"
+        undersample=adjust to the number of non cancer images to the number of tumor images, \
+        oversample=adjust to the number of cancer images to the number of non-cancer data, \
+        only_tumor=take only images which have cancer"
     )
     parser.add_argument(
         "--split-ratio", type=float, default=0.9, help="the ratio to split the dataset into training and valid"
