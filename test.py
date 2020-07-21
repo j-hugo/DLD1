@@ -20,6 +20,12 @@ from torchvision import models
 
 
 def load_datasets(args):
+    """load the dataset for evaluation   
+
+    Args:
+        args: arguments from the parser.
+        
+    """
     dataset = ColonDataset(
         image_dir=args.testimages,
         label_dir=args.testlabels,
@@ -31,12 +37,32 @@ def load_datasets(args):
     return dataset
 
 def load_dataloader(dataset):
+    """load a dataloader using a dataset (ColonDataset)
+
+    Args:
+        dataset: a dataset to create a data loader
+
+    Return:
+        dataloader: a dataloader for evaluation 
+    """
     dataloader = {
        'test': DataLoader(dataset, shuffle=False, batch_size=1)
     }
     return dataloader
 
 def plot_result(img, label, pred, index, path, dice_score):
+    """Create a plot to compare original image, ground truth, and prediction
+       Save the created plot
+
+    Args:
+        img: a CT image
+        label: a groundtruth 
+        pred: a prediction from the model
+        index: the index of the image
+        path: a path to save the created image
+        dice_score: a dice score of the prediction
+
+    """
     img = img.cpu()
     result = pred.cpu()
     label = label.cpu()
@@ -52,19 +78,41 @@ def plot_result(img, label, pred, index, path, dice_score):
     ax3.imshow(result[0][0][:, :])
     plt.savefig(f'{path}eval_plot_{index}.png')
 
+
 def test_model(model, device, dataloaders, plot_path, info):
+    """
+        Evaluate the model
+
+        Args:
+            model: A neural netowrk model for evaluation
+            device: gpu or cpu
+            dataloaders: a data loader
+            plot_path: a path to save plotting image files
+            info: a dictionary to save metrics of evaluation
+        
+        Return:
+            test_dice: the average dice score of the evaluation
+        """
+    # load the trained model
     check = torch.load(f"{args.model_path}best_metric_{args.model}_{args.metric_dataset_type}_{args.epochs}.pth")
     model.load_state_dict(check['model_state_dict']) 
+    
+    # initialize to save dice scores
     test_dice = list()
     test_cancer_dice = list()
     test_non_cancer_dice = list()
+    
     print('-' * 10)
     print('The Evaluation Starts ...')
     print('-' * 10)
     since = time.time()
     # Test Phase
     model.eval()   # Set model to evaluate mode
+    
+    # initilize dictionary to save metrics for evaluation
     test_metrics = {}
+    
+    # initilize variables to save metrics for evaluation
     test_samples = 0
     test_cancer_samples = 0
     test_non_cancer_samples = 0
@@ -73,14 +121,18 @@ def test_model(model, device, dataloaders, plot_path, info):
     gt_c_pd_no_c = 0
     gt_n_pd_c = 0
     gt_n_pd_n = 0
+
+    # to count images
     i = 0
-    for inputs, labels in dataloaders['test']:
+
+    # load image and label
+    for images, labels in dataloaders['test']:
         cancer = 'non-cancer'
         pd = 'non-cancer'
-        inputs = inputs.to(device)
+        images = images.to(device)
         labels = labels.to(device)
         with torch.set_grad_enabled(False):
-            outputs = model(inputs)
+            outputs = model(images)
             preds = torch.sigmoid(outputs)
             preds = torch.round(preds)
             dice_score = dice_coef(preds, labels)
@@ -90,10 +142,13 @@ def test_model(model, device, dataloaders, plot_path, info):
         #    plot_result(inputs, labels, preds, i, plot_path, dice_score)
         #if i % 50 == 0:
         #    plot_result(inputs, labels, preds, i, plot_path, dice_score)
+        
+        # check the image has cancer
         if number_label_class != 1:
             cancer = 'cancer'
             test_cancer_dice.append(dice_score)
             test_cancer_samples += 1
+            # check the prediction has cancer and save some metrics
             if predicted_num_class != 1 and dice_score >= 0.009:
                 gt_c_pd_c_overlap += 1
                 pd = 'cancer'
@@ -114,15 +169,17 @@ def test_model(model, device, dataloaders, plot_path, info):
                 gt_n_pd_c += 1
         #print(f"The {i} image's dice score is {dice_score}.")
         test_dice.append(dice_score)
+        # save dice score, ground truth, and prediction for each slice 
         info['dice_score_each_slice'].append({i: dice_score.item(), "gt": cancer, 'pd': pd})
         test_samples += 1
         i += 1
 
-    test_metrics = []
+    # calculate average dice score for the test set
     average_dice_score = sum(test_dice) / test_samples
     average_cancer_dice_score = sum(test_cancer_dice) / test_cancer_samples    
     average_non_cancer_dice_score = sum(test_non_cancer_dice) / test_non_cancer_samples
 
+    # save metrics to the info
     info['number of cancer case'] = test_cancer_samples
     info['number of non-cancer case'] = test_non_cancer_samples
 
@@ -137,6 +194,7 @@ def test_model(model, device, dataloaders, plot_path, info):
     info['gt_n_pd_n'] = gt_n_pd_n
     info['gt_n_pd_c'] = gt_n_pd_c
 
+    # print all the results of evaluation
     print(f"The total samples: {test_samples}")
     print(f"The average dice score is {average_dice_score}.")
     print(f"The number of cancer samples: {test_cancer_samples}")
@@ -155,6 +213,12 @@ def test_model(model, device, dataloaders, plot_path, info):
     return test_dice
 
 def makedirs(args):
+    """create directories to save plots  
+
+    Args:
+        args: arguments from the parser.
+        
+    """
     os.makedirs(args.plot_path, exist_ok=True)
 
 def main(args):
@@ -162,6 +226,7 @@ def main(args):
     device = torch.device("cpu" if not torch.cuda.is_available() else args.device)
     dataset = load_datasets(args)
     colon_dataloader = load_dataloader(dataset)
+    # initialize a dictionary to save metrics for evaluation
     info_test = {'test set size':0, 'average_dice_score':0, \
                  'number of cancer case': 0, 'average_cancer_dice_score':0, \
                  'number of non-cancer case': 0, 'average_non_cancer_dice_score':0, \
@@ -169,6 +234,7 @@ def main(args):
                  'gt_n_pd_n': 0, 'gt_n_pd_c':0, 'dice_score_each_slice':[]}
     info_test['test set size'] = len(colon_dataloader['test'])
     
+    # initialize the model for evaluation
     if args.model == 'unet':
         model = UNet(n_channel=1,n_class=1).to(device)
     elif args.model == 'resnetunet':
@@ -178,8 +244,11 @@ def main(args):
     print('----------------------------------------------------------------')
     print(f"The number of test set: {len(colon_dataloader['test'])}")
     print('----------------------------------------------------------------')
+    
+    # starts evaluation of the model
     result = test_model(model, device, colon_dataloader, args.plot_path, info_test)
     
+    # save the result from the evalutaion
     with open(f"{args.metric_path}best_metric_{args.model}_{args.metric_dataset_type}_{args.epochs}.json", 'ab+') as f:
         f.seek(0,2)                                #Go to the end of file    
         if f.tell() == 0 :                         #Check if file is empty

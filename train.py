@@ -30,11 +30,14 @@ def makedirs(args):
     os.makedirs(args.metric_path, exist_ok=True)
 
 def load_datasets(args):
-    """load the dataset and split the dataset into train and validation set   
+    """load the dataset (ColonDataset) and split the dataset into train and validation set   
 
     Args:
         args: arguments from the parser.
         
+    Return:
+        train_dataset: a dataset for training
+        val_dataset: a dataset for validation
     """
     dataset = ColonDataset(
         image_dir=args.trainimages,
@@ -52,13 +55,15 @@ def load_datasets(args):
     return train_dataset, val_dataset
 
 def load_dataloader(args, train, valid):
-    """load a dataloader using train dataset and validation dataset  
+    """load a dataloader using train dataset and validation dataset (ColonDataset)
 
     Args:
         args: the object which store arguments from the parser
         train: train dataset (ColonDataset)
         valid: validation dataset (ColonDataset)
         
+    Return:
+        dataloader: a dataloader for training 
     """
     dataloader = {
        'train': DataLoader(train, shuffle=True, batch_size=args.train_batch, num_workers=4),
@@ -124,7 +129,7 @@ def train_model(model, optimizer, scheduler, device, num_epochs, dataloaders, in
             model: A trained model
             metric_train: Metrics from training phase
             metric_valid: Metrics from validation phase
-        """
+    """
     best_model_wts = copy.deepcopy(model.state_dict())
     best_loss = 1e10
 
