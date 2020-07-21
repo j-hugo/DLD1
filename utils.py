@@ -1,6 +1,7 @@
 # utility functions such as statistics
 
 import json
+import argparse
 
 
 def get_subset_stats(json_path):
@@ -23,7 +24,7 @@ if __name__ == "__main__":
         description="Training the model for image segmentation of Colon"
     )
     parser.add_argument(
-        "--function",
+        "--method",
         type=str,
         default=None,
         help="util function to be executed",
