@@ -23,12 +23,8 @@ def load_datasets(args):
         image_dir=args.testimages,
         label_dir=args.testlabels,
         json_dir=args.jsonfile,
-        #image_dir=args.trainimages,
-        #label_dir=args.trainlabels,
-        #csv_dir=args.traincsv,
         image_size=args.image_size,
         torch_transform=args.transform,
-        balance_dataset=args.dataset_type,
         test=True
     )
     return dataset
@@ -56,7 +52,7 @@ def plot_result(img, label, pred, index, path, dice_score):
     plt.savefig(f'{path}eval_plot_{index}.png')
 
 def test_model(model, device, dataloaders, plot_path):
-    model.load_state_dict(torch.load(f"{args.weights}best_metric_model_{args.model}_{args.metric_dataset_type}_{args.epochs}.pth")) 
+    model.load_state_dict(torch.load(f"{args.model_path}best_metric_model_{args.model}_{args.metric_dataset_type}_{args.epochs}.pth")) 
     test_dice = list()
     test_tumor_dice = list()
     test_non_tumor_dice = list()
@@ -70,6 +66,11 @@ def test_model(model, device, dataloaders, plot_path):
     test_samples = 0
     test_tumor_samples = 0
     test_non_tumor_samples = 0
+    gt_tum_pd_tum_ok = 0
+    gt_tum_pd_tum_no = 0
+    gt_tum_pd_no = 0
+    gt_no_pd_tumor = 0
+    gt_no_pd_no = 0
     i = 0
     for inputs, labels in dataloaders['test']:
         inputs = inputs.to(device)
@@ -79,16 +80,32 @@ def test_model(model, device, dataloaders, plot_path):
             preds = torch.sigmoid(outputs)
             preds = torch.round(preds)
             dice_score = dice_coef(preds, labels)
+            predicted_num_class = len(torch.unique(preds))
+            number_label_class = len(torch.unique(labels)) 
         #if len(torch.unique(labels)) != 1:
         #    plot_result(inputs, labels, preds, i, plot_path, dice_score)
         #if i % 50 == 0:
         #    plot_result(inputs, labels, preds, i, plot_path, dice_score)
-        if len(torch.unique(labels)) != 1:
+        if number_label_class != 1:
             test_tumor_dice.append(dice_score)
             test_tumor_samples += 1
+            if predicted_num_class != 1 and dice_score >= 0.009:
+                gt_tum_pd_tum_ok += 1
+                save_overlay_img(preds,labels,inputs,i,plot_path)
+                #plot_result(inputs, labels, preds, i, plot_path, dice_score)
+            elif predicted_num_class == 1:
+                gt_tum_pd_no += 1
+                #plot_result(inputs, labels, preds, i, plot_path, dice_score)
+            else:
+                gt_tum_pd_tum_no += 1
+                #plot_result(inputs, labels, preds, i, plot_path, dice_score)
         else:
             test_non_tumor_dice.append(dice_score)
             test_non_tumor_samples += 1
+            if predicted_num_class == 1:
+                gt_no_pd_no += 1
+            if predicted_num_class == 2:
+                gt_no_pd_tumor += 1
         #print(f"The {i} image's dice score is {dice_score}.")
         test_dice.append(dice_score)
         test_samples += 1
@@ -101,8 +118,13 @@ def test_model(model, device, dataloaders, plot_path):
     print(f"The average dice score is {average_dice_score}.")
     print(f"The number of tumor samples: {test_tumor_samples}")
     print(f"The average dice score of the slices which have tumor is {average_tumor_dice_score}.")
+    print(f"The number of correct cases when the prediction predicts some poriton of the tumor: {gt_tum_pd_tum_ok}")
+    print(f"The number of incorrect cases when the prediction predicts some poriton of the tumor: {gt_tum_pd_tum_no}")
+    print(f"The number of cases when the prediction predicts no tumor but it has tumor: {gt_tum_pd_no}")
     print(f"The number of non-tumor samples: {test_non_tumor_samples}")
     print(f"The average dice score of the slices which have non-tumor is {average_non_tumor_dice_score}.")
+    print(f"The number of cases when the prediction predicts no tumor when it has no tumor: {gt_no_pd_no}")
+    print(f"The number of cases when the prediction predicts tumor when it has no tumor: {gt_no_pd_tumor}")
     time_elapsed = time.time() - since
     print('{:.0f}m {:.0f}s'.format(time_elapsed // 60, time_elapsed % 60))
 
@@ -125,7 +147,7 @@ def main(args):
     print('----------------------------------------------------------------')
     print(f"The number of test set: {len(colon_dataloader['test'])}")
     print('----------------------------------------------------------------')
-    result = test_model(model, device, colon_dataloader, args.eval_plot)
+    result = test_model(model, device, colon_dataloader, args.plot_path)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -150,13 +172,10 @@ if __name__ == "__main__":
         help="number of workers for data loading (default: 4)",
     )
     parser.add_argument(
-        "--weights", type=str, default="./weights/", help="folder to save weights"
+        "--model-path", type=str, default="./weights/", help="folder to save weights"
     )
     parser.add_argument(
-        "--eval-plot", type=str, default="./eval_plot/", help="folder to save eval plots"
-    )
-    parser.add_argument(
-        "--logs", type=str, default="./logs", help="folder to save logs"
+        "--plot-path", type=str, default="./eval_plot/", help="folder to save eval plots"
     )
     parser.add_argument(
         "--image-size",
@@ -177,24 +196,11 @@ if __name__ == "__main__":
         "--transform", type=bool, default=True, help="activate data augmentation"
     )
     parser.add_argument(
-        "--dataset-type", type=str, default=None, help="choose what type of dataset you need; \
-        None=original dataset, \
-        undersample=adjust to the number of non tumor images to the number of tumor images, \
-        oversample=adjust to the number of tumor images to the number of non-tumor data, \
-        only_tumor=take only images which have tumor"
-    )
-    parser.add_argument(
         "--metric-dataset-type", type=str, default=None, help="choose what type of dataset you need for loading best metric; \
         None=original dataset, \
         undersample=adjust to the number of non tumor images to the number of tumor images, \
         oversample=adjust to the number of tumor images to the number of non-tumor data, \
         only_tumor=take only images which have tumor"
-    )
-    parser.add_argument(
-        "--split-ratio", type=float, default=0.8, help="the ratio to split the dataset into training and valid"
-    )
-    parser.add_argument(
-        "--freeze", type=bool, default=False, help="freeze the pretrained weights of resnet"
     )
     parser.add_argument(
         "--model", type=str, default='unet', help="choose the model between unet and resnet+unet; UNet-> unet, Resnet+Unet-> resnetunet"

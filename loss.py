@@ -1,10 +1,5 @@
 import torch.nn.functional as F
 import torch
-from torch import einsum
-from functools import partial
-from typing import Any, Callable, Iterable, List, Set, Tuple, TypeVar, Union
-
-from torch import Tensor
 
 
 def dice_coef(pred, target, smooth = 1.):
