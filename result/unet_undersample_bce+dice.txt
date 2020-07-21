@@ -1,0 +1,1357 @@
+torch) chan@chan-desktop:~/Desktop/DLD1$ python train.py --model unet --dataset-type undersample --epochs 100
+----------------------------------------------------------------
+        Layer (type)               Output Shape         Param #
+================================================================
+            Conv2d-1         [-1, 64, 256, 256]             640
+       BatchNorm2d-2         [-1, 64, 256, 256]             128
+              ReLU-3         [-1, 64, 256, 256]               0
+            Conv2d-4         [-1, 64, 256, 256]          36,928
+       BatchNorm2d-5         [-1, 64, 256, 256]             128
+              ReLU-6         [-1, 64, 256, 256]               0
+         MaxPool2d-7         [-1, 64, 128, 128]               0
+            Conv2d-8        [-1, 128, 128, 128]          73,856
+       BatchNorm2d-9        [-1, 128, 128, 128]             256
+             ReLU-10        [-1, 128, 128, 128]               0
+           Conv2d-11        [-1, 128, 128, 128]         147,584
+      BatchNorm2d-12        [-1, 128, 128, 128]             256
+             ReLU-13        [-1, 128, 128, 128]               0
+        MaxPool2d-14          [-1, 128, 64, 64]               0
+           Conv2d-15          [-1, 256, 64, 64]         295,168
+      BatchNorm2d-16          [-1, 256, 64, 64]             512
+             ReLU-17          [-1, 256, 64, 64]               0
+           Conv2d-18          [-1, 256, 64, 64]         590,080
+      BatchNorm2d-19          [-1, 256, 64, 64]             512
+             ReLU-20          [-1, 256, 64, 64]               0
+        MaxPool2d-21          [-1, 256, 32, 32]               0
+           Conv2d-22          [-1, 512, 32, 32]       1,180,160
+      BatchNorm2d-23          [-1, 512, 32, 32]           1,024
+             ReLU-24          [-1, 512, 32, 32]               0
+           Conv2d-25          [-1, 512, 32, 32]       2,359,808
+      BatchNorm2d-26          [-1, 512, 32, 32]           1,024
+             ReLU-27          [-1, 512, 32, 32]               0
+        MaxPool2d-28          [-1, 512, 16, 16]               0
+           Conv2d-29         [-1, 1024, 16, 16]       4,719,616
+      BatchNorm2d-30         [-1, 1024, 16, 16]           2,048
+             ReLU-31         [-1, 1024, 16, 16]               0
+           Conv2d-32         [-1, 1024, 16, 16]       9,438,208
+      BatchNorm2d-33         [-1, 1024, 16, 16]           2,048
+             ReLU-34         [-1, 1024, 16, 16]               0
+         Upsample-35         [-1, 1024, 32, 32]               0
+           Conv2d-36          [-1, 512, 32, 32]       7,078,400
+             ReLU-37          [-1, 512, 32, 32]               0
+           Conv2d-38          [-1, 512, 32, 32]       2,359,808
+             ReLU-39          [-1, 512, 32, 32]               0
+         Upsample-40          [-1, 512, 64, 64]               0
+           Conv2d-41          [-1, 256, 64, 64]       1,769,728
+             ReLU-42          [-1, 256, 64, 64]               0
+           Conv2d-43          [-1, 256, 64, 64]         590,080
+             ReLU-44          [-1, 256, 64, 64]               0
+         Upsample-45        [-1, 256, 128, 128]               0
+           Conv2d-46        [-1, 128, 128, 128]         442,496
+             ReLU-47        [-1, 128, 128, 128]               0
+           Conv2d-48        [-1, 128, 128, 128]         147,584
+             ReLU-49        [-1, 128, 128, 128]               0
+         Upsample-50        [-1, 128, 256, 256]               0
+           Conv2d-51         [-1, 64, 256, 256]         110,656
+             ReLU-52         [-1, 64, 256, 256]               0
+           Conv2d-53         [-1, 64, 256, 256]          36,928
+             ReLU-54         [-1, 64, 256, 256]               0
+           Conv2d-55          [-1, 1, 256, 256]              65
+================================================================
+Total params: 31,385,729
+Trainable params: 31,385,729
+Non-trainable params: 0
+----------------------------------------------------------------
+Input size (MB): 0.25
+Forward/backward pass size (MB): 747.50
+Params size (MB): 119.73
+Estimated Total Size (MB): 867.48
+----------------------------------------------------------------
+----------------------------------------------------------------
+The number of train set: 2064
+The number of valid set: 240
+----------------------------------------------------------------
+Epoch 0/99
+----------
+LR 0.003
+train: bce: 0.679668, dice: 0.992773, loss: 0.992773
+val: bce: 0.678798, dice: 0.993528, loss: 0.993528
+Validation loss decreased (inf --> 0.993528).  Saving best model ...
+1m 16s
+Epoch 1/99
+----------
+LR 0.003
+train: bce: 0.678092, dice: 0.992574, loss: 0.992574
+val: bce: 0.678211, dice: 0.993356, loss: 0.993356
+Validation loss decreased (0.993528 --> 0.993356).  Saving best model ...
+1m 16s
+Epoch 2/99
+----------
+LR 0.003
+train: bce: 0.677965, dice: 0.992375, loss: 0.992375
+val: bce: 0.679828, dice: 0.993184, loss: 0.993184
+Validation loss decreased (0.993356 --> 0.993184).  Saving best model ...
+1m 16s
+Epoch 3/99
+----------
+LR 0.003
+train: bce: 0.679532, dice: 0.992165, loss: 0.992165
+val: bce: 0.683819, dice: 0.993002, loss: 0.993002
+Validation loss decreased (0.993184 --> 0.993002).  Saving best model ...
+1m 17s
+Epoch 4/99
+----------
+LR 0.003
+train: bce: 0.681636, dice: 0.991914, loss: 0.991914
+val: bce: 0.681928, dice: 0.992737, loss: 0.992737
+Validation loss decreased (0.993002 --> 0.992737).  Saving best model ...
+1m 15s
+Epoch 5/99
+----------
+LR 0.003
+train: bce: 0.682553, dice: 0.991579, loss: 0.991579
+val: bce: 0.683650, dice: 0.992404, loss: 0.992404
+Validation loss decreased (0.992737 --> 0.992404).  Saving best model ...
+1m 16s
+Epoch 6/99
+----------
+LR 0.003
+train: bce: 0.680423, dice: 0.991113, loss: 0.991113
+val: bce: 0.680183, dice: 0.991947, loss: 0.991947
+Validation loss decreased (0.992404 --> 0.991947).  Saving best model ...
+1m 15s
+Epoch 7/99
+----------
+LR 0.003
+train: bce: 0.671484, dice: 0.990433, loss: 0.990433
+val: bce: 0.672317, dice: 0.991251, loss: 0.991251
+Validation loss decreased (0.991947 --> 0.991251).  Saving best model ...
+1m 17s
+Epoch 8/99
+----------
+LR 0.003
+train: bce: 0.647026, dice: 0.989398, loss: 0.989398
+val: bce: 0.638571, dice: 0.990124, loss: 0.990124
+Validation loss decreased (0.991251 --> 0.990124).  Saving best model ...
+1m 16s
+Epoch 9/99
+----------
+LR 0.003
+train: bce: 0.602583, dice: 0.987842, loss: 0.987842
+val: bce: 0.566757, dice: 0.988409, loss: 0.988409
+Validation loss decreased (0.990124 --> 0.988409).  Saving best model ...
+1m 16s
+Epoch 10/99
+----------
+LR 0.003
+train: bce: 0.530546, dice: 0.985514, loss: 0.985514
+val: bce: 0.487776, dice: 0.985984, loss: 0.985984
+Validation loss decreased (0.988409 --> 0.985984).  Saving best model ...
+1m 19s
+Epoch 11/99
+----------
+LR 0.003
+train: bce: 0.375544, dice: 0.980708, loss: 0.980708
+val: bce: 0.197605, dice: 0.978196, loss: 0.978196
+Validation loss decreased (0.985984 --> 0.978196).  Saving best model ...
+1m 19s
+Epoch 12/99
+----------
+LR 0.003
+train: bce: 0.132817, dice: 0.966002, loss: 0.966002
+val: bce: 0.108076, dice: 0.963994, loss: 0.963994
+Validation loss decreased (0.978196 --> 0.963994).  Saving best model ...
+1m 17s
+Epoch 13/99
+----------
+LR 0.003
+train: bce: 0.132270, dice: 0.953273, loss: 0.953273
+val: bce: 0.055223, dice: 0.950424, loss: 0.950424
+Validation loss decreased (0.963994 --> 0.950424).  Saving best model ...
+1m 18s
+Epoch 14/99
+----------
+LR 0.003
+train: bce: 0.372076, dice: 0.590683, loss: 0.590683
+val: bce: 0.420341, dice: 0.454476, loss: 0.454476
+Validation loss decreased (0.950424 --> 0.454476).  Saving best model ...
+1m 19s
+Epoch 15/99
+----------
+LR 0.003
+train: bce: 0.479385, dice: 0.499640, loss: 0.499640
+val: bce: 0.418231, dice: 0.454476, loss: 0.454476
+Validation loss decreased (0.454476 --> 0.454476).  Saving best model ...
+1m 17s
+Epoch 16/99
+----------
+LR 0.003
+train: bce: 0.481762, dice: 0.499638, loss: 0.499638
+val: bce: 0.414220, dice: 0.454475, loss: 0.454475
+Validation loss decreased (0.454476 --> 0.454475).  Saving best model ...
+1m 20s
+Epoch 17/99
+----------
+LR 0.003
+train: bce: 0.485503, dice: 0.499637, loss: 0.499637
+val: bce: 0.428655, dice: 0.454471, loss: 0.454471
+Validation loss decreased (0.454475 --> 0.454471).  Saving best model ...
+1m 20s
+Epoch 18/99
+----------
+LR 0.003
+train: bce: 0.487863, dice: 0.499636, loss: 0.499636
+val: bce: 0.431810, dice: 0.454471, loss: 0.454471
+EarlyStopping counter: 1 out of 15
+1m 19s
+Epoch 19/99
+----------
+LR 0.003
+train: bce: 0.488734, dice: 0.499635, loss: 0.499635
+val: bce: 0.424745, dice: 0.454470, loss: 0.454470
+Validation loss decreased (0.454471 --> 0.454470).  Saving best model ...
+1m 19s
+Epoch 20/99
+----------
+LR 0.003
+train: bce: 0.491783, dice: 0.499634, loss: 0.499634
+val: bce: 0.425824, dice: 0.454470, loss: 0.454470
+Validation loss decreased (0.454470 --> 0.454470).  Saving best model ...
+1m 19s
+Epoch 21/99
+----------
+LR 0.0015
+train: bce: 0.494005, dice: 0.499634, loss: 0.499634
+val: bce: 0.439081, dice: 0.454470, loss: 0.454470
+EarlyStopping counter: 1 out of 15
+1m 19s
+Epoch 22/99
+----------
+LR 0.0015
+train: bce: 0.492105, dice: 0.499634, loss: 0.499634
+val: bce: 0.431672, dice: 0.454469, loss: 0.454469
+Validation loss decreased (0.454470 --> 0.454469).  Saving best model ...
+1m 20s
+Epoch 23/99
+----------
+LR 0.0015
+train: bce: 0.496344, dice: 0.499633, loss: 0.499633
+val: bce: 0.432074, dice: 0.454470, loss: 0.454470
+EarlyStopping counter: 1 out of 15
+1m 19s
+Epoch 24/99
+----------
+LR 0.0015
+train: bce: 0.495874, dice: 0.499633, loss: 0.499633
+val: bce: 0.430537, dice: 0.454468, loss: 0.454468
+Validation loss decreased (0.454469 --> 0.454468).  Saving best model ...
+1m 19s
+Epoch 25/99
+----------
+LR 0.0015
+train: bce: 0.497573, dice: 0.499633, loss: 0.499633
+val: bce: 0.438992, dice: 0.454469, loss: 0.454469
+EarlyStopping counter: 1 out of 15
+1m 19s
+Epoch 26/99
+----------
+LR 0.0015
+train: bce: 0.495902, dice: 0.499633, loss: 0.499633
+val: bce: 0.438797, dice: 0.454468, loss: 0.454468
+Validation loss decreased (0.454468 --> 0.454468).  Saving best model ...
+1m 20s
+Epoch 27/99
+----------
+LR 0.00075
+train: bce: 0.497307, dice: 0.499633, loss: 0.499633
+val: bce: 0.436361, dice: 0.454469, loss: 0.454469
+EarlyStopping counter: 1 out of 15
+1m 16s
+Epoch 28/99
+----------
+LR 0.00075
+train: bce: 0.499245, dice: 0.499632, loss: 0.499632
+val: bce: 0.431260, dice: 0.454470, loss: 0.454470
+EarlyStopping counter: 2 out of 15
+1m 15s
+Epoch 29/99
+----------
+LR 0.00075
+train: bce: 0.499076, dice: 0.499632, loss: 0.499632
+val: bce: 0.425653, dice: 0.454468, loss: 0.454468
+Validation loss decreased (0.454468 --> 0.454468).  Saving best model ...
+1m 16s
+Epoch 30/99
+----------
+LR 0.00075
+train: bce: 0.499263, dice: 0.499632, loss: 0.499632
+val: bce: 0.433662, dice: 0.454468, loss: 0.454468
+EarlyStopping counter: 1 out of 15
+1m 15s
+Epoch 31/99
+----------
+LR 0.00075
+train: bce: 0.499920, dice: 0.499632, loss: 0.499632
+val: bce: 0.447090, dice: 0.454469, loss: 0.454469
+EarlyStopping counter: 2 out of 15
+1m 15s
+Epoch 32/99
+----------
+LR 0.00075
+train: bce: 0.500388, dice: 0.499632, loss: 0.499632
+val: bce: 0.439541, dice: 0.454469, loss: 0.454469
+EarlyStopping counter: 3 out of 15
+1m 15s
+Epoch 33/99
+----------
+LR 0.000375
+^CTraceback (most recent call last):
+  File "train.py", line 316, in <module>
+    main(args)
+  File "train.py", line 211, in main
+    model, metric_t, metric_v = train_model(model, optimizer_ft, scheduler, device, args.epochs, colon_dataloader)
+  File "train.py", line 118, in train_model
+    inputs = inputs.to(device)
+KeyboardInterrupt
+(torch) chan@chan-desktop:~/Desktop/DLD1$ python test.py --model unet --dataset-type undersample --epochs 100
+----------------------------------------------------------------
+The number of test set: 1189
+----------------------------------------------------------------
+Traceback (most recent call last):
+  File "test.py", line 268, in <module>
+    main(args)
+  File "test.py", line 151, in main
+    result = test_model(model, device, colon_dataloader, args.eval_plot)
+  File "test.py", line 59, in test_model
+    model.load_state_dict(torch.load(f"{args.weights}best_metric_model_{args.model}_{args.metric_dataset_type}_{args.epochs}.pth")) 
+  File "/home/chan/miniconda3/envs/torch/lib/python3.7/site-packages/torch/serialization.py", line 584, in load
+    with _open_file_like(f, 'rb') as opened_file:
+  File "/home/chan/miniconda3/envs/torch/lib/python3.7/site-packages/torch/serialization.py", line 234, in _open_file_like
+    return _open_file(name_or_buffer, mode)
+  File "/home/chan/miniconda3/envs/torch/lib/python3.7/site-packages/torch/serialization.py", line 215, in __init__
+    super(_open_file, self).__init__(open(name, mode))
+FileNotFoundError: [Errno 2] No such file or directory: './weights/best_metric_model_unet_None_100.pth'
+(torch) chan@chan-desktop:~/Desktop/DLD1$ python test.py --model unet --metric-dataset-type undersample --epochs 100
+----------------------------------------------------------------
+The number of test set: 1189
+----------------------------------------------------------------
+----------
+The Evaluation Starts ...
+----------
+The total samples: 1189
+The average dice score is tensor([[0.8811]], device='cuda:0').
+The number of tumor samples: 142
+The average dice score of the slices which have tumor is tensor([[0.0042]], device='cuda:0').
+The number of correct cases when the prediction predicts some poriton of the tumor: 0
+The number of incorrect cases when the prediction predicts some poriton of the tumor: 142
+The number of cases when the prediction predicts no tumor but it has tumor: 0
+The number of non-tumor samples: 1047
+The average dice score of the slices which have non-tumor is tensor([[1.]], device='cuda:0').
+The number of cases when the prediction predicts no tumor when it has no tumor: 1047
+The number of cases when the prediction predicts tumor when it has no tumor: 0
+0m 26s
+(torch) chan@chan-desktop:~/Desktop/DLD1$ python test.py --model unet --metric-dataset-type undersample
+----------------------------------------------------------------
+The number of test set: 1189
+----------------------------------------------------------------
+----------
+The Evaluation Starts ...
+----------
+The total samples: 1189
+The average dice score is tensor([[0.8418]], device='cuda:0').
+The number of tumor samples: 142
+The average dice score of the slices which have tumor is tensor([[0.2235]], device='cuda:0').
+The number of correct cases when the prediction predicts some poriton of the tumor: 80
+The number of incorrect cases when the prediction predicts some poriton of the tumor: 62
+The number of cases when the prediction predicts no tumor but it has tumor: 0
+The number of non-tumor samples: 1047
+The average dice score of the slices which have non-tumor is tensor([[0.9257]], device='cuda:0').
+The number of cases when the prediction predicts no tumor when it has no tumor: 964
+The number of cases when the prediction predicts tumor when it has no tumor: 83
+0m 26s
+(torch) chan@chan-desktop:~/Desktop/DLD1$ python test.py --model unet --metric-dataset-type undersample
+----------------------------------------------------------------
+The number of test set: 1189
+----------------------------------------------------------------
+----------
+The Evaluation Starts ...
+----------
+The total samples: 1189
+The average dice score is tensor([[0.8418]], device='cuda:0').
+The number of tumor samples: 142
+The average dice score of the slices which have tumor is tensor([[0.2235]], device='cuda:0').
+The number of correct cases when the prediction predicts some poriton of the tumor: 80
+The number of incorrect cases when the prediction predicts some poriton of the tumor: 62
+The number of cases when the prediction predicts no tumor but it has tumor: 0
+The number of non-tumor samples: 1047
+The average dice score of the slices which have non-tumor is tensor([[0.9257]], device='cuda:0').
+The number of cases when the prediction predicts no tumor when it has no tumor: 964
+The number of cases when the prediction predicts tumor when it has no tumor: 83
+0m 25s
+(torch) chan@chan-desktop:~/Desktop/DLD1$ ^C
+(torch) chan@chan-desktop:~/Desktop/DLD1$ python test.py --model unet --metric-dataset-type undersample --epochs 100
+----------------------------------------------------------------
+The number of test set: 1189
+----------------------------------------------------------------
+----------
+The Evaluation Starts ...
+----------
+The total samples: 1189
+The average dice score is tensor([[0.8811]], device='cuda:0').
+The number of tumor samples: 142
+The average dice score of the slices which have tumor is tensor([[0.0042]], device='cuda:0').
+The number of correct cases when the prediction predicts some poriton of the tumor: 0
+The number of incorrect cases when the prediction predicts some poriton of the tumor: 142
+The number of cases when the prediction predicts no tumor but it has tumor: 0
+The number of non-tumor samples: 1047
+The average dice score of the slices which have non-tumor is tensor([[1.]], device='cuda:0').
+The number of cases when the prediction predicts no tumor when it has no tumor: 1047
+The number of cases when the prediction predicts tumor when it has no tumor: 0
+0m 26s
+(torch) chan@chan-desktop:~/Desktop/DLD1$ python test.py --model unet --metric-dataset-type undersample --epochs 100
+----------------------------------------------------------------
+The number of test set: 1189
+----------------------------------------------------------------
+----------
+The Evaluation Starts ...
+----------
+test.py:47: MatplotlibDeprecationWarning: Adding an axes using the same arguments as a previous axes currently reuses the earlier instance.  In a future version, a new instance will always be created and returned.  Meanwhile, this warning can be suppressed, and the future behavior ensured, by passing a unique label to each axes instance.
+  ax1 = plt.subplot(1, 3, 1)
+test.py:50: MatplotlibDeprecationWarning: Adding an axes using the same arguments as a previous axes currently reuses the earlier instance.  In a future version, a new instance will always be created and returned.  Meanwhile, this warning can be suppressed, and the future behavior ensured, by passing a unique label to each axes instance.
+  ax2 = plt.subplot(1, 3, 2)
+test.py:53: MatplotlibDeprecationWarning: Adding an axes using the same arguments as a previous axes currently reuses the earlier instance.  In a future version, a new instance will always be created and returned.  Meanwhile, this warning can be suppressed, and the future behavior ensured, by passing a unique label to each axes instance.
+  ax3 = plt.subplot(1, 3, 3)
+^CTraceback (most recent call last):
+  File "test.py", line 267, in <module>
+    main(args)
+  File "test.py", line 150, in main
+    result = test_model(model, device, colon_dataloader, args.eval_plot)
+  File "test.py", line 90, in test_model
+    plot_result(inputs, labels, preds, i, plot_path, dice_score)
+  File "test.py", line 56, in plot_result
+    plt.savefig(f'{path}eval_plot_{index}.png')
+  File "/home/chan/miniconda3/envs/torch/lib/python3.7/site-packages/matplotlib/pyplot.py", line 723, in savefig
+    res = fig.savefig(*args, **kwargs)
+  File "/home/chan/miniconda3/envs/torch/lib/python3.7/site-packages/matplotlib/figure.py", line 2203, in savefig
+    self.canvas.print_figure(fname, **kwargs)
+  File "/home/chan/miniconda3/envs/torch/lib/python3.7/site-packages/matplotlib/backends/backend_qt5agg.py", line 93, in print_figure
+    super().print_figure(*args, **kwargs)
+  File "/home/chan/miniconda3/envs/torch/lib/python3.7/site-packages/matplotlib/backend_bases.py", line 2126, in print_figure
+    **kwargs)
+  File "/home/chan/miniconda3/envs/torch/lib/python3.7/site-packages/matplotlib/backends/backend_agg.py", line 514, in print_png
+    FigureCanvasAgg.draw(self)
+  File "/home/chan/miniconda3/envs/torch/lib/python3.7/site-packages/matplotlib/backends/backend_agg.py", line 393, in draw
+    self.figure.draw(self.renderer)
+  File "/home/chan/miniconda3/envs/torch/lib/python3.7/site-packages/matplotlib/artist.py", line 38, in draw_wrapper
+    return draw(artist, renderer, *args, **kwargs)
+  File "/home/chan/miniconda3/envs/torch/lib/python3.7/site-packages/matplotlib/figure.py", line 1736, in draw
+    renderer, self, artists, self.suppressComposite)
+  File "/home/chan/miniconda3/envs/torch/lib/python3.7/site-packages/matplotlib/image.py", line 137, in _draw_list_compositing_images
+    a.draw(renderer)
+  File "/home/chan/miniconda3/envs/torch/lib/python3.7/site-packages/matplotlib/artist.py", line 38, in draw_wrapper
+    return draw(artist, renderer, *args, **kwargs)
+  File "/home/chan/miniconda3/envs/torch/lib/python3.7/site-packages/matplotlib/axes/_base.py", line 2630, in draw
+    mimage._draw_list_compositing_images(renderer, self, artists)
+  File "/home/chan/miniconda3/envs/torch/lib/python3.7/site-packages/matplotlib/image.py", line 137, in _draw_list_compositing_images
+    a.draw(renderer)
+  File "/home/chan/miniconda3/envs/torch/lib/python3.7/site-packages/matplotlib/artist.py", line 38, in draw_wrapper
+    return draw(artist, renderer, *args, **kwargs)
+  File "/home/chan/miniconda3/envs/torch/lib/python3.7/site-packages/matplotlib/image.py", line 626, in draw
+    renderer, renderer.get_image_magnification())
+  File "/home/chan/miniconda3/envs/torch/lib/python3.7/site-packages/matplotlib/image.py", line 917, in make_image
+    magnification, unsampled=unsampled)
+  File "/home/chan/miniconda3/envs/torch/lib/python3.7/site-packages/matplotlib/image.py", line 499, in _make_image
+    out_alpha = _resample(self, mask, out_shape, t, resample=True)
+  File "/home/chan/miniconda3/envs/torch/lib/python3.7/site-packages/matplotlib/image.py", line 202, in _resample
+    image_obj.get_filterrad())
+KeyboardInterrupt
+(torch) chan@chan-desktop:~/Desktop/DLD1$ python test.py --model unet --metric-dataset-type undersample --epochs 100
+----------------------------------------------------------------
+The number of test set: 1189
+----------------------------------------------------------------
+----------
+The Evaluation Starts ...
+----------
+test.py:47: MatplotlibDeprecationWarning: Adding an axes using the same arguments as a previous axes currently reuses the earlier instance.  In a future version, a new instance will always be created and returned.  Meanwhile, this warning can be suppressed, and the future behavior ensured, by passing a unique label to each axes instance.
+  ax1 = plt.subplot(1, 3, 1)
+test.py:50: MatplotlibDeprecationWarning: Adding an axes using the same arguments as a previous axes currently reuses the earlier instance.  In a future version, a new instance will always be created and returned.  Meanwhile, this warning can be suppressed, and the future behavior ensured, by passing a unique label to each axes instance.
+  ax2 = plt.subplot(1, 3, 2)
+test.py:53: MatplotlibDeprecationWarning: Adding an axes using the same arguments as a previous axes currently reuses the earlier instance.  In a future version, a new instance will always be created and returned.  Meanwhile, this warning can be suppressed, and the future behavior ensured, by passing a unique label to each axes instance.
+  ax3 = plt.subplot(1, 3, 3)
+^CTraceback (most recent call last):
+  File "test.py", line 267, in <module>
+    main(args)
+  File "test.py", line 150, in main
+    result = test_model(model, device, colon_dataloader, args.eval_plot)
+  File "test.py", line 80, in test_model
+    inputs = inputs.to(device)
+KeyboardInterrupt
+(torch) chan@chan-desktop:~/Desktop/DLD1$ python test.py --model unet --metric-dataset-type undersample --epochs 100
+----------------------------------------------------------------
+The number of test set: 1189
+----------------------------------------------------------------
+----------
+The Evaluation Starts ...
+----------
+The total samples: 1189
+The average dice score is tensor([[0.8811]], device='cuda:0').
+The number of tumor samples: 142
+The average dice score of the slices which have tumor is tensor([[0.0042]], device='cuda:0').
+The number of correct cases when the prediction predicts some poriton of the tumor: 0
+The number of incorrect cases when the prediction predicts some poriton of the tumor: 0
+The number of cases when the prediction predicts no tumor but it has tumor: 142
+The number of non-tumor samples: 1047
+The average dice score of the slices which have non-tumor is tensor([[1.]], device='cuda:0').
+The number of cases when the prediction predicts no tumor when it has no tumor: 1047
+The number of cases when the prediction predicts tumor when it has no tumor: 0
+0m 26s
+(torch) chan@chan-desktop:~/Desktop/DLD1$ ^C
+(torch) chan@chan-desktop:~/Desktop/DLD1$ python test.py --model unet --metric-dataset-type undersample 
+----------------------------------------------------------------
+The number of test set: 1189
+----------------------------------------------------------------
+----------
+The Evaluation Starts ...
+----------
+The total samples: 1189
+The average dice score is tensor([[0.8418]], device='cuda:0').
+The number of tumor samples: 142
+The average dice score of the slices which have tumor is tensor([[0.2235]], device='cuda:0').
+The number of correct cases when the prediction predicts some poriton of the tumor: 80
+The number of incorrect cases when the prediction predicts some poriton of the tumor: 0
+The number of cases when the prediction predicts no tumor but it has tumor: 62
+The number of non-tumor samples: 1047
+The average dice score of the slices which have non-tumor is tensor([[0.9257]], device='cuda:0').
+The number of cases when the prediction predicts no tumor when it has no tumor: 964
+The number of cases when the prediction predicts tumor when it has no tumor: 83
+0m 25s
+(torch) chan@chan-desktop:~/Desktop/DLD1$ python test.py --model unet --metric-dataset-type undersample 
+----------------------------------------------------------------
+The number of test set: 1189
+----------------------------------------------------------------
+----------
+The Evaluation Starts ...
+----------
+^CTraceback (most recent call last):
+  File "test.py", line 267, in <module>
+    main(args)
+  File "test.py", line 150, in main
+    result = test_model(model, device, colon_dataloader, args.eval_plot)
+  File "test.py", line 83, in test_model
+    outputs = model(inputs)
+  File "/home/chan/miniconda3/envs/torch/lib/python3.7/site-packages/torch/nn/modules/module.py", line 550, in __call__
+    result = self.forward(*input, **kwargs)
+  File "/home/chan/Desktop/DLD1/architecture.py", line 60, in forward
+    x = torch.cat([x, conv4], dim=1)
+KeyboardInterrupt
+(torch) chan@chan-desktop:~/Desktop/DLD1$ python test.py --model unet --metric-dataset-type undersample --epochs 100
+----------------------------------------------------------------
+The number of test set: 1189
+----------------------------------------------------------------
+Traceback (most recent call last):
+  File "test.py", line 267, in <module>
+    main(args)
+  File "test.py", line 150, in main
+    result = test_model(model, device, colon_dataloader, args.eval_plot)
+  File "test.py", line 59, in test_model
+    model.load_state_dict(torch.load(f"{args.weights}best_metric_model_{args.model}_{args.metric_dataset_type}_{args.epochs}.pth")) 
+  File "/home/chan/miniconda3/envs/torch/lib/python3.7/site-packages/torch/serialization.py", line 584, in load
+    with _open_file_like(f, 'rb') as opened_file:
+  File "/home/chan/miniconda3/envs/torch/lib/python3.7/site-packages/torch/serialization.py", line 234, in _open_file_like
+    return _open_file(name_or_buffer, mode)
+  File "/home/chan/miniconda3/envs/torch/lib/python3.7/site-packages/torch/serialization.py", line 215, in __init__
+    super(_open_file, self).__init__(open(name, mode))
+FileNotFoundError: [Errno 2] No such file or directory: './weights/best_metric_model_unet_undersample_100.pth'
+(torch) chan@chan-desktop:~/Desktop/DLD1$ python train.py --model unet --dataset-type undersample --epochs 100
+----------------------------------------------------------------
+        Layer (type)               Output Shape         Param #
+================================================================
+            Conv2d-1         [-1, 64, 256, 256]             640
+       BatchNorm2d-2         [-1, 64, 256, 256]             128
+              ReLU-3         [-1, 64, 256, 256]               0
+            Conv2d-4         [-1, 64, 256, 256]          36,928
+       BatchNorm2d-5         [-1, 64, 256, 256]             128
+              ReLU-6         [-1, 64, 256, 256]               0
+         MaxPool2d-7         [-1, 64, 128, 128]               0
+            Conv2d-8        [-1, 128, 128, 128]          73,856
+       BatchNorm2d-9        [-1, 128, 128, 128]             256
+             ReLU-10        [-1, 128, 128, 128]               0
+           Conv2d-11        [-1, 128, 128, 128]         147,584
+      BatchNorm2d-12        [-1, 128, 128, 128]             256
+             ReLU-13        [-1, 128, 128, 128]               0
+        MaxPool2d-14          [-1, 128, 64, 64]               0
+           Conv2d-15          [-1, 256, 64, 64]         295,168
+      BatchNorm2d-16          [-1, 256, 64, 64]             512
+             ReLU-17          [-1, 256, 64, 64]               0
+           Conv2d-18          [-1, 256, 64, 64]         590,080
+      BatchNorm2d-19          [-1, 256, 64, 64]             512
+             ReLU-20          [-1, 256, 64, 64]               0
+        MaxPool2d-21          [-1, 256, 32, 32]               0
+           Conv2d-22          [-1, 512, 32, 32]       1,180,160
+      BatchNorm2d-23          [-1, 512, 32, 32]           1,024
+             ReLU-24          [-1, 512, 32, 32]               0
+           Conv2d-25          [-1, 512, 32, 32]       2,359,808
+      BatchNorm2d-26          [-1, 512, 32, 32]           1,024
+             ReLU-27          [-1, 512, 32, 32]               0
+        MaxPool2d-28          [-1, 512, 16, 16]               0
+           Conv2d-29         [-1, 1024, 16, 16]       4,719,616
+      BatchNorm2d-30         [-1, 1024, 16, 16]           2,048
+             ReLU-31         [-1, 1024, 16, 16]               0
+           Conv2d-32         [-1, 1024, 16, 16]       9,438,208
+      BatchNorm2d-33         [-1, 1024, 16, 16]           2,048
+             ReLU-34         [-1, 1024, 16, 16]               0
+         Upsample-35         [-1, 1024, 32, 32]               0
+           Conv2d-36          [-1, 512, 32, 32]       7,078,400
+             ReLU-37          [-1, 512, 32, 32]               0
+           Conv2d-38          [-1, 512, 32, 32]       2,359,808
+             ReLU-39          [-1, 512, 32, 32]               0
+         Upsample-40          [-1, 512, 64, 64]               0
+           Conv2d-41          [-1, 256, 64, 64]       1,769,728
+             ReLU-42          [-1, 256, 64, 64]               0
+           Conv2d-43          [-1, 256, 64, 64]         590,080
+             ReLU-44          [-1, 256, 64, 64]               0
+         Upsample-45        [-1, 256, 128, 128]               0
+           Conv2d-46        [-1, 128, 128, 128]         442,496
+             ReLU-47        [-1, 128, 128, 128]               0
+           Conv2d-48        [-1, 128, 128, 128]         147,584
+             ReLU-49        [-1, 128, 128, 128]               0
+         Upsample-50        [-1, 128, 256, 256]               0
+           Conv2d-51         [-1, 64, 256, 256]         110,656
+             ReLU-52         [-1, 64, 256, 256]               0
+           Conv2d-53         [-1, 64, 256, 256]          36,928
+             ReLU-54         [-1, 64, 256, 256]               0
+           Conv2d-55          [-1, 1, 256, 256]              65
+================================================================
+Total params: 31,385,729
+Trainable params: 31,385,729
+Non-trainable params: 0
+----------------------------------------------------------------
+Input size (MB): 0.25
+Forward/backward pass size (MB): 747.50
+Params size (MB): 119.73
+Estimated Total Size (MB): 867.48
+----------------------------------------------------------------
+----------------------------------------------------------------
+The number of train set: 2064
+The number of valid set: 240
+----------------------------------------------------------------
+Epoch 0/99
+----------
+LR 0.003
+train: bce: 0.111010, dice: 0.682390, loss: 0.793400
+val: bce: 0.050068, dice: 0.437105, loss: 0.487173
+Validation loss decreased (inf --> 0.487173).  Saving best model ...
+1m 15s
+Epoch 1/99
+----------
+LR 0.003
+train: bce: 0.054167, dice: 0.505495, loss: 0.559662
+val: bce: 0.048381, dice: 0.437920, loss: 0.486300
+Validation loss decreased (0.487173 --> 0.486300).  Saving best model ...
+1m 17s
+Epoch 2/99
+----------
+LR 0.003
+train: bce: 0.053605, dice: 0.505610, loss: 0.559214
+val: bce: 0.047346, dice: 0.438777, loss: 0.486123
+Validation loss decreased (0.486300 --> 0.486123).  Saving best model ...
+1m 16s
+Epoch 3/99
+----------
+LR 0.003
+train: bce: 0.053331, dice: 0.505576, loss: 0.558907
+val: bce: 0.047626, dice: 0.438294, loss: 0.485920
+Validation loss decreased (0.486123 --> 0.485920).  Saving best model ...
+1m 16s
+Epoch 4/99
+----------
+LR 0.003
+train: bce: 0.053239, dice: 0.505530, loss: 0.558768
+val: bce: 0.045897, dice: 0.440219, loss: 0.486116
+EarlyStopping counter: 1 out of 15
+1m 15s
+Epoch 5/99
+----------
+LR 0.003
+train: bce: 0.052674, dice: 0.505588, loss: 0.558263
+val: bce: 0.046723, dice: 0.438597, loss: 0.485321
+Validation loss decreased (0.485920 --> 0.485321).  Saving best model ...
+1m 16s
+Epoch 6/99
+----------
+LR 0.003
+train: bce: 0.052096, dice: 0.505558, loss: 0.557654
+val: bce: 0.048301, dice: 0.436411, loss: 0.484712
+Validation loss decreased (0.485321 --> 0.484712).  Saving best model ...
+1m 16s
+Epoch 7/99
+----------
+LR 0.003
+train: bce: 0.051472, dice: 0.505451, loss: 0.556923
+val: bce: 0.045932, dice: 0.437721, loss: 0.483653
+Validation loss decreased (0.484712 --> 0.483653).  Saving best model ...
+1m 16s
+Epoch 8/99
+----------
+LR 0.003
+train: bce: 0.050680, dice: 0.505542, loss: 0.556222
+val: bce: 0.044998, dice: 0.438218, loss: 0.483216
+Validation loss decreased (0.483653 --> 0.483216).  Saving best model ...
+1m 16s
+Epoch 9/99
+----------
+LR 0.003
+train: bce: 0.050005, dice: 0.505505, loss: 0.555510
+val: bce: 0.042773, dice: 0.439127, loss: 0.481901
+Validation loss decreased (0.483216 --> 0.481901).  Saving best model ...
+1m 16s
+Epoch 10/99
+----------
+LR 0.003
+train: bce: 0.049338, dice: 0.505528, loss: 0.554866
+val: bce: 0.041915, dice: 0.439644, loss: 0.481560
+Validation loss decreased (0.481901 --> 0.481560).  Saving best model ...
+1m 17s
+Epoch 11/99
+----------
+LR 0.003
+train: bce: 0.048010, dice: 0.505517, loss: 0.553528
+val: bce: 0.040601, dice: 0.439789, loss: 0.480390
+Validation loss decreased (0.481560 --> 0.480390).  Saving best model ...
+1m 16s
+Epoch 12/99
+----------
+LR 0.003
+train: bce: 0.046735, dice: 0.505559, loss: 0.552294
+val: bce: 0.045270, dice: 0.437481, loss: 0.482752
+EarlyStopping counter: 1 out of 15
+1m 15s
+Epoch 13/99
+----------
+LR 0.003
+train: bce: 0.045672, dice: 0.505656, loss: 0.551328
+val: bce: 0.040733, dice: 0.437781, loss: 0.478514
+Validation loss decreased (0.480390 --> 0.478514).  Saving best model ...
+1m 16s
+Epoch 14/99
+----------
+LR 0.003
+train: bce: 0.044846, dice: 0.505588, loss: 0.550434
+val: bce: 0.039850, dice: 0.439915, loss: 0.479765
+EarlyStopping counter: 1 out of 15
+1m 15s
+Epoch 15/99
+----------
+LR 0.003
+train: bce: 0.044285, dice: 0.505307, loss: 0.549591
+val: bce: 0.040012, dice: 0.441002, loss: 0.481014
+EarlyStopping counter: 2 out of 15
+1m 15s
+Epoch 16/99
+----------
+LR 0.003
+train: bce: 0.043599, dice: 0.505839, loss: 0.549438
+val: bce: 0.042578, dice: 0.435939, loss: 0.478517
+EarlyStopping counter: 3 out of 15
+1m 18s
+Epoch 17/99
+----------
+LR 0.003
+train: bce: 0.042391, dice: 0.505649, loss: 0.548040
+val: bce: 0.033793, dice: 0.462951, loss: 0.496743
+EarlyStopping counter: 4 out of 15
+1m 21s
+Epoch 18/99
+----------
+LR 0.003
+train: bce: 0.042689, dice: 0.505850, loss: 0.548539
+val: bce: 0.034114, dice: 0.443905, loss: 0.478019
+Validation loss decreased (0.478514 --> 0.478019).  Saving best model ...
+1m 17s
+Epoch 19/99
+----------
+LR 0.003
+train: bce: 0.043739, dice: 0.505944, loss: 0.549683
+val: bce: 0.035703, dice: 0.438971, loss: 0.474674
+Validation loss decreased (0.478019 --> 0.474674).  Saving best model ...
+1m 19s
+Epoch 20/99
+----------
+LR 0.003
+train: bce: 0.040470, dice: 0.505853, loss: 0.546323
+val: bce: 0.036942, dice: 0.439888, loss: 0.476830
+EarlyStopping counter: 1 out of 15
+1m 19s
+Epoch 21/99
+----------
+LR 0.003
+train: bce: 0.042179, dice: 0.506101, loss: 0.548280
+val: bce: 0.035091, dice: 0.450040, loss: 0.485131
+EarlyStopping counter: 2 out of 15
+1m 18s
+Epoch 22/99
+----------
+LR 0.003
+train: bce: 0.041795, dice: 0.505783, loss: 0.547578
+val: bce: 0.041825, dice: 0.436547, loss: 0.478372
+EarlyStopping counter: 3 out of 15
+1m 18s
+Epoch 23/99
+----------
+LR 0.003
+train: bce: 0.041763, dice: 0.506236, loss: 0.547998
+val: bce: 0.048054, dice: 0.435530, loss: 0.483585
+EarlyStopping counter: 4 out of 15
+1m 16s
+Epoch 24/99
+----------
+LR 0.003
+train: bce: 0.043652, dice: 0.505784, loss: 0.549436
+val: bce: 0.048247, dice: 0.438842, loss: 0.487089
+EarlyStopping counter: 5 out of 15
+1m 18s
+Epoch 25/99
+----------
+LR 0.003
+train: bce: 0.043092, dice: 0.505339, loss: 0.548431
+val: bce: 0.036277, dice: 0.473733, loss: 0.510010
+EarlyStopping counter: 6 out of 15
+1m 17s
+Epoch 26/99
+----------
+LR 0.0015
+train: bce: 0.041867, dice: 0.503834, loss: 0.545701
+val: bce: 0.031394, dice: 0.573882, loss: 0.605277
+EarlyStopping counter: 7 out of 15
+1m 16s
+Epoch 27/99
+----------
+LR 0.0015
+train: bce: 0.046909, dice: 0.506513, loss: 0.553421
+val: bce: 0.087848, dice: 0.434638, loss: 0.522486
+EarlyStopping counter: 8 out of 15
+1m 15s
+Epoch 28/99
+----------
+LR 0.0015
+train: bce: 0.045584, dice: 0.499896, loss: 0.545480
+val: bce: 0.051948, dice: 0.430843, loss: 0.482791
+EarlyStopping counter: 9 out of 15
+1m 18s
+Epoch 29/99
+----------
+LR 0.0015
+train: bce: 0.047826, dice: 0.507008, loss: 0.554833
+val: bce: 0.037786, dice: 0.437041, loss: 0.474827
+EarlyStopping counter: 10 out of 15
+1m 18s
+Epoch 30/99
+----------
+LR 0.0015
+train: bce: 0.041854, dice: 0.500123, loss: 0.541977
+val: bce: 0.037034, dice: 0.425468, loss: 0.462502
+Validation loss decreased (0.474674 --> 0.462502).  Saving best model ...
+1m 16s
+Epoch 31/99
+----------
+LR 0.0015
+train: bce: 0.047353, dice: 0.499059, loss: 0.546411
+val: bce: 0.043675, dice: 0.440227, loss: 0.483902
+EarlyStopping counter: 1 out of 15
+1m 18s
+Epoch 32/99
+----------
+LR 0.0015
+train: bce: 0.045647, dice: 0.505503, loss: 0.551150
+val: bce: 0.036098, dice: 0.440619, loss: 0.476717
+EarlyStopping counter: 2 out of 15
+1m 18s
+Epoch 33/99
+----------
+LR 0.0015
+train: bce: 0.041873, dice: 0.499896, loss: 0.541769
+val: bce: 0.040523, dice: 0.428752, loss: 0.469275
+EarlyStopping counter: 3 out of 15
+1m 17s
+Epoch 34/99
+----------
+LR 0.0015
+train: bce: 0.046562, dice: 0.498549, loss: 0.545111
+val: bce: 0.052745, dice: 0.434002, loss: 0.486748
+EarlyStopping counter: 4 out of 15
+1m 15s
+Epoch 35/99
+----------
+LR 0.0015
+train: bce: 0.044626, dice: 0.502381, loss: 0.547008
+val: bce: 0.038463, dice: 0.441916, loss: 0.480379
+EarlyStopping counter: 5 out of 15
+1m 15s
+Epoch 36/99
+----------
+LR 0.0015
+train: bce: 0.050387, dice: 0.505263, loss: 0.555650
+val: bce: 0.042227, dice: 0.440087, loss: 0.482315
+EarlyStopping counter: 6 out of 15
+1m 15s
+Epoch 37/99
+----------
+LR 0.00075
+train: bce: 0.047545, dice: 0.505340, loss: 0.552885
+val: bce: 0.041234, dice: 0.438784, loss: 0.480018
+EarlyStopping counter: 7 out of 15
+1m 17s
+Epoch 38/99
+----------
+LR 0.00075
+train: bce: 0.043938, dice: 0.501354, loss: 0.545292
+val: bce: 0.039975, dice: 0.429725, loss: 0.469700
+EarlyStopping counter: 8 out of 15
+1m 15s
+Epoch 39/99
+----------
+LR 0.00075
+train: bce: 0.042363, dice: 0.493319, loss: 0.535682
+val: bce: 0.041165, dice: 0.429055, loss: 0.470220
+EarlyStopping counter: 9 out of 15
+1m 17s
+Epoch 40/99
+----------
+LR 0.00075
+train: bce: 0.044956, dice: 0.500032, loss: 0.544987
+val: bce: 0.039183, dice: 0.439857, loss: 0.479040
+EarlyStopping counter: 10 out of 15
+1m 15s
+Epoch 41/99
+----------
+LR 0.00075
+train: bce: 0.043531, dice: 0.505100, loss: 0.548631
+val: bce: 0.035967, dice: 0.439766, loss: 0.475733
+EarlyStopping counter: 11 out of 15
+1m 15s
+Epoch 42/99
+----------
+LR 0.00075
+train: bce: 0.036836, dice: 0.482340, loss: 0.519176
+val: bce: 0.032238, dice: 0.426643, loss: 0.458881
+Validation loss decreased (0.462502 --> 0.458881).  Saving best model ...
+1m 16s
+Epoch 43/99
+----------
+LR 0.00075
+train: bce: 0.038558, dice: 0.481829, loss: 0.520387
+val: bce: 0.048627, dice: 0.429906, loss: 0.478533
+EarlyStopping counter: 1 out of 15
+1m 15s
+Epoch 44/99
+----------
+LR 0.00075
+train: bce: 0.039525, dice: 0.480228, loss: 0.519753
+val: bce: 0.032283, dice: 0.429514, loss: 0.461797
+EarlyStopping counter: 2 out of 15
+1m 15s
+Epoch 45/99
+----------
+LR 0.00075
+train: bce: 0.038778, dice: 0.475071, loss: 0.513849
+val: bce: 0.033417, dice: 0.452445, loss: 0.485861
+EarlyStopping counter: 3 out of 15
+1m 15s
+Epoch 46/99
+----------
+LR 0.00075
+train: bce: 0.042310, dice: 0.476837, loss: 0.519147
+val: bce: 0.038093, dice: 0.430385, loss: 0.468478
+EarlyStopping counter: 4 out of 15
+1m 15s
+Epoch 47/99
+----------
+LR 0.00075
+train: bce: 0.039680, dice: 0.465297, loss: 0.504977
+val: bce: 0.040827, dice: 0.418456, loss: 0.459282
+EarlyStopping counter: 5 out of 15
+1m 15s
+Epoch 48/99
+----------
+LR 0.00075
+train: bce: 0.038628, dice: 0.466168, loss: 0.504797
+val: bce: 0.033670, dice: 0.581824, loss: 0.615494
+EarlyStopping counter: 6 out of 15
+1m 15s
+Epoch 49/99
+----------
+LR 0.000375
+train: bce: 0.040148, dice: 0.475929, loss: 0.516077
+val: bce: 0.032723, dice: 0.425229, loss: 0.457951
+Validation loss decreased (0.458881 --> 0.457951).  Saving best model ...
+1m 15s
+Epoch 50/99
+----------
+LR 0.000375
+train: bce: 0.033596, dice: 0.441610, loss: 0.475206
+val: bce: 0.035527, dice: 0.450681, loss: 0.486208
+EarlyStopping counter: 1 out of 15
+1m 15s
+Epoch 51/99
+----------
+LR 0.000375
+train: bce: 0.031162, dice: 0.416858, loss: 0.448020
+val: bce: 0.026793, dice: 0.389422, loss: 0.416215
+Validation loss decreased (0.457951 --> 0.416215).  Saving best model ...
+1m 15s
+Epoch 52/99
+----------
+LR 0.000375
+train: bce: 0.036494, dice: 0.435008, loss: 0.471503
+val: bce: 0.034793, dice: 0.446193, loss: 0.480986
+EarlyStopping counter: 1 out of 15
+1m 15s
+Epoch 53/99
+----------
+LR 0.000375
+train: bce: 0.034515, dice: 0.431939, loss: 0.466455
+val: bce: 0.030181, dice: 0.367707, loss: 0.397888
+Validation loss decreased (0.416215 --> 0.397888).  Saving best model ...
+1m 15s
+Epoch 54/99
+----------
+LR 0.000375
+train: bce: 0.034063, dice: 0.426656, loss: 0.460719
+val: bce: 0.029801, dice: 0.430276, loss: 0.460078
+EarlyStopping counter: 1 out of 15
+1m 15s
+Epoch 55/99
+----------
+LR 0.000375
+train: bce: 0.031364, dice: 0.418244, loss: 0.449608
+val: bce: 0.037443, dice: 0.379920, loss: 0.417363
+EarlyStopping counter: 2 out of 15
+1m 15s
+Epoch 56/99
+----------
+LR 0.000375
+train: bce: 0.032104, dice: 0.410781, loss: 0.442886
+val: bce: 0.028385, dice: 0.446504, loss: 0.474889
+EarlyStopping counter: 3 out of 15
+1m 16s
+Epoch 57/99
+----------
+LR 0.000375
+train: bce: 0.031367, dice: 0.404136, loss: 0.435503
+val: bce: 0.046514, dice: 0.417915, loss: 0.464429
+EarlyStopping counter: 4 out of 15
+1m 17s
+Epoch 58/99
+----------
+LR 0.000375
+train: bce: 0.029422, dice: 0.401713, loss: 0.431135
+val: bce: 0.026028, dice: 0.413351, loss: 0.439379
+EarlyStopping counter: 5 out of 15
+1m 17s
+Epoch 59/99
+----------
+LR 0.000375
+train: bce: 0.029045, dice: 0.393888, loss: 0.422932
+val: bce: 0.026057, dice: 0.360588, loss: 0.386645
+Validation loss decreased (0.397888 --> 0.386645).  Saving best model ...
+1m 18s
+Epoch 60/99
+----------
+LR 0.000375
+train: bce: 0.026347, dice: 0.378638, loss: 0.404985
+val: bce: 0.023185, dice: 0.338121, loss: 0.361307
+Validation loss decreased (0.386645 --> 0.361307).  Saving best model ...
+1m 20s
+Epoch 61/99
+----------
+LR 0.000375
+train: bce: 0.025540, dice: 0.379753, loss: 0.405293
+val: bce: 0.039603, dice: 0.404211, loss: 0.443813
+EarlyStopping counter: 1 out of 15
+1m 17s
+Epoch 62/99
+----------
+LR 0.000375
+train: bce: 0.026600, dice: 0.391557, loss: 0.418157
+val: bce: 0.029155, dice: 0.360344, loss: 0.389499
+EarlyStopping counter: 2 out of 15
+1m 15s
+Epoch 63/99
+----------
+LR 0.000375
+train: bce: 0.030885, dice: 0.394633, loss: 0.425518
+val: bce: 0.035814, dice: 0.399827, loss: 0.435641
+EarlyStopping counter: 3 out of 15
+1m 15s
+Epoch 64/99
+----------
+LR 0.000375
+train: bce: 0.027703, dice: 0.388894, loss: 0.416597
+val: bce: 0.034691, dice: 0.377609, loss: 0.412300
+EarlyStopping counter: 4 out of 15
+1m 19s
+Epoch 65/99
+----------
+LR 0.000375
+train: bce: 0.026165, dice: 0.370300, loss: 0.396465
+val: bce: 0.030688, dice: 0.368575, loss: 0.399263
+EarlyStopping counter: 5 out of 15
+1m 18s
+Epoch 66/99
+----------
+LR 0.000375
+train: bce: 0.030584, dice: 0.384464, loss: 0.415048
+val: bce: 0.034015, dice: 0.417312, loss: 0.451328
+EarlyStopping counter: 6 out of 15
+1m 18s
+Epoch 67/99
+----------
+LR 0.0001875
+train: bce: 0.030333, dice: 0.403885, loss: 0.434217
+val: bce: 0.024465, dice: 0.348597, loss: 0.373062
+EarlyStopping counter: 7 out of 15
+1m 21s
+Epoch 68/99
+----------
+LR 0.0001875
+train: bce: 0.025371, dice: 0.366069, loss: 0.391440
+val: bce: 0.023580, dice: 0.358091, loss: 0.381671
+EarlyStopping counter: 8 out of 15
+1m 20s
+Epoch 69/99
+----------
+LR 0.0001875
+train: bce: 0.024632, dice: 0.354055, loss: 0.378687
+val: bce: 0.023108, dice: 0.326287, loss: 0.349395
+Validation loss decreased (0.361307 --> 0.349395).  Saving best model ...
+1m 20s
+Epoch 70/99
+----------
+LR 0.0001875
+train: bce: 0.023608, dice: 0.350974, loss: 0.374582
+val: bce: 0.023273, dice: 0.362779, loss: 0.386053
+EarlyStopping counter: 1 out of 15
+1m 18s
+Epoch 71/99
+----------
+LR 0.0001875
+train: bce: 0.023738, dice: 0.348602, loss: 0.372340
+val: bce: 0.021583, dice: 0.367040, loss: 0.388623
+EarlyStopping counter: 2 out of 15
+1m 17s
+Epoch 72/99
+----------
+LR 0.0001875
+train: bce: 0.023821, dice: 0.353613, loss: 0.377434
+val: bce: 0.024632, dice: 0.333962, loss: 0.358593
+EarlyStopping counter: 3 out of 15
+1m 17s
+Epoch 73/99
+----------
+LR 0.0001875
+train: bce: 0.024966, dice: 0.351997, loss: 0.376963
+val: bce: 0.027974, dice: 0.326445, loss: 0.354419
+EarlyStopping counter: 4 out of 15
+1m 20s
+Epoch 74/99
+----------
+LR 0.0001875
+train: bce: 0.026594, dice: 0.360505, loss: 0.387098
+val: bce: 0.024852, dice: 0.355993, loss: 0.380844
+EarlyStopping counter: 5 out of 15
+1m 18s
+Epoch 75/99
+----------
+LR 0.0001875
+train: bce: 0.024322, dice: 0.352674, loss: 0.376996
+val: bce: 0.023034, dice: 0.345913, loss: 0.368947
+EarlyStopping counter: 6 out of 15
+1m 18s
+Epoch 76/99
+----------
+LR 9.375e-05
+train: bce: 0.023394, dice: 0.331275, loss: 0.354669
+val: bce: 0.023633, dice: 0.327741, loss: 0.351375
+EarlyStopping counter: 7 out of 15
+1m 17s
+Epoch 77/99
+----------
+LR 9.375e-05
+train: bce: 0.021681, dice: 0.329532, loss: 0.351213
+val: bce: 0.021013, dice: 0.332068, loss: 0.353081
+EarlyStopping counter: 8 out of 15
+1m 16s
+Epoch 78/99
+----------
+LR 9.375e-05
+train: bce: 0.021249, dice: 0.326042, loss: 0.347290
+val: bce: 0.022507, dice: 0.319830, loss: 0.342338
+Validation loss decreased (0.349395 --> 0.342338).  Saving best model ...
+1m 16s
+Epoch 79/99
+----------
+LR 9.375e-05
+train: bce: 0.020570, dice: 0.324846, loss: 0.345416
+val: bce: 0.020425, dice: 0.339350, loss: 0.359775
+EarlyStopping counter: 1 out of 15
+1m 18s
+Epoch 80/99
+----------
+LR 9.375e-05
+train: bce: 0.021065, dice: 0.317316, loss: 0.338380
+val: bce: 0.020203, dice: 0.320968, loss: 0.341172
+Validation loss decreased (0.342338 --> 0.341172).  Saving best model ...
+1m 17s
+Epoch 81/99
+----------
+LR 9.375e-05
+train: bce: 0.020226, dice: 0.319593, loss: 0.339819
+val: bce: 0.018403, dice: 0.321386, loss: 0.339789
+Validation loss decreased (0.341172 --> 0.339789).  Saving best model ...
+1m 16s
+Epoch 82/99
+----------
+LR 9.375e-05
+train: bce: 0.020662, dice: 0.322436, loss: 0.343098
+val: bce: 0.019512, dice: 0.321547, loss: 0.341059
+EarlyStopping counter: 1 out of 15
+1m 16s
+Epoch 83/99
+----------
+LR 9.375e-05
+train: bce: 0.020861, dice: 0.321111, loss: 0.341972
+val: bce: 0.022440, dice: 0.312722, loss: 0.335162
+Validation loss decreased (0.339789 --> 0.335162).  Saving best model ...
+1m 16s
+Epoch 84/99
+----------
+LR 9.375e-05
+train: bce: 0.021318, dice: 0.323342, loss: 0.344660
+val: bce: 0.020567, dice: 0.316254, loss: 0.336821
+EarlyStopping counter: 1 out of 15
+1m 19s
+Epoch 85/99
+----------
+LR 9.375e-05
+train: bce: 0.020436, dice: 0.314930, loss: 0.335366
+val: bce: 0.024555, dice: 0.317856, loss: 0.342412
+EarlyStopping counter: 2 out of 15
+1m 20s
+Epoch 86/99
+----------
+LR 9.375e-05
+train: bce: 0.020954, dice: 0.317907, loss: 0.338862
+val: bce: 0.020398, dice: 0.313852, loss: 0.334250
+Validation loss decreased (0.335162 --> 0.334250).  Saving best model ...
+1m 20s
+Epoch 87/99
+----------
+LR 9.375e-05
+train: bce: 0.021563, dice: 0.321315, loss: 0.342878
+val: bce: 0.020296, dice: 0.311862, loss: 0.332158
+Validation loss decreased (0.334250 --> 0.332158).  Saving best model ...
+1m 19s
+Epoch 88/99
+----------
+LR 9.375e-05
+train: bce: 0.021338, dice: 0.318531, loss: 0.339869
+val: bce: 0.023406, dice: 0.318022, loss: 0.341428
+EarlyStopping counter: 1 out of 15
+1m 15s
+Epoch 89/99
+----------
+LR 9.375e-05
+train: bce: 0.021300, dice: 0.319893, loss: 0.341193
+val: bce: 0.022230, dice: 0.307573, loss: 0.329802
+Validation loss decreased (0.332158 --> 0.329802).  Saving best model ...
+1m 18s
+Epoch 90/99
+----------
+LR 9.375e-05
+train: bce: 0.019842, dice: 0.307671, loss: 0.327513
+val: bce: 0.020727, dice: 0.307173, loss: 0.327899
+Validation loss decreased (0.329802 --> 0.327899).  Saving best model ...
+1m 17s
+Epoch 91/99
+----------
+LR 9.375e-05
+train: bce: 0.020697, dice: 0.314341, loss: 0.335038
+val: bce: 0.021043, dice: 0.313369, loss: 0.334412
+EarlyStopping counter: 1 out of 15
+1m 17s
+Epoch 92/99
+----------
+LR 9.375e-05
+train: bce: 0.020009, dice: 0.311467, loss: 0.331476
+val: bce: 0.021441, dice: 0.333393, loss: 0.354834
+EarlyStopping counter: 2 out of 15
+1m 18s
+Epoch 93/99
+----------
+LR 9.375e-05
+train: bce: 0.020345, dice: 0.310229, loss: 0.330574
+val: bce: 0.021530, dice: 0.323190, loss: 0.344719
+EarlyStopping counter: 3 out of 15
+1m 16s
+Epoch 94/99
+----------
+LR 9.375e-05
+train: bce: 0.020046, dice: 0.306903, loss: 0.326949
+val: bce: 0.019207, dice: 0.310198, loss: 0.329405
+EarlyStopping counter: 4 out of 15
+1m 16s
+Epoch 95/99
+----------
+LR 9.375e-05
+train: bce: 0.020815, dice: 0.310407, loss: 0.331221
+val: bce: 0.021112, dice: 0.315599, loss: 0.336712
+EarlyStopping counter: 5 out of 15
+1m 17s
+Epoch 96/99
+----------
+LR 9.375e-05
+train: bce: 0.019197, dice: 0.298792, loss: 0.317989
+val: bce: 0.021274, dice: 0.306298, loss: 0.327572
+Validation loss decreased (0.327899 --> 0.327572).  Saving best model ...
+1m 18s
+Epoch 97/99
+----------
+LR 9.375e-05
+train: bce: 0.019685, dice: 0.308565, loss: 0.328250
+val: bce: 0.023649, dice: 0.323665, loss: 0.347315
+EarlyStopping counter: 1 out of 15
+1m 17s
+Epoch 98/99
+----------
+LR 9.375e-05
+train: bce: 0.020367, dice: 0.309510, loss: 0.329877
+val: bce: 0.019527, dice: 0.285773, loss: 0.305299
+Validation loss decreased (0.327572 --> 0.305299).  Saving best model ...
+1m 17s
+Epoch 99/99
+----------
+LR 9.375e-05
+train: bce: 0.020343, dice: 0.310531, loss: 0.330874
+val: bce: 0.020550, dice: 0.294816, loss: 0.315366
+EarlyStopping counter: 1 out of 15
+1m 18s
+Best val loss: 0.305299
+(torch) chan@chan-desktop:~/Desktop/DLD1$ python test.py --model unet --metric-dataset-type undersample --epochs 100
+----------------------------------------------------------------
+The number of test set: 1189
+----------------------------------------------------------------
+----------
+The Evaluation Starts ...
+----------
+The total samples: 1189
+The average dice score is tensor([[0.8249]], device='cuda:0').
+The number of tumor samples: 142
+The average dice score of the slices which have tumor is tensor([[0.2030]], device='cuda:0').
+The number of correct cases when the prediction predicts some poriton of the tumor: 43
+The number of incorrect cases when the prediction predicts some poriton of the tumor: 32
+The number of cases when the prediction predicts no tumor but it has tumor: 67
+The number of non-tumor samples: 1047
+The average dice score of the slices which have non-tumor is tensor([[0.9093]], device='cuda:0').
+The number of cases when the prediction predicts no tumor when it has no tumor: 952
+The number of cases when the prediction predicts tumor when it has no tumor: 95
+0m 27s
