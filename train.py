@@ -90,8 +90,8 @@ def train_model(model, optimizer, scheduler, device, num_epochs, dataloaders):
     best_loss = 1e10
     epoch_train_loss = list()
     epoch_valid_loss = list()
-    epoch_train_dice = list()
-    epoch_valid_dice = list()
+    epoch_train_dice_loss = list()
+    epoch_valid_dice_loss = list()
     epoch_train_bce = list()
     epoch_valid_bce = list()
     writer = SummaryWriter()
@@ -136,16 +136,16 @@ def train_model(model, optimizer, scheduler, device, num_epochs, dataloaders):
             print_metrics(metrics, epoch_samples, phase)
             epoch_loss = metrics['loss'] / epoch_samples
             writer.add_scalar('Loss(BCE+Dice)/train', epoch_loss, epoch)
-            writer.add_scalar('Dice Loss/train', metrics['dice']/ epoch_samples, epoch)
+            writer.add_scalar('Dice Loss/train', metrics['dice_loss']/ epoch_samples, epoch)
             writer.add_scalar('BCE/train', metrics['bce']/ epoch_samples, epoch)
             if phase == 'train':
                 epoch_train_loss.append(metrics['loss']/ epoch_samples)
                 epoch_train_bce.append(metrics['bce']/ epoch_samples)
-                epoch_train_dice.append(metrics['dice']/ epoch_samples)
+                epoch_train_dice_loss.append(metrics['dice_loss']/ epoch_samples)
             elif phase == 'val':
                 epoch_valid_loss.append(metrics['loss']/ epoch_samples)
                 epoch_valid_bce.append(metrics['bce']/ epoch_samples)
-                epoch_valid_dice.append(metrics['dice']/ epoch_samples)
+                epoch_valid_dice_loss.append(metrics['dice_loss']/ epoch_samples)
                 scheduler.step(epoch_loss)
                 for tag, value in model.named_parameters():
                     tag = tag.replace('.', '/')
@@ -154,7 +154,7 @@ def train_model(model, optimizer, scheduler, device, num_epochs, dataloaders):
                     #    writer.add_histogram('grads/' + tag, value.grad.data.cpu().numpy(), epoch)
                 writer.add_scalar('learning_rate', optimizer.param_groups[0]['lr'], epoch)
                 writer.add_scalar('Loss(BCE+Dice)/valid', metrics['loss']/ epoch_samples, epoch)
-                writer.add_scalar('Dice Loss/valid', metrics['dice']/ epoch_samples, epoch)
+                writer.add_scalar('Dice Loss/valid', metrics['dice_loss']/ epoch_samples, epoch)
                 writer.add_scalar('BCE/valid', metrics['bce']/ epoch_samples, epoch)
                 early_stopping(epoch_loss, model)
             # deep copy the model
@@ -169,8 +169,8 @@ def train_model(model, optimizer, scheduler, device, num_epochs, dataloaders):
             break   
         
     print('Best val loss: {:4f}'.format(best_loss))
-    metric_train = (epoch_train_loss, epoch_train_bce, epoch_train_dice)
-    metric_valid = (epoch_valid_loss, epoch_valid_bce, epoch_valid_dice)
+    metric_train = (epoch_train_loss, epoch_train_bce, epoch_train_dice_loss)
+    metric_valid = (epoch_valid_loss, epoch_valid_bce, epoch_valid_dice_loss)
     # load best model weights
     model.load_state_dict(best_model_wts)
     writer.close()
