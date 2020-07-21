@@ -51,8 +51,8 @@ def plot_result(img, label, pred, index, path, dice_score):
     ax3.imshow(result[0][0][:, :])
     plt.savefig(f'{path}eval_plot_{index}.png')
 
-def test_model(model, device, dataloaders, plot_path):
-    model.load_state_dict(torch.load(f"{args.model_path}best_metric_model_{args.model}_{args.metric_dataset_type}_{args.epochs}.pth")) 
+def test_model(model, device, dataloaders, plot_path, info):
+    model.load_state_dict(torch.load(f"{args.model_path}best_metric_{args.model}_{args.metric_dataset_type}_{args.epochs}.pth")) 
     test_dice = list()
     test_tumor_dice = list()
     test_non_tumor_dice = list()
@@ -91,7 +91,6 @@ def test_model(model, device, dataloaders, plot_path):
             test_tumor_samples += 1
             if predicted_num_class != 1 and dice_score >= 0.009:
                 gt_tum_pd_tum_ok += 1
-                save_overlay_img(preds,labels,inputs,i,plot_path)
                 #plot_result(inputs, labels, preds, i, plot_path, dice_score)
             elif predicted_num_class == 1:
                 gt_tum_pd_no += 1
@@ -111,7 +110,7 @@ def test_model(model, device, dataloaders, plot_path):
         test_samples += 1
         i += 1
 
-    test_metrics[]
+    test_metrics = []
     average_dice_score = sum(test_dice) / test_samples
     average_tumor_dice_score = sum(test_tumor_dice) / test_tumor_samples
     average_non_tumor_dice_score = sum(test_non_tumor_dice) / test_non_tumor_samples
@@ -139,13 +138,14 @@ def test_model(model, device, dataloaders, plot_path):
     return test_dice
 
 def makedirs(args):
-    os.makedirs(args.eval_plot, exist_ok=True)
+    os.makedirs(args.plot_path, exist_ok=True)
 
 def main(args):
     makedirs(args)
     device = torch.device("cpu" if not torch.cuda.is_available() else args.device)
     dataset = load_datasets(args)
     colon_dataloader = load_dataloader(dataset)
+    info = {'average_dice_score':0, 'average_tumor_dice_score':0, 'average_non_tumor_dice_score':0}
     if args.model == 'unet':
         model = UNet(n_channel=1,n_class=1).to(device)
     elif args.model == 'resnetunet':
@@ -155,7 +155,7 @@ def main(args):
     print('----------------------------------------------------------------')
     print(f"The number of test set: {len(colon_dataloader['test'])}")
     print('----------------------------------------------------------------')
-    result = test_model(model, device, colon_dataloader, args.plot_path)
+    result = test_model(model, device, colon_dataloader, args.plot_path, info)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(

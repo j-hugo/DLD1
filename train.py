@@ -17,6 +17,7 @@ from architecture import UNet, ResNetUNet
 from loss import calc_loss, print_metrics
 from torchvision import models
 from torch.optim import lr_scheduler, SGD
+import json
 
 def makedirs(args):
     os.makedirs(args.weights, exist_ok=True)
@@ -62,11 +63,11 @@ class EarlyStopping:
         self.early_stop = False
         self.val_loss_min = np.Inf
 
-    def __call__(self, val_loss, model):
+    def __call__(self, val_loss, model, optimizer):
 
         if self.best_val_loss is None:
             self.best_val_loss = val_loss
-            self.save_checkpoint(val_loss, model)
+            self.save_checkpoint(val_loss, model, optimizer)
         elif val_loss > self.best_val_loss:
             self.counter += 1
             print(f'EarlyStopping counter: {self.counter} out of {self.patience}')
@@ -77,15 +78,16 @@ class EarlyStopping:
             self.save_checkpoint(val_loss, model)
             self.counter = 0
 
-    def save_checkpoint(self, val_loss, model):
+    def save_checkpoint(self, val_loss, model, optimizer):
         '''Saves model when validation loss decrease.'''
         if self.verbose:
             print(f'Validation loss decreased ({self.val_loss_min:.6f} --> {val_loss:.6f}).  Saving best model ...')
         torch.save({'model_state_dict':model.state_dict(),
-                    'epoch':epoch}, f"{args.weights}best_metric_model_{args.model}_{args.dataset_type}_{args.epochs}.pth") # https://pytorch.org/tutorials/beginner/saving_loading_models.html#saving-loading-a-general-checkpoint-for-inference-and-or-resuming-training
+                    'optimizer_state_dict': optimizer.state_dict()}, 
+                    f"{args.weights}best_metric_{args.model}_{args.dataset_type}_{args.epochs}.pth")
         self.val_loss_min = val_loss
 
-def train_model(model, optimizer, scheduler, device, num_epochs, dataloaders):
+def train_model(model, optimizer, scheduler, device, num_epochs, dataloaders, info, fine_tune=False):
     best_model_wts = copy.deepcopy(model.state_dict())
     best_loss = 1e10
     epoch_train_loss = list()
@@ -97,7 +99,6 @@ def train_model(model, optimizer, scheduler, device, num_epochs, dataloaders):
     writer = SummaryWriter()
 
     early_stopping = EarlyStopping(patience=args.earlystop, verbose=True)
-
     for epoch in range(num_epochs):
         print('Epoch {}/{}'.format(epoch+1, num_epochs))
         print('-' * 10)
@@ -161,7 +162,7 @@ def train_model(model, optimizer, scheduler, device, num_epochs, dataloaders):
 
                 scheduler.step(epoch_loss) # pass loss to ReduceLROnPlateau scheduler
 
-                early_stopping(epoch_loss, model) #  evaluate early stopping criterion
+                early_stopping(epoch_loss, model, optimizer) #  evaluate early stopping criterion
 
                 # deep copy the model
                 if epoch_loss < best_loss:
@@ -173,8 +174,26 @@ def train_model(model, optimizer, scheduler, device, num_epochs, dataloaders):
 
         if early_stopping.early_stop:
             print(f"Early stopping after epoch {epoch}")
+            if fine_tune:
+                info['stopping LR'] = optimizer.param_groups[0]['lr']
+                info['stopping epoch'] = epoch
+                info['best loss'] = best_loss
+            else:
+                info['fine_tune_stopping LR'] = optimizer.param_groups[0]['lr']
+                info['fine_tune_stopping epoch'] = epoch
+                info['fine_tune_best loss'] = best_loss
             break   
-        
+
+    if early_stopping.early_stop != True:
+        if fine_tune != True:
+            info['stopping LR'] = optimizer.param_groups[0]['lr']
+            info['stopping epoch'] = epoch+1
+            info['best loss'] = best_loss
+        else:
+            info['fine_tune_stopping LR'] = optimizer.param_groups[0]['lr']
+            info['fine_tune_stopping epoch'] = epoch+1
+            info['fine_tune_best loss'] = best_loss
+    
     print('Best val loss: {:4f}'.format(best_loss))
 
     # collect all metrics
@@ -191,10 +210,12 @@ def train_model(model, optimizer, scheduler, device, num_epochs, dataloaders):
 def main(args):
     makedirs(args) # create necessary directories
     device = torch.device("cpu" if not torch.cuda.is_available() else "cuda:0") # set device to GPU if available
-
+    info_train = {}
     train, valid = load_datasets(args) # get train and val dataset
-
     colon_dataloader = load_dataloader(args, train, valid)
+
+    info_train['model'] = args.model
+    info_train['dataset'] = args.dataset_type
 
     if args.model == 'unet':
         model = UNet(n_channel=1, n_class=1).to(device)
@@ -203,7 +224,7 @@ def main(args):
         base_net.conv1 = torch.nn.Conv2d(1, 64, (7, 7), (2, 2), (3, 3), bias=False) # adjust first layer of ResNet to allow input of 1 channel
         model = ResNetUNet(base_net,n_class=1).to(device)
 
-    if args.device == 'cpu':
+    if device == 'cpu':
         print(model)
     else:
         summary(model, input_size=(1, args.image_size, args.image_size))
@@ -219,14 +240,16 @@ def main(args):
     scheduler = lr_scheduler.ReduceLROnPlateau(optimizer_ft, 'min', threshold_mode='abs', min_lr=1e-8, factor=0.1, patience=args.sched_patience)
 
     if args.load:
-        model.load_state_dict(torch.load(f"{args.weights}best_metric_model_{args.model}_{args.dataset_type}_{args.epochs}.pth")) 
+        checkpoint = torch.load(f"{args.weights}best_metric_{args.model}_{args.dataset_type}_{args.epochs}.pth")
+        model.load_state_dict(checkpoint['model_state_dict'])
+        optimizer_ft.load_state_dict(checkpoint['optimizer_state_dict'])
     
     if args.model == 'resnetunet':    
         for l in model.base_layers:
             for param in l.parameters():
                 param.requires_grad = False
 
-    model, metric_t, metric_v = train_model(model, optimizer_ft, scheduler, device, args.epochs, colon_dataloader)
+    model, metric_t, metric_v = train_model(model, optimizer_ft, scheduler, device, args.epochs, colon_dataloader, info_train)
     
     if args.model == 'resnetunet':
         print('----------------------------------------------------------------')
@@ -235,8 +258,11 @@ def main(args):
         for l in model.base_layers:
             for param in l.parameters():
                 param.requires_grad = True
-        model, metric_ft, metric_fv = train_model(model, optimizer_ft, scheduler, device, int(args.epochs/5), colon_dataloader)
+        model, metric_ft, metric_fv = train_model(model, optimizer_ft, scheduler, device, int(args.epochs/5), colon_dataloader, info_train, True)
     
+    with open(f"{args.weights}best_metric_{args.model}_{args.dataset_type}_{args.epochs}.json", "w") as json_file:
+        json.dump(info_train, json_file)
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Training the model for image segmentation of Colon"
