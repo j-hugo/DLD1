@@ -331,6 +331,7 @@ def main(args):
         print('----------------------------------------------------------------')
         print("Fine Tuning of ResNetUnet starts ...")
         print('----------------------------------------------------------------')
+        # unfreeze pretrained layers
         for l in model.base_layers:
             for param in l.parameters():
                 param.requires_grad = True
