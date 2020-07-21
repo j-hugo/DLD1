@@ -143,7 +143,7 @@ if __name__ == "__main__":
 
     if args.method == "create_dataset":
         convert_to_npy(args)
-    if args.method == "assign_subsets":
+    elif args.method == "assign_subsets":
         create_data_subsets(args)
     else:
         print("Please select whether you want to convert nifti files to npy files (create_dataset) or assign slices to test or train data-subset (assign_subsets) via --method argument")
