@@ -165,8 +165,8 @@ class ColonDataset(Dataset):
         label_path = os.path.join(self.label_dir,
                                   self.label_files[idx])
         
-        image = np.load(image_path, allow_pickle=True)
-        label = np.load(label_path, allow_pickle=True)
+        image = np.load(image_path)
+        label = np.load(label_path)
         if self.torch_transform:
             x, y = self.transform(image, label)
 
