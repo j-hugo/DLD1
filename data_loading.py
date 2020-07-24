@@ -78,9 +78,9 @@ def get_oversample_files(json_dir):
   
   return(image_files,label_files)
 
-# only_tumor_files() returns a list of all files that contain cancer tissue.
+# get_only_tumor_files() returns a list of all files that contain cancer tissue.
 # no files without cancer tissue will be returned
-def only_tumor_files(json_dir):
+def get_only_tumor_files(json_dir):
   with open(json_dir) as json_file:
     data_index = json.load(json_file)
 
@@ -147,7 +147,7 @@ class ColonDataset(Dataset):
             if self.balance_dataset == "oversample":
                 self.image_files, self.label_files = get_oversample_files(self.json_dir)
             if self.balance_dataset == 'only_tumor':
-                self.image_files, self.label_files = only_tumor_files(self.json_dir)
+                self.image_files, self.label_files = get_only_tumor_files(self.json_dir)
         if (self.balance_dataset is None) or (self.test is True):
             self.image_files, self.label_files = get_original_dataset(self.json_dir, self.test)
 
