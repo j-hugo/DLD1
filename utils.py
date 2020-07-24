@@ -20,8 +20,10 @@ def get_subset_stats(json_path):
 
 
 def metrics_summary(metrics_path):
-    print("{:<12} {:<15} {:<5} {:<5} {:<5} {:<5} {:<5} {:<5}".format('Model', 'Dataset', 'avg_dice', 'c_dice', 'n_dice',
-                                                                     'precision', 'recall', 'overlap'))
+    print(
+        "{:<12} {:<15} {:<5} {:<5} {:<5} {:<5} {:<5} {:<5} {:<5} {:<5}".format('Model', 'Dataset', 'avg_dice', 'c_dice',
+                                                                               'n_dice', 'precision', 'recall',
+                                                                               'overlap', 'FPR', 'FNR'))
     for file in os.listdir(metrics_path):
         file_path = os.path.join(metrics_path, file)
         with open(file_path) as json_file:
@@ -52,10 +54,18 @@ def metrics_summary(metrics_path):
         else:
             TP_with_overlap = metrics['test']['gt_c_pd_c_overlap'] / TP
 
-        print("{:<12} {:<15} {:.3f}    {:.3f}  {:.3f}  {:.3f}     {:.3f}  {:.3f}".format(model, dataset, avg_dice,
-                                                                                         cancer_dice, no_cancer_dice,
-                                                                                         precision, recall,
-                                                                                         TP_with_overlap))
+        false_positive = FP / (FP + TN)
+        false_negative = FN / (FN + TP)
+
+        print("{:<12} {:<15} {:.3f}    {:.3f}  {:.3f}  {:.3f}     {:.3f}  {:.3f}   {:.3f} {:.3f}".format(model, dataset,
+                                                                                                         avg_dice,
+                                                                                                         cancer_dice,
+                                                                                                         no_cancer_dice,
+                                                                                                         precision,
+                                                                                                         recall,
+                                                                                                         TP_with_overlap,
+                                                                                                         false_positive,
+                                                                                                         false_negative))
 
 
 if __name__ == "__main__":
