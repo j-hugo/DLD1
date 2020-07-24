@@ -163,5 +163,6 @@ class ResNetUNet(nn.Module):
 
       
 if __name__ == "__main__":
-  u_model = UNet(1, 2)
-  print(summary(u_model, input_size=(1, 256, 256)))
+  device = torch.device("cpu" if not torch.cuda.is_available() else "cuda:0") # set device to GPU if available
+  u_model = UNet(1, 2).to(device)
+  summary(u_model, input_size=(1, 256, 256))

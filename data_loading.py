@@ -213,15 +213,16 @@ class ColonDataset(Dataset):
       return image, label
       
 if __name__ == "__main__":
-  path = os.path.abspath(".") + "/"
+  path = os.path.abspath(".") + "/data/"
   image_dir = path+'npy_images'
   label_dir = path+'npy_labels'
-  json_dir = path+'data_index.json'
+  json_dir = path+'data_index_subsets.json'
 
-  data = ColonDataset(image_dir,label_dir,csv_dir, 256,torch_transform=True, balance_dataset="only_tumor")
-  single_example = data[1]
+  data = ColonDataset(image_dir,label_dir,json_dir, 256,torch_transform=True, balance_dataset="only_tumor")
+  single_example = data[0]
+  print(single_example)
   print(f"Plotting slice of Image")
   plt.imshow(single_example[0][0], cmap='gray')
-  plt.imshow(single_example[1][1],alpha=0.3)
+  plt.imshow(single_example[1][0],alpha=0.3)
   plt.axis('off')
   plt.show()
