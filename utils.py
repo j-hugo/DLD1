@@ -70,7 +70,7 @@ def metrics_summary(metrics_path):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Training the model for image segmentation of Colon"
+        description="Utility funcitons for statistics on the dataset or analysis of metrics"
     )
     parser.add_argument(
         "--method",
