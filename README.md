@@ -1,7 +1,7 @@
 # DLD1
 Use the following structure as minimal requirement for your submission:
 
-() model.pt: your trained model file
+(o) model.pt: your trained model file
 
 (o) data_loading.py: preprocessing, data iterators
 
@@ -15,11 +15,9 @@ Use the following structure as minimal requirement for your submission:
 
 () summary.pdf
 
-() if required: /app/application_files
-
 () README: Describe clearly how to run your code
 
-() license file: Under which license do you distribute your project?
+(o) license file: Under which license do you distribute your project?
 
 How to use 
 1. execute dataset.py
