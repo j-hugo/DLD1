@@ -21,7 +21,7 @@ def convert_to_npy(args):
         Convert nitfi image files to numpy files
 
         Args:
-            args: arguments from the parser. 
+            args: arguments from the parser.
 
     """
     # load a path of image files and sort them
@@ -32,7 +32,7 @@ def convert_to_npy(args):
 
     # set the location to converted image files
     image_saved_path =args.path +'npy_images/'
-    
+
     # create a directory of the converted image files
     try:
         os.mkdir(image_saved_path)
@@ -50,7 +50,7 @@ def convert_to_npy(args):
         print ("Creation of the directory %s failed" % label_saved_path)
     else:
         print ("Successfully created the directory %s " % label_saved_path)
-        
+
     data_index = {}
 
     for img, label in zip(images,labels):
@@ -60,12 +60,12 @@ def convert_to_npy(args):
         training_label = nibabel.load(os.path.join(label_data_path, label))
 
         for k in range(training_label.shape[2]):
-            # axial cuts are made along the z axis (slice) 
+            # axial cuts are made along the z axis (slice)
             image_2d = np.array(training_image.get_fdata()[:, :, k], dtype='int16') # I checked: all values in the nifti files were integers, ranging from -1024 to approx 3000
             label_2d = np.array(training_label.get_fdata()[:, :, k], dtype='uint8') # only contains 1s and 0s
             slice_number = str(k).zfill(3)
             slice_index = image_number+'_'+slice_number
-            
+
             if len(np.unique(label_2d))!=1:
               contains_cancer = True
             else:
@@ -80,24 +80,24 @@ def convert_to_npy(args):
 
             np.save((image_saved_path+'image_{}_{}.npy'.format(image_number,slice_number)), image_2d)
             np.save((label_saved_path +'label_{}_{}.npy'.format(image_number,slice_number)), label_2d)
-            
+
         print(f'Saved slices of image {image_number}')
-    
+
     with open(args.path+"data_index.json", "w") as json_file:
         json.dump(data_index,json_file)
 
 def create_data_subsets(args):
     """
-        Split the data for test and train. 
+        Split the data for test and train.
         You can choose how to split the data by examples(patients) or by slices.
-        It saved as json file and the json file is used one of arguments of ConlonDataset on dataset.py
+        It is saved as json file and the json file is used one of arguments of ConlonDataset on dataset.py
 
         Args:
-            args: arguments from the parser. 
+            args: arguments from the parser.
 
     """
     data_index_file = args.path+"data_index.json"
-    
+
     with open(data_index_file) as json_file:
         data_index = json.load(json_file)
 
@@ -168,4 +168,3 @@ if __name__ == "__main__":
         create_data_subsets(args)
     else:
         print("Please select whether you want to convert nifti files to npy files (create_dataset) or assign slices to test or train data-subset (assign_subsets) via --method argument")
-
