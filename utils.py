@@ -122,6 +122,10 @@ if __name__ == "__main__":
         "--metric_path", type=str, default="./save/metrics",
         help="root folder with json with assigned subsets"
     )
+    parser.add_argument(
+        "--plot-path", type=str, default="./save/plots",
+        help="root folder to save plots"
+    )
     args = parser.parse_args()
     if args.method == 'subset_stats':
         get_subset_stats(args.jsonfile)
