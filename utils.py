@@ -6,6 +6,12 @@ import numpy as np
 import os
 
 def get_subset_stats(json_path):
+    """
+        Calculate the statistics of subset dataset
+
+        Args:
+            json_path: A path to subset json file
+    """
     with open(json_path) as json_file:
         data_index = json.load(json_file)
     stats = {}
@@ -21,6 +27,12 @@ def get_subset_stats(json_path):
 
 
 def metrics_summary(metric_path):
+    """
+        Calculate the statistics of evaluation metrics
+
+        Args:
+            metric_path: A path to metric json file directory
+    """
     print(
         "{:<12} {:<15} {:<5} {:<5} {:<5} {:<5} {:<5} {:<5} {:<5} {:<5}".format('Model', 'Dataset', 'avg_dice', 'c_dice',
                                                                                'n_dice', 'precision', 'recall',
@@ -74,7 +86,17 @@ def metrics_summary(metric_path):
 
 # outline, gray2rgb, overlay_plot are adapted from: https://github.com/mateuszbuda/brain-segmentation-pytorch/blob/master/utils.py
 def outline(image, mask, color):
-    #mask = mask.numpy()
+    """
+        Give a color to the outline of the mask
+
+        Args:
+            image: an image 
+            mask: a label
+            color: a RGB color for outline
+            
+        Return:
+            image: the image which is drawn outline 
+    """
     mask = np.round(mask)
     yy, xx = np.nonzero(mask)
     for y, x in zip(yy, xx):
@@ -84,8 +106,15 @@ def outline(image, mask, color):
 
 
 def gray2rgb(image):
-    #if type(image) != 'numpy.ndarray':
-    #    image = image.numpy()
+    """
+        Change a one channel image to a RGB image
+
+        Args:
+            image: an image which has one channel
+            
+        Return:
+            image: the converted image which has a RGB channel 
+    """
     w, h = image.shape
     image += np.abs(np.min(image))
     image_max = np.abs(np.max(image))
@@ -96,10 +125,23 @@ def gray2rgb(image):
     return ret
 
 
-def overlay_plot(img, y_pred, y_true, index, args, save_plot=False):
-    image = gray2rgb(img[0])  # channel 1 is for FLAIR
-    image = outline(image, y_pred[0], color=[255, 0, 0])
-    image = outline(image, y_true[0], color=[0, 255, 0])
+def overlay_plot(img, y_true, y_pred, index, args, save_plot=False):
+    """
+        Change a one channel image to a RGB image
+
+        Args:
+            img: an image which has one channel
+            y_pred: the predicted label from the model
+            y_true: the ground truth label
+            index: the index number 
+            args: arguemtns from the parser
+            save_plot: if True, it saves plots
+        Return:
+            image: the overlay image 
+    """
+    image = gray2rgb(img[0]) 
+    image = outline(image, y_true[0], color=[255, 0, 0])
+    image = outline(image, y_pred[0], color=[0, 255, 0])
     if save_plot == True:
         filename = "img-{}.png".format(index)
         filepath = os.path.join(args.plot_path, filename)
