@@ -31,6 +31,8 @@ def metrics_summary(metric_path):
             metrics = json.load(json_file)
 
         dataset = metrics['train']['dataset']
+        if dataset == None:
+            dataset = "original"
         model = metrics['train']['model']
         image_size = metrics['train']['image_size']
         avg_dice = metrics['test']['average_dice_score']
