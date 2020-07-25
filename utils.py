@@ -69,6 +69,7 @@ def metrics_summary(metrics_path):
                                                                                                          false_negative))
 
 
+# outline, gray2rgb, overlay_plot are adapted from: https://github.com/mateuszbuda/brain-segmentation-pytorch/blob/master/utils.py
 def outline(image, mask, color):
     mask = mask.numpy()
     mask = np.round(mask)
