@@ -79,7 +79,7 @@ def plot_result(img, label, pred, index, path, dice_score):
     plt.savefig(f'{path}eval_plot_{index}.png')
 
 
-def test_model(model, device, dataloaders, plot_path, info):
+def test_model(model, device, dataloaders, pred_save, info):
     """
         Evaluate the model
 
@@ -87,7 +87,7 @@ def test_model(model, device, dataloaders, plot_path, info):
             model: A neural netowrk model for evaluation
             device: gpu or cpu
             dataloaders: a data loader
-            plot_path: a path to save plotting image files
+            pred_save: save the image, label and prediction
             info: a dictionary to save metrics of evaluation
         
         Return:
@@ -101,7 +101,8 @@ def test_model(model, device, dataloaders, plot_path, info):
     test_dice = list()
     test_cancer_dice = list()
     test_non_cancer_dice = list()
-    
+    if pred_save == True:
+        predicted_label = dict()
     print('-' * 10)
     print('The Evaluation Starts ...')
     print('-' * 10)
@@ -135,6 +136,10 @@ def test_model(model, device, dataloaders, plot_path, info):
             outputs = model(images)
             preds = torch.sigmoid(outputs)
             preds = torch.round(preds)
+            if pred_save == True:
+                predicted[i]['img'] = images.cpu().numpy()
+                predicted[i]['label'] = labels.cpu().numpy()
+                predicted[i]['pred'] = preds.cpu().numpy()
             dice_score = dice_coef(preds, labels)
             predicted_num_class = len(torch.unique(preds))
             number_label_class = len(torch.unique(labels)) 
@@ -209,8 +214,9 @@ def test_model(model, device, dataloaders, plot_path, info):
     
     time_elapsed = time.time() - since
     print('{:.0f}m {:.0f}s'.format(time_elapsed // 60, time_elapsed % 60))
-
-    return test_dice
+    
+    if pred_save == True:
+        return predicted
 
 def makedirs(args):
     """create directories to save plots  
