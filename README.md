@@ -1,31 +1,41 @@
-# DLD1
-Use the following structure as minimal requirement for your submission:
+# Colon Image Segmentation
 
-(o) model.pt: your trained model file
+## under construction :D
 
-(o) data_loading.py: preprocessing, data iterators
+## 1. Data
 
-(o) architecture.py: model architecture class(es)
+The Dataset used for image segmentation was made publicly available on [Medical Segmentation Decathlon](http://medicaldecathlon.com/index.html). 
 
-(o) train.py: instantiates a model, conducts the training and saves the model
+1) Download and extract the dataset. It is recommended to extract it in the same folder of this repository.
 
-(o) test.py: evaluation metric functions
+2) Run the code below on the command line to create 2D slices of the CT images from the original data are in 3D NifTI format.
+    ```
+    python dataset.py --method create_dataset 
+    ```
 
-() demo.colab
+3) Run the code below on the command line to split the data into training data and test data.
+    ```
+    python dataset.py --method assign_subsets
+    ```
 
-() summary.pdf
+You can set a path for data, split method, split ratio, and other arguments. For more options and help `run: python dataset.py --h`
 
-() README: Describe clearly how to run your code
+## 2. Train
+1) Run the code below on the command line. 
+    ```
+    python train.py
+    ```
+2) After finishing the training, run the command below to see how the loss and learning rate changes with every epoch.
+    ```
+    tensorboard --logdir=runs
+    ```
 
-(o) license file: Under which license do you distribute your project?
+For more options and help run: `python train.py --h`
 
-How to use 
-1. execute dataset.py
+## 3. Test
+1) Run the code below on the command line. 
+    ```
+    python test.py
+    ```
+For more options and help run: `python test.py --h`
 
-2-1. execute train.py 
-
-2-2. run this command on the command line to see plots of loss: 
-```
-tensorboard --logdir=runs
-```
-3. exectue evaluate.py 
