@@ -1,5 +1,17 @@
 # Semantic Segmentation of Colon Cancer Primaries
 
+## 0. Set up the environment
+You have to install some packages that need to run our project. 
+
+If you use anaconda, run the following command: 
+```
+conda env create -f environment.yaml
+```
+If you want to install packages using pip, run the following command:
+```
+pip install -r requirements.txt
+```
+
 ## 1. Data
 
 The Dataset used in this project for semantic image segmentation was made publicly available on [Medical Segmentation Decathlon](http://medicaldecathlon.com/index.html). 
