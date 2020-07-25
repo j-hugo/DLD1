@@ -1,7 +1,5 @@
 # Semantic Segmentation of Colon Cancer Primaries
 
-## under construction :D
-
 ## 1. Data
 
 The Dataset used in this project for semantic image segmentation was made publicly available on [Medical Segmentation Decathlon](http://medicaldecathlon.com/index.html). 
