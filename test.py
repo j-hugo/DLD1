@@ -50,35 +50,6 @@ def load_dataloader(dataset):
     }
     return dataloader
 
-def plot_result(img, label, pred, index, path, dice_score):
-    """Create a plot to compare original image, ground truth, and prediction
-       Save the created plot
-
-    Args:
-        img: a CT image
-        label: a groundtruth 
-        pred: a prediction from the model
-        index: the index of the image
-        path: a path to save the created image
-        dice_score: a dice score of the prediction
-
-    """
-    img = img.cpu()
-    result = pred.cpu()
-    label = label.cpu()
-    plt.figure('check', (18, 6))
-    ax1 = plt.subplot(1, 3, 1)
-    ax1.set_title('image')
-    ax1.imshow(img[0][0][ :, :])
-    ax2 = plt.subplot(1, 3, 2)
-    ax2.set_title('label')
-    ax2.imshow(label[0][0][ :, :])
-    ax3 = plt.subplot(1, 3, 3)
-    ax3.set_title(f'prediction: dice_score ({dice_score.item():.4f})')
-    ax3.imshow(result[0][0][:, :])
-    plt.savefig(f'{path}eval_plot_{index}.png')
-
-
 def test_model(model, device, dataloaders, pred_save, info):
     """
         Evaluate the model
@@ -143,10 +114,6 @@ def test_model(model, device, dataloaders, pred_save, info):
             dice_score = dice_coef(preds, labels)
             predicted_num_class = len(torch.unique(preds))
             number_label_class = len(torch.unique(labels)) 
-        #if len(torch.unique(labels)) != 1:
-        #    plot_result(inputs, labels, preds, i, plot_path, dice_score)
-        #if i % 50 == 0:
-        #    plot_result(inputs, labels, preds, i, plot_path, dice_score)
         
         # check the image has cancer
         if number_label_class != 1:
@@ -157,14 +124,11 @@ def test_model(model, device, dataloaders, pred_save, info):
             if predicted_num_class != 1 and dice_score >= 0.009:
                 gt_c_pd_c_overlap += 1
                 pd = 'cancer'
-                #plot_result(inputs, labels, preds, i, plot_path, dice_score)
             elif predicted_num_class == 1:
                 gt_c_pd_no_c += 1
-                #plot_result(inputs, labels, preds, i, plot_path, dice_score)
             else:
                 gt_c_pd_c_no_overlap += 1
                 pd = 'cancer'
-                #plot_result(inputs, labels, preds, i, plot_path, dice_score)
         else:
             test_non_cancer_dice.append(dice_score)
             test_non_cancer_samples += 1
