@@ -1,9 +1,9 @@
 # utility functions such as statistics
-
+import skimage.io as io
 import json
 import argparse
 import numpy as np
-from skimage.io import imsave
+import os
 
 def get_subset_stats(json_path):
     with open(json_path) as json_file:
@@ -20,13 +20,13 @@ def get_subset_stats(json_path):
         print("{:<8} {:<8} {:<10} {:<8}".format(k, cancer+non_cancer,cancer, non_cancer))
 
 
-def metrics_summary(metrics_path):
+def metrics_summary(metric_path):
     print(
         "{:<12} {:<15} {:<5} {:<5} {:<5} {:<5} {:<5} {:<5} {:<5} {:<5}".format('Model', 'Dataset', 'avg_dice', 'c_dice',
                                                                                'n_dice', 'precision', 'recall',
                                                                                'overlap', 'FPR', 'FNR'))
-    for file in os.listdir(metrics_path):
-        file_path = os.path.join(metrics_path, file)
+    for file in os.listdir(metric_path):
+        file_path = os.path.join(metric_path, file)
         with open(file_path) as json_file:
             metrics = json.load(json_file)
 
@@ -66,12 +66,13 @@ def metrics_summary(metrics_path):
                                                                                                          recall,
                                                                                                          TP_with_overlap,
                                                                                                          false_positive,
-                                                                                                         false_negative))
+                                                                                                         false_negative
+                                                                                                         ))
 
 
 # outline, gray2rgb, overlay_plot are adapted from: https://github.com/mateuszbuda/brain-segmentation-pytorch/blob/master/utils.py
 def outline(image, mask, color):
-    mask = mask.numpy()
+    #mask = mask.numpy()
     mask = np.round(mask)
     yy, xx = np.nonzero(mask)
     for y, x in zip(yy, xx):
@@ -79,8 +80,10 @@ def outline(image, mask, color):
             image[max(0, y) : y + 1, max(0, x) : x + 1] = color
     return image
 
+
 def gray2rgb(image):
-    image = image.numpy()
+    #if type(image) != 'numpy.ndarray':
+    #    image = image.numpy()
     w, h = image.shape
     image += np.abs(np.min(image))
     image_max = np.abs(np.max(image))
@@ -90,14 +93,16 @@ def gray2rgb(image):
     ret[:, :, 2] = ret[:, :, 1] = ret[:, :, 0] = image * 255
     return ret
 
-def overlay_plot(img, y_pred, y_true, index, save_plot):
+
+def overlay_plot(img, y_pred, y_true, index, args, save_plot=False):
     image = gray2rgb(img[0])  # channel 1 is for FLAIR
     image = outline(image, y_pred[0], color=[255, 0, 0])
     image = outline(image, y_true[0], color=[0, 255, 0])
     if save_plot == True:
-        filename = "{}.png".format(index)
+        filename = "img-{}.png".format(index)
         filepath = os.path.join(args.plot_path, filename)
-        imsave(filepath, image)
+        io.imsave(filepath, image)
+    return image
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -114,11 +119,11 @@ if __name__ == "__main__":
         help="root folder with json with assigned subsets"
     )
     parser.add_argument(
-        "--metrics_path", type=str, default="./save/metrics",
+        "--metric_path", type=str, default="./save/metrics",
         help="root folder with json with assigned subsets"
     )
     args = parser.parse_args()
     if args.method == 'subset_stats':
         get_subset_stats(args.jsonfile)
     elif args.method == 'metrics_summary':
-        metrics_summary(args.metrics_path)
+        metrics_summary(args.metric_path)

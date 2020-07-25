@@ -50,7 +50,7 @@ def load_dataloader(dataset):
     }
     return dataloader
 
-def test_model(model, device, dataloaders, pred_save, info):
+def test_model(model, device, dataloaders, pred_save, info, args):
     """
         Evaluate the model
 
@@ -62,7 +62,7 @@ def test_model(model, device, dataloaders, pred_save, info):
             info: a dictionary to save metrics of evaluation
         
         Return:
-            test_dice: the average dice score of the evaluation
+            predicted: If pred_save is ture, a dictionary which has image, label, and prediction of the slice returns
         """
     # load the trained model
     check = torch.load(f"{args.model_path}best_metric_{args.model}_{args.metric_dataset_type}_{args.epochs}.pth")
@@ -73,7 +73,7 @@ def test_model(model, device, dataloaders, pred_save, info):
     test_cancer_dice = list()
     test_non_cancer_dice = list()
     if pred_save == True:
-        predicted_label = dict()
+        predicted = dict()
     print('-' * 10)
     print('The Evaluation Starts ...')
     print('-' * 10)
@@ -107,16 +107,18 @@ def test_model(model, device, dataloaders, pred_save, info):
             outputs = model(images)
             preds = torch.sigmoid(outputs)
             preds = torch.round(preds)
-            if pred_save == True:
-                predicted[i]['img'] = images.cpu().numpy()
-                predicted[i]['label'] = labels.cpu().numpy()
-                predicted[i]['pred'] = preds.cpu().numpy()
             dice_score = dice_coef(preds, labels)
+            if pred_save == True:
+                data = {'img':images[0].cpu().numpy(), 'label':labels[0].cpu().numpy(), 'pred':preds[0].cpu().numpy(), \
+                        'dice': dice_score.item(), 'cancer_gt': False, 'cancer_pd': False}
+                predicted[i] = data
             predicted_num_class = len(torch.unique(preds))
             number_label_class = len(torch.unique(labels)) 
         
         # check the image has cancer
         if number_label_class != 1:
+            if pred_save == True:
+                predicted[i]['cancer_gt'] = True
             cancer = 'cancer'
             test_cancer_dice.append(dice_score)
             test_cancer_samples += 1
@@ -124,11 +126,15 @@ def test_model(model, device, dataloaders, pred_save, info):
             if predicted_num_class != 1 and dice_score >= 0.009:
                 gt_c_pd_c_overlap += 1
                 pd = 'cancer'
+                if pred_save == True:
+                    predicted[i]['cancer_pd'] = True
             elif predicted_num_class == 1:
                 gt_c_pd_no_c += 1
             else:
                 gt_c_pd_c_no_overlap += 1
                 pd = 'cancer'
+                if pred_save == True:
+                    predicted[i]['cancer_pd'] = True
         else:
             test_non_cancer_dice.append(dice_score)
             test_non_cancer_samples += 1
@@ -216,7 +222,7 @@ def main(args):
     print('----------------------------------------------------------------')
     
     # starts evaluation of the model
-    result = test_model(model, device, colon_dataloader, args.plot_path, info_test)
+    result = test_model(model, device, colon_dataloader, args.plot_path, info_test, args)
     
     # save the result from the evalutaion
     with open(f"{args.metric_path}best_metric_{args.model}_{args.metric_dataset_type}_{args.epochs}.json", 'ab+') as f:
@@ -229,6 +235,8 @@ def main(args):
             f.write(', "test": '.encode()) 
             f.write(json.dumps(info_test, indent=4).encode())    #Dump the dictionary
             f.write('}'.encode())  
+
+    
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(

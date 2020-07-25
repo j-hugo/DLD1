@@ -86,10 +86,10 @@ class EarlyStopping:
         self.early_stop = False
         self.val_loss_min = np.Inf
 
-    def __call__(self, val_loss, model, optimizer):
+    def __call__(self, val_loss, model, optimizer, args):
         if self.best_val_loss is None:
             self.best_val_loss = val_loss
-            self.save_checkpoint(val_loss, model, optimizer)
+            self.save_checkpoint(val_loss, model, optimizer, args)
         elif val_loss > self.best_val_loss:
             self.counter += 1
             print(f'EarlyStopping counter: {self.counter} out of {self.patience}')
@@ -97,10 +97,10 @@ class EarlyStopping:
                 self.early_stop = True
         else:
             self.best_val_loss = val_loss
-            self.save_checkpoint(val_loss, model, optimizer)
+            self.save_checkpoint(val_loss, model, optimizer, args)
             self.counter = 0
 
-    def save_checkpoint(self, val_loss, model, optimizer):
+    def save_checkpoint(self, val_loss, model, optimizer, args):
         '''Saves model when validation loss decrease.'''
         if self.verbose:
             print(f'Validation loss decreased ({self.val_loss_min:.6f} --> {val_loss:.6f}).  Saving best model ...')
@@ -110,7 +110,7 @@ class EarlyStopping:
         self.val_loss_min = val_loss
 
 # adapted from https://github.com/mateuszbuda/brain-segmentation-pytorch
-def train_model(model, optimizer, scheduler, device, num_epochs, dataloaders, info, fine_tune=False):
+def train_model(model, optimizer, scheduler, device, num_epochs, dataloaders, info, args, fine_tune=False):
     """
         Train the model
 
@@ -214,7 +214,7 @@ def train_model(model, optimizer, scheduler, device, num_epochs, dataloaders, in
 
                 scheduler.step(epoch_loss) # pass loss to ReduceLROnPlateau scheduler
 
-                early_stopping(epoch_loss, model, optimizer) #  evaluate early stopping criterion
+                early_stopping(epoch_loss, model, optimizer, args) #  evaluate early stopping criterion
 
                 # compare loss and deep copy the model
                 if epoch_loss < best_loss:
@@ -324,7 +324,7 @@ def main(args):
     else:
         num_epochs = args.epochs
 
-    model, metric_t, metric_v = train_model(model, optimizer, scheduler, device, num_epochs, colon_dataloader, info_train)
+    model, metric_t, metric_v = train_model(model, optimizer, scheduler, device, num_epochs, colon_dataloader, info_train, args)
     
     # for fine tuning restnetunet model
     if args.model == 'resnetunet':
@@ -339,7 +339,7 @@ def main(args):
         optimizer_ft = SGD(filter(lambda p: p.requires_grad, model.parameters()), lr=args.lr*0.01, momentum=0.9)
         # initialise learning rate scheduler
         scheduler_ft = lr_scheduler.ReduceLROnPlateau(optimizer_ft, 'min', threshold_mode='abs', min_lr=1e-8, factor=0.1, patience=args.sched_patience)
-        model, metric_ft, metric_fv = train_model(model, optimizer_ft, scheduler_ft, device, int(num_epochs/3), colon_dataloader, info_train, True)
+        model, metric_ft, metric_fv = train_model(model, optimizer_ft, scheduler_ft, device, int(num_epochs/3), colon_dataloader, info_train, args, True)
     
     # create json file from save information about the model, dataset, and metrics.
     with open(f"{args.metric_path}best_metric_{args.model}_{args.dataset_type}_{args.epochs}.json", "w") as json_file:
