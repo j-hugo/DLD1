@@ -65,7 +65,7 @@ def test_model(model, device, dataloaders, pred_save, info, args):
             predicted: If pred_save is ture, a dictionary which has image, label, and prediction of the slice returns
         """
     # load the trained model
-    check = torch.load(f"{args.model_path}best_metric_{args.model}_{args.metric_dataset_type}_{args.epochs}.pth")
+    check = torch.load(f"{args.model_path}best_metric_{args.model}_{args.test_dataset_type}_{args.epochs}.pth")
     model.load_state_dict(check['model_state_dict']) 
     
     # initialize to save dice scores
@@ -225,7 +225,7 @@ def main(args):
     result = test_model(model, device, colon_dataloader, args.plot_path, info_test, args)
     
     # save the result from the evalutaion
-    with open(f"{args.metric_path}best_metric_{args.model}_{args.metric_dataset_type}_{args.epochs}.json", 'ab+') as f:
+    with open(f"{args.metric_path}best_metric_{args.model}_{args.test_dataset_type}_{args.epochs}.json", 'ab+') as f:
         f.seek(0,2)                                #Go to the end of file    
         if f.tell() == 0 :                         #Check if file is empty
             f.write(json.dumps(info_test, indent=4).encode())  #If empty, write an array
@@ -247,12 +247,6 @@ if __name__ == "__main__":
         type=int,
         default=200,
         help="number of epochs to train (default: 100)",
-    )
-    parser.add_argument(
-        "--workers",
-        type=int,
-        default=4,
-        help="number of workers for data loading (default: 4)",
     )
     parser.add_argument(
         "--model-path", type=str, default="./save/models/", help="folder to load model"
@@ -283,7 +277,7 @@ if __name__ == "__main__":
         "--transform", type=bool, default=True, help="activate data augmentation"
     )
     parser.add_argument(
-        "--metric-dataset-type", type=str, default=None, help="choose what type of dataset you need for loading best metric; \
+        "--test-dataset-type", type=str, default=None, help="choose what type of dataset you need for loading best metric; \
         None=original dataset, \
         undersample=adjust to the number of non cancer images to the number of cancer images, \
         oversample=adjust to the number of cancer images to the number of non-cancer data, \
@@ -291,10 +285,6 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--model", type=str, default='unet', help="choose the model between unet and resnet+unet; UNet-> unet, Resnet+Unet-> resnetunet"
-    )
-    parser.add_argument(
-        "--savemetrics", type=bool, default=False,
-        help="save test metrics to json"
     )
     args = parser.parse_args()
     main(args)

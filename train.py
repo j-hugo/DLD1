@@ -64,8 +64,8 @@ def load_dataloader(args, train, valid):
         dataloader: a dataloader for training 
     """
     dataloader = {
-       'train': DataLoader(train, shuffle=True, batch_size=args.train_batch, num_workers=4),
-        'val': DataLoader(valid, shuffle=True, batch_size=args.valid_batch, num_workers=4)
+       'train': DataLoader(train, shuffle=True, batch_size=args.train_batch, num_workers=args.workers),
+        'val': DataLoader(valid, shuffle=True, batch_size=args.valid_batch, num_workers=args.workers)
     }
     return dataloader
 

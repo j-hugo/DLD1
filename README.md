@@ -32,7 +32,7 @@ The Dataset used in this project for semantic image segmentation was made public
     python dataset.py --method assign_subsets
     ```
 
-You can set a path for data, split method, split ratio, and other arguments. For more options and help `run: python dataset.py --h`
+You can set a path for data, split method, split ratio, and other arguments. For more options and help run: `python dataset.py --h`
 
 ## 2. Train
 1) Run the code below on the command line to start model training. 
