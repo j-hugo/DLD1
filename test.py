@@ -238,7 +238,8 @@ def main(args):
             f.write(json.dumps(info_test, indent=4).encode())    #Dump the dictionary
             f.write('}'.encode())  
 
-    # If save_plot is true, it saves overlay image
+    # If save_plot is true, it saves randomly chosen overlay image; 
+    # six images from cancer case, six images from non-cancer case 
     # red: ground truth label, green: predicted label
     if args.save_plot:
         c_index = list()
