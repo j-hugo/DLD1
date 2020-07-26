@@ -17,6 +17,7 @@ from torchvision import models
 from torch.optim import lr_scheduler, SGD
 import json
 
+
 def makedirs(args):
     """create directories to save model and metric  
 
@@ -380,11 +381,11 @@ if __name__ == "__main__":
         help="number of workers for data loading (default: 4)",
     )
     parser.add_argument(
-        "--model-path", type=str, default="./save/models/", help="folder to save model"
+        "--model-path", type=str, default="./save/models/", help="the paht to save model"
     )
     parser.add_argument(
         "--metric-path", type=str, default="./save/metrics/",
-        help="to save metrics result"
+        help="the path to save metrics result"
     )
     parser.add_argument(
         "--image-size",

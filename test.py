@@ -2,7 +2,9 @@
 from data_loading import ColonDataset
 from architecture import UNet, ResNetUNet
 from loss import calc_loss, print_metrics, dice_coef
+from utils import overlay_plot
 
+import random
 import argparse
 import _osx_support
 import copy 
@@ -18,6 +20,14 @@ from torch.utils.data import DataLoader
 from torchsummary import summary
 from torchvision import models
 
+def makedirs(args):
+    """create directories to save plot
+
+    Args:
+        args: arguments from the parser.
+        
+    """
+    os.makedirs(args.plot_path, exist_ok=True)
 
 def load_datasets(args):
     """load the dataset for evaluation   
@@ -62,7 +72,7 @@ def test_model(model, device, dataloaders, pred_save, info, args):
             info: a dictionary to save metrics of evaluation
         
         Return:
-            predicted: If pred_save is ture, a dictionary which has image, label, and prediction of the slice returns
+            predicted: If pred_save is true, a dictionary which has image, label, and prediction of the slice returns
         """
     # load the trained model
     check = torch.load(f"{args.model_path}best_metric_{args.model}_{args.test_dataset_type}_{args.epochs}.pth")
@@ -188,17 +198,9 @@ def test_model(model, device, dataloaders, pred_save, info, args):
     if pred_save == True:
         return predicted
 
-def makedirs(args):
-    """create directories to save plots  
-
-    Args:
-        args: arguments from the parser.
-        
-    """
-    os.makedirs(args.plot_path, exist_ok=True)
-
 def main(args):
-    makedirs(args)
+    if args.save_plot:
+        makedirs(args)
     device = torch.device("cpu" if not torch.cuda.is_available() else "cuda:0")
     dataset = load_datasets(args)
     colon_dataloader = load_dataloader(dataset)
@@ -222,7 +224,7 @@ def main(args):
     print('----------------------------------------------------------------')
     
     # starts evaluation of the model
-    result = test_model(model, device, colon_dataloader, args.plot_path, info_test, args)
+    result = test_model(model, device, colon_dataloader, args.save_plot, info_test, args)
     
     # save the result from the evalutaion
     with open(f"{args.metric_path}best_metric_{args.model}_{args.test_dataset_type}_{args.epochs}.json", 'ab+') as f:
@@ -236,7 +238,20 @@ def main(args):
             f.write(json.dumps(info_test, indent=4).encode())    #Dump the dictionary
             f.write('}'.encode())  
 
-    
+    # red: ground truth label, green: predicted label
+    if args.save_plot:
+        c_index = list()
+        n_index = list()
+        for i, j in result.items():
+            if j['cancer_gt'] and j['cancer_pd']:
+                c_index.append(i)
+            else:
+                n_index.append(i)
+        cancer = random.sample(c_index, 6)
+        no_cancer = random.sample(n_index, 6)
+        rand_index = np.concatenate((cancer, no_cancer))
+        for pos, i in enumerate(rand_index):
+            image = overlay_plot(result[i]['img'], result[i]['label'], result[i]['pred'], i, args, args.save_plot)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -249,14 +264,19 @@ if __name__ == "__main__":
         help="number of epochs to train (default: 100)",
     )
     parser.add_argument(
-        "--model-path", type=str, default="./save/models/", help="folder to load model"
+        "--model-path", type=str, default="./save/models/", help="the path to load model"
     )
     parser.add_argument(
         "--metric-path", type=str, default="./save/metrics/",
-        help="to save metrics result"
+        help="the path to save metrics result"
     )
     parser.add_argument(
-        "--plot-path", type=str, default="./save/plots", help="folder to save eval plots"
+        "--plot-path", type=str, default="./save/plots/",
+        help="the path to save plots"
+    )
+    parser.add_argument(
+        "--save-plot", type=bool, default=False,
+        help="choose to save plots"
     )
     parser.add_argument(
         "--image-size",
