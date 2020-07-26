@@ -1,16 +1,20 @@
 # Semantic Segmentation of Colon Cancer Primaries
 
 ## 0. Set up the environment
-You have to install some packages that need to run our project. 
 
-If you use anaconda, run the following command: 
-```
-conda env create -f environment.yaml
-```
-If you want to install packages using pip, run the following command:
-```
-pip install -r requirements.txt
-```
+1) Download this repository.
+2) You have to install packages that need to run our project. 
+    ### Option 1 (anaconda) 
+    ```
+    conda env create -f environment.yaml
+    ```
+    This command will create the conda environment and install requirements packages.
+
+    ### Option 2 (pip)
+    ```
+    pip install -r requirements.txt
+    ```
+    This command will download and install requirements packages.
 
 ## 1. Data
 
