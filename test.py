@@ -256,7 +256,7 @@ if __name__ == "__main__":
         help="to save metrics result"
     )
     parser.add_argument(
-        "--plot-path", type=str, default="./eval_plot/", help="folder to save eval plots"
+        "--plot-path", type=str, default="./save/plots", help="folder to save eval plots"
     )
     parser.add_argument(
         "--image-size",

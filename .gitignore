@@ -1,14 +1,8 @@
 Task10_Colon/
 .ipynb*
-npy_train_images/
-npy_train_labels/
-npy_test_images/
-npy_test_labels/
 __pycache__/
 runs/
-eval_plot/
 data/
-weights/
 .idea/
 .DS_Store
 save/
