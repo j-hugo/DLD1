@@ -58,4 +58,4 @@ For more options and help run: `python test.py --h`. In testing please specify t
 - dice_coef function and other helper functions at *loss.py* are adapted from https://github.com/usuyama/pytorch-unet
 - Early Stopping class at *train.py* is adpated from https://github.com/Bjarten/early-stopping-pytorch
 - train_model function (train loop) at *train.py* is adpated from https://github.com/usuyama/pytorch-unet
-- outline, gray2rgb, overlay_plot functions at *utils.py* are adapted from: https://github.com/mateuszbuda/brain-segmentation-pytorch/blob/master/utils.py
+- outline, gray2rgb, overlay_plot functions at *utils.py* are adapted from: https://github.com/mateuszbuda/brain-segmentation-pytorch
