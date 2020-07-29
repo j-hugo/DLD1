@@ -249,11 +249,20 @@ def main(args):
         for i, j in result.items():
             if j['cancer_gt'] and j['cancer_pd']:
                 c_index.append(i)
-            else:
+            elif j['cancer_gt'] and j['cancer_pd'] == False:
+                c_index.append(i)
+            elif j['cancer_gt'] == False:
                 n_index.append(i)
-        cancer = random.sample(c_index, 6)
+
+        if len(c_index) != 0:
+            cancer = random.sample(c_index, 6)
         no_cancer = random.sample(n_index, 6)
-        rand_index = np.concatenate((cancer, no_cancer))
+        
+        if len(c_index) != 0: 
+            rand_index = np.concatenate((cancer, no_cancer))
+        else: 
+            rand_index = no_cancer
+
         for i in rand_index:
             dice_store[int(i)] = result[i]['dice']
         for pos, i in enumerate(rand_index):
