@@ -239,9 +239,11 @@ def main(args):
             f.write('}'.encode())  
 
     # If save_plot is true, it saves randomly chosen overlay image; 
-    # six images from cancer case, six images from non-cancer case 
+    # six images from cancer case, six images from non-cancer case;
+    # also, it saves dice score for saved images 
     # red: ground truth label, green: predicted label
     if args.save_plot:
+        dice_store = dict()
         c_index = list()
         n_index = list()
         for i, j in result.items():
@@ -252,8 +254,13 @@ def main(args):
         cancer = random.sample(c_index, 6)
         no_cancer = random.sample(n_index, 6)
         rand_index = np.concatenate((cancer, no_cancer))
+        for i in rand_index:
+            dice_store[int(i)] = result[i]['dice']
         for pos, i in enumerate(rand_index):
             image = overlay_plot(result[i]['img'], result[i]['label'], result[i]['pred'], i, args, args.save_plot)
+        filepath = os.path.join(args.plot_path, 'dice_score.json')
+        with open(filepath, "w") as json_file:
+            json.dump(dice_store, json_file, indent=4)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
