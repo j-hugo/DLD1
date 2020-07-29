@@ -1,7 +1,7 @@
 import torch.nn.functional as F
 import torch
 
-
+# adpated from https://github.com/usuyama/pytorch-unet
 def dice_coef(pred, target, smooth = 1.):
     """
         Calculate the dice coefficient
@@ -22,7 +22,7 @@ def dice_coef(pred, target, smooth = 1.):
     dice = ((2. * intersection + smooth) / (pred.sum(dim=2).sum(dim=2) + target.sum(dim=2).sum(dim=2) + smooth))
     return dice.mean()
 
-
+# adapted from https://github.com/usuyama/pytorch-unet
 def calc_loss(pred, target, metrics, bce_weight=1.0, dc_weight=1.0):
     """
         Calculate the loss
@@ -48,7 +48,7 @@ def calc_loss(pred, target, metrics, bce_weight=1.0, dc_weight=1.0):
 
     return loss
 
-
+# adapted from https://github.com/usuyama/pytorch-unet
 def print_metrics(metrics, epoch_samples, phase):
     """
         Print out metrics

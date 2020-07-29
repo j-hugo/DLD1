@@ -110,7 +110,7 @@ class EarlyStopping:
                     f"{args.model_path}best_metric_{args.model}_{args.dataset_type}_{args.epochs}.pth")
         self.val_loss_min = val_loss
 
-# adapted from https://github.com/mateuszbuda/brain-segmentation-pytorch
+# adapted from https://github.com/usuyama/pytorch-unet
 def train_model(model, optimizer, scheduler, device, num_epochs, dataloaders, info, args, fine_tune=False):
     """
         Train the model
